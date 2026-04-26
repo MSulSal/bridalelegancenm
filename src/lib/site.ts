@@ -7,5 +7,5 @@ export const siteConfig = {
 	tagline:
 		"Editorial bridal styling with a personalized showroom experience.",
 	appointmentLabel: "Book Appointment",
-	appointmentHref: "/#appointment-intent",
+	appointmentHref: "/book-appointment",
 } as const;

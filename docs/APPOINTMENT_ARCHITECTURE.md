@@ -43,6 +43,14 @@ Appointment-setting is the primary conversion flow. This compares practical opti
 3. Default recommendation: `Cal.com` if client wants stronger control and future flexibility.
 4. Use `Calendly` if client prioritizes quickest setup with familiar UX.
 
+## Current Implementation Status
+
+- Phase 1 request flow is now implemented:
+  - Dedicated booking page: `/book-appointment`
+  - Request API endpoint: `/api/appointment-request`
+  - Manual confirmation model remains active (no live slot locking yet)
+- Form delivery supports Formspree via environment configuration.
+
 ## Decision Inputs Needed From Client
 
 - Exact appointment types and durations
