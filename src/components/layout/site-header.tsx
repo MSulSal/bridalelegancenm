@@ -1,9 +1,17 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
+import {
+	defaultTheme,
+	readTheme,
+	subscribeTheme,
+	type ThemeId,
+} from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
 import styles from "./site-header.module.css";
 
@@ -14,17 +22,38 @@ const navItems = [
 	{ href: "/#about-preview", label: "About" },
 ] as const;
 
+const logoByTheme: Record<ThemeId, string> = {
+	blue: "/logo-text-v5.png",
+	blush: "/logo-text-v4.png",
+	monochrome: "/logo-text-v3.png",
+};
+
+function getServerThemeSnapshot(): ThemeId {
+	return defaultTheme;
+}
+
 export function SiteHeader() {
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+	const hideMobileHeader = useMobileHeaderVisibility(mobileMenuRef);
 
-	function closeMobileMenu() {
-		if (mobileMenuRef.current) {
-			mobileMenuRef.current.open = false;
-		}
-	}
+	const activeTheme = useSyncExternalStore(
+		subscribeTheme,
+		readTheme,
+		getServerThemeSnapshot,
+	);
+
+	const monochromeBadgeStyle: CSSProperties | undefined =
+		activeTheme === "monochrome" ? { borderColor: "#111111" } : undefined;
+
+	const mobileLogoStyle: CSSProperties = {
+		width: "clamp(102px, 31vw, 116px)",
+		transform: "translateY(0.18rem)",
+	};
 
 	return (
-		<header className="be-topbar">
+		<header
+			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
+		>
 			<div className="be-container be-topbar-inner">
 				<div className={styles.mobileRow}>
 					<div className={styles.mobileLeft}>
@@ -36,15 +65,16 @@ export function SiteHeader() {
 							href="/"
 							aria-label={siteConfig.name}
 							className={`be-logo-medallion be-logo-medallion-mobile ${styles.logoBadgeMobile}`}
-							onClick={closeMobileMenu}
+							style={monochromeBadgeStyle}
 						>
 							<Image
-								src="/logo-text-v2.png"
+								src={logoByTheme[activeTheme]}
 								alt={siteConfig.name}
 								width={280}
 								height={72}
 								priority
 								className={`${styles.logoImage} ${styles.logoImageMobile}`}
+								style={mobileLogoStyle}
 							/>
 						</Link>
 					</div>
@@ -54,7 +84,8 @@ export function SiteHeader() {
 						className={`be-menu ${styles.mobileRight}`}
 					>
 						<summary
-							className="be-menu-trigger h-12 w-12 text-[color:var(--theme-toggle-circle)]"
+							className="be-menu-trigger h-12 w-12"
+							style={{ color: "var(--theme-toggle-circle)" }}
 							aria-label="Open menu"
 						>
 							<span className="sr-only">Open menu</span>
@@ -86,7 +117,6 @@ export function SiteHeader() {
 												className={
 													styles.mobileInstagramLink
 												}
-												onClick={closeMobileMenu}
 											>
 												<svg
 													aria-hidden="true"
@@ -122,7 +152,6 @@ export function SiteHeader() {
 												<Link
 													href={item.href}
 													className="be-nav-link"
-													onClick={closeMobileMenu}
 												>
 													{item.label}
 												</Link>
@@ -156,9 +185,10 @@ export function SiteHeader() {
 							href="/"
 							aria-label={siteConfig.name}
 							className={`be-logo-medallion ${styles.logoBadgeDesktop}`}
+							style={monochromeBadgeStyle}
 						>
 							<Image
-								src="/logo-text-v2.png"
+								src={logoByTheme[activeTheme]}
 								alt={siteConfig.name}
 								width={340}
 								height={92}

@@ -89,6 +89,7 @@
 		--badge-width: clamp(12.2rem, 16.8vw, 14.4rem);
 		--badge-half-width: clamp(6.1rem, 8.4vw, 7.2rem);
 		--badge-gap: 0.95rem;
+		--rail-gap: clamp(1rem, 2vw, 2.1rem);
 	}
 
 	.leftRail,
@@ -97,17 +98,16 @@
 		align-items: center;
 		flex: 1 1 0;
 		min-width: 0;
+		gap: var(--rail-gap);
 	}
 
 	.leftRail {
 		justify-content: flex-end;
-		gap: clamp(1rem, 2vw, 2.1rem);
 		padding-right: calc(var(--badge-half-width) + var(--badge-gap));
 	}
 
 	.rightRail {
 		justify-content: flex-start;
-		gap: var(--badge-gap);
 		padding-left: calc(var(--badge-half-width) + var(--badge-gap));
 	}
 

@@ -23,10 +23,10 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Sticky mobile appointment CTA bar is in place.
 - Mobile navigation now supports a dedicated dropdown sheet pattern.
 - Mobile burger trigger sizing is tuned for iPhone-class touch targets.
-- Mobile header now remains sticky/always available during scroll for navigation consistency.
+- Mobile header now hides on downward scroll, reappears on upward scroll, and stays visible while the burger menu is open.
 - Desktop header density has been tightened while preserving centered-logo composition.
 - Homepage section structure has expanded to support journey storytelling and stronger booking intent flow.
-- Theme toggle is implemented with three modes (Royal Blue, Blush, Monochrome) and persistent preference.
+- Theme toggle is implemented with three modes (Sage Atelier, Blush, Monochrome) and persistent preference.
 - Theme dropdown closes on selection/outside click/Escape and supports keyboard semantics.
 - Header layout now uses component-scoped styling (`site-header.module.css`) for faster iterative visual tuning.
 - Default first-load theme is monochrome (persisted user preference still respected).
@@ -38,6 +38,7 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Homepage sections now reveal on viewport entry via reusable `ScrollReveal` wrappers for more editorial scroll pacing.
 - Hero caption and footer spacing now account for sticky mobile booking CTA + safe-area inset to prevent text/content obstruction.
 - Mobile burger icon color now tracks the active theme accent (`--theme-toggle-circle`) for stronger visual cohesion.
+- Desktop left and right nav rails now share matched spacing for a more balanced header composition.
 
 ## Implementation Principles
 

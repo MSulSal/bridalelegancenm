@@ -1,28 +1,29 @@
 @import "tailwindcss";
 
 :root,
+:root,
 html[data-theme="blue"] {
-	--color-bg: #fcfeff;
-	--color-bg-alt: #f8fbff;
+	--color-bg: #f6f8f4;
+	--color-bg-alt: #eef3ec;
 	--color-surface: #ffffff;
-	--color-surface-soft: #f3f8ff;
-	--color-accent: #031a66;
-	--color-accent-strong: #02124f;
-	--color-text: #111827;
-	--color-text-muted: #5d6e8a;
-	--color-gold: #d8b56a;
-	--color-border: #e4eeff;
-	--color-glow: rgba(6, 75, 219, 0.05);
+	--color-surface-soft: #e5ece2;
+	--color-accent: #5e766a;
+	--color-accent-strong: #43584f;
+	--color-text: #1c2421;
+	--color-text-muted: #5f7067;
+	--color-gold: #c8a45d;
+	--color-border: #d7e0d3;
+	--color-glow: rgba(94, 118, 106, 0.1);
 	--color-logo-surface: #ffffff;
-	--color-logo-border: #031a66;
-	--color-logo-border-soft: #064bdb;
-	--theme-toggle-circle: #031a66;
-	--topbar-glass: rgba(255, 255, 255, 0.44);
-	--topbar-glass-edge: rgba(246, 250, 255, 0.32);
+	--color-logo-border: #5e766a;
+	--color-logo-border-soft: #43584f;
+	--theme-toggle-circle: #5e766a;
+	--topbar-glass: rgba(249, 252, 248, 0.46);
+	--topbar-glass-edge: rgba(241, 247, 238, 0.34);
 	--mono-ink: #050505;
 	--mono-charcoal: #181818;
 	--mono-border: #d6d0c5;
-	--shadow-soft: 0 24px 52px -36px rgba(3, 26, 102, 0.2);
+	--shadow-soft: 0 24px 52px -36px rgba(67, 88, 79, 0.24);
 }
 
 html[data-theme="blush"] {
@@ -59,8 +60,8 @@ html[data-theme="monochrome"] {
 	--color-border: #d6d0c5;
 	--color-glow: rgba(17, 17, 17, 0);
 	--color-logo-surface: #ffffff;
-	--color-logo-border: #c8a45d;
-	--color-logo-border-soft: #c8a45d;
+	--color-logo-border: #111111;
+	--color-logo-border-soft: #111111;
 	--theme-toggle-circle: #111111;
 	--topbar-glass: rgba(255, 255, 255, 0.44);
 	--topbar-glass-edge: rgba(255, 255, 255, 0.32);

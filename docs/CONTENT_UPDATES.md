@@ -35,6 +35,10 @@ This project is designed so content can be updated quickly without rebuilding ar
 
 - Place reusable logos in `public/` when used in page components.
 - Keep favicon/app icon files in `src/app/` when driven by App Router metadata conventions.
+- Current theme-wordmark mapping in header:
+  - `public/logo-text-v5.png` -> Sage Atelier (`blue` id)
+  - `public/logo-text-v4.png` -> Blush
+  - `public/logo-text-v3.png` -> Monochrome
 - Preferred naming pattern:
   - `logo-text.*`
   - `logo-notext.*`

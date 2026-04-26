@@ -4,9 +4,10 @@ export const defaultTheme = "monochrome" as const;
 
 export const themeOptions = [
 	{
+		// Keep id "blue" for localStorage compatibility from older sessions.
 		id: "blue",
-		name: "Royal Blue",
-		swatch: "#031A66",
+		name: "Sage Atelier",
+		swatch: "#5E766A",
 	},
 	{
 		id: "blush",

@@ -9,6 +9,21 @@ export function useMobileHeaderVisibility(
 
 	useEffect(() => {
 		let lastY = window.scrollY;
+		let awaitingUserScrollIntent = false;
+
+		const onUserScrollIntent = () => {
+			awaitingUserScrollIntent = false;
+		};
+
+		const onMenuToggle = () => {
+			const menuIsOpen = Boolean(menuRef.current?.open);
+			setIsHidden(false);
+			lastY = window.scrollY;
+
+			// After menu closes, wait for an actual user scroll gesture
+			// before allowing hide-on-scroll logic again.
+			awaitingUserScrollIntent = !menuIsOpen;
+		};
 
 		const onScroll = () => {
 			const currentY = window.scrollY;
@@ -17,10 +32,18 @@ export function useMobileHeaderVisibility(
 			if (!isMobileViewport) {
 				setIsHidden(false);
 				lastY = currentY;
+				awaitingUserScrollIntent = false;
 				return;
 			}
 
 			if (menuRef.current?.open) {
+				setIsHidden(false);
+				lastY = currentY;
+				awaitingUserScrollIntent = false;
+				return;
+			}
+
+			if (awaitingUserScrollIntent) {
 				setIsHidden(false);
 				lastY = currentY;
 				return;
@@ -40,15 +63,27 @@ export function useMobileHeaderVisibility(
 		const onResize = () => {
 			if (window.innerWidth >= 1024) {
 				setIsHidden(false);
+				awaitingUserScrollIntent = false;
 			}
 		};
 
+		const menuElement = menuRef.current;
+		menuElement?.addEventListener("toggle", onMenuToggle);
+
 		window.addEventListener("scroll", onScroll, { passive: true });
 		window.addEventListener("resize", onResize);
+		window.addEventListener("touchmove", onUserScrollIntent, {
+			passive: true,
+		});
+		window.addEventListener("wheel", onUserScrollIntent, { passive: true });
 
 		return () => {
+			menuElement?.removeEventListener("toggle", onMenuToggle);
+
 			window.removeEventListener("scroll", onScroll);
 			window.removeEventListener("resize", onResize);
+			window.removeEventListener("touchmove", onUserScrollIntent);
+			window.removeEventListener("wheel", onUserScrollIntent);
 		};
 	}, [menuRef]);
 
