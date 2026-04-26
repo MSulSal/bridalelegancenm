@@ -12,8 +12,8 @@ export function SiteHeader() {
 	return (
 		<header className="be-topbar">
 			<div className="be-container be-topbar-inner">
-				<div className="grid grid-cols-[2.75rem_1fr_2.75rem] items-center gap-2 lg:hidden">
-					<span aria-hidden="true" className="h-11 w-11" />
+				<div className="grid grid-cols-[3rem_1fr_3rem] items-center gap-2 lg:hidden">
+					<span aria-hidden="true" className="h-12 w-12" />
 
 					<Link
 						href="/"
@@ -32,17 +32,17 @@ export function SiteHeader() {
 
 					<details className="be-menu justify-self-end">
 						<summary
-							className="be-menu-trigger h-11 w-11"
+							className="be-menu-trigger h-14 w-14"
 							aria-label="Open menu"
 						>
 							<span className="sr-only">Open menu</span>
 							<svg
 								aria-hidden="true"
 								viewBox="0 0 24 24"
-								className="h-5 w-5"
+								className="h-7 w-7"
 								fill="none"
 								stroke="currentColor"
-								strokeWidth="1.9"
+								strokeWidth="2.1"
 							>
 								<path d="M4 7h16M4 12h16M4 17h16" />
 							</svg>
