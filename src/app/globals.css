@@ -17,8 +17,8 @@ html[data-theme="blue"] {
 	--color-logo-border: #031a66;
 	--color-logo-border-soft: #064bdb;
 	--theme-toggle-circle: #031a66;
-	--topbar-glass: rgba(255, 255, 255, 0.34);
-	--topbar-glass-edge: rgba(246, 250, 255, 0.24);
+	--topbar-glass: rgba(255, 255, 255, 0.44);
+	--topbar-glass-edge: rgba(246, 250, 255, 0.32);
 	--mono-ink: #050505;
 	--mono-charcoal: #181818;
 	--mono-border: #d6d0c5;
@@ -41,8 +41,8 @@ html[data-theme="blush"] {
 	--color-logo-border: #d8b56a;
 	--color-logo-border-soft: #d8b56a;
 	--theme-toggle-circle: #e4afa9;
-	--topbar-glass: rgba(255, 246, 244, 0.5);
-	--topbar-glass-edge: rgba(252, 233, 228, 0.38);
+	--topbar-glass: rgba(255, 246, 244, 0.44);
+	--topbar-glass-edge: rgba(252, 233, 228, 0.32);
 	--shadow-soft: 0 24px 52px -36px rgba(130, 80, 75, 0.28);
 }
 
@@ -250,6 +250,7 @@ a {
 	z-index: 70;
 	overflow: visible;
 	border-bottom: 1px solid var(--line-subtle);
+	background-color: rgba(255, 255, 255, 0.72);
 	background: linear-gradient(
 		120deg,
 		var(--topbar-glass-edge) 0%,

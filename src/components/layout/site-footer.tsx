@@ -12,7 +12,7 @@ export function SiteFooter() {
 
 	return (
 		<footer className="be-footer">
-			<div className="be-container py-12">
+			<div className="be-container pt-12 pb-[calc(6.75rem+env(safe-area-inset-bottom))] md:py-12">
 				<div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
 					<div className="space-y-4">
 						<p className="be-kicker">Bridal Elegance NM</p>

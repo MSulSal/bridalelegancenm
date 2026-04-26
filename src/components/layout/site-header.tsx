@@ -54,7 +54,7 @@ export function SiteHeader() {
 						className={`be-menu ${styles.mobileRight}`}
 					>
 						<summary
-							className="be-menu-trigger h-12 w-12"
+							className="be-menu-trigger h-12 w-12 text-[color:var(--theme-toggle-circle)]"
 							aria-label="Open menu"
 						>
 							<span className="sr-only">Open menu</span>

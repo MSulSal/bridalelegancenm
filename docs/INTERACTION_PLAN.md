@@ -23,7 +23,6 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Sticky mobile appointment CTA bar is in place.
 - Mobile navigation now supports a dedicated dropdown sheet pattern.
 - Mobile burger trigger sizing is tuned for iPhone-class touch targets.
-- Mobile header now hides on downward scroll and reappears on upward scroll.
 - Mobile header now remains sticky/always available during scroll for navigation consistency.
 - Desktop header density has been tightened while preserving centered-logo composition.
 - Homepage section structure has expanded to support journey storytelling and stronger booking intent flow.
@@ -36,6 +35,9 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Homepage hero now runs as a near full-viewport section with CTA/copy anchored in a bottom overlay to improve mobile storytelling and conversion focus.
 - Collections/spotlight card images now render with intrinsic dimensions to reduce hard-crop artifacts.
 - Primary nav now includes an explicit `Home` link for clarity in both desktop and mobile patterns.
+- Homepage sections now reveal on viewport entry via reusable `ScrollReveal` wrappers for more editorial scroll pacing.
+- Hero caption and footer spacing now account for sticky mobile booking CTA + safe-area inset to prevent text/content obstruction.
+- Mobile burger icon color now tracks the active theme accent (`--theme-toggle-circle`) for stronger visual cohesion.
 
 ## Implementation Principles
 
