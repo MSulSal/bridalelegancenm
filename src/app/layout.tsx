@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { defaultTheme, themeIds, themeStorageKey } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -22,6 +23,19 @@ const metadataBase = (() => {
 	}
 })();
 
+const themeInitScript = `(() => {
+	const key = ${JSON.stringify(themeStorageKey)};
+	const fallback = ${JSON.stringify(defaultTheme)};
+	const allowed = ${JSON.stringify(themeIds)};
+	try {
+		const stored = window.localStorage.getItem(key);
+		const next = allowed.includes(stored ?? "") ? stored : fallback;
+		document.documentElement.setAttribute("data-theme", next);
+	} catch {
+		document.documentElement.setAttribute("data-theme", fallback);
+	}
+})();`;
+
 export const metadata: Metadata = {
 	metadataBase,
 	title: {
@@ -35,7 +49,14 @@ export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en-US">
+		<html lang="en-US" data-theme={defaultTheme} suppressHydrationWarning>
+			<head>
+				{/* Prevent theme flash before React hydrates */}
+				<script
+					id="be-theme-init"
+					dangerouslySetInnerHTML={{ __html: themeInitScript }}
+				/>
+			</head>
 			<body
 				className={`${bodyFont.variable} ${displayFont.variable} antialiased`}
 			>

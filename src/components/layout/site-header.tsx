@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
 import { siteConfig } from "@/lib/site";
+import styles from "./site-header.module.css";
 
 const navItems = [
 	{ href: "/#collections-preview", label: "Collections" },
@@ -27,31 +29,35 @@ export function SiteHeader() {
 			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
 		>
 			<div className="be-container be-topbar-inner">
-				<div className="grid grid-cols-[3rem_1fr_3rem] items-center gap-2 lg:hidden">
-					<span aria-hidden="true" className="h-12 w-12" />
+				<div className={styles.mobileRow}>
+					<div className={styles.mobileLeft}>
+						<ThemeToggle align="left" size="compact" />
+					</div>
 
-					<Link
-						href="/"
-						aria-label={siteConfig.name}
-						className="be-logo-medallion be-logo-medallion-mobile justify-self-center inline-flex items-center justify-center"
-						onClick={closeMobileMenu}
-					>
-						<Image
-							src="/logo-text-v2.png"
-							alt={siteConfig.name}
-							width={280}
-							height={72}
-							priority
-							className="h-auto w-[164px] sm:w-[186px]"
-						/>
-					</Link>
+					<div className={styles.logoClipMobile}>
+						<Link
+							href="/"
+							aria-label={siteConfig.name}
+							className={`be-logo-medallion be-logo-medallion-mobile ${styles.logoBadgeMobile}`}
+							onClick={closeMobileMenu}
+						>
+							<Image
+								src="/logo-text-v2.png"
+								alt={siteConfig.name}
+								width={280}
+								height={72}
+								priority
+								className={`${styles.logoImage} ${styles.logoImageMobile}`}
+							/>
+						</Link>
+					</div>
 
 					<details
 						ref={mobileMenuRef}
-						className="be-menu justify-self-end"
+						className={`be-menu ${styles.mobileRight}`}
 					>
 						<summary
-							className="be-menu-trigger h-14 w-14"
+							className="be-menu-trigger h-12 w-12"
 							aria-label="Open menu"
 						>
 							<span className="sr-only">Open menu</span>
@@ -89,8 +95,11 @@ export function SiteHeader() {
 					</details>
 				</div>
 
-				<div className="hidden grid-cols-[1fr_auto_1fr] items-center gap-5 lg:grid">
-					<nav className="flex items-center gap-6">
+				<div className={styles.desktopRow}>
+					<nav
+						className={styles.leftRail}
+						aria-label="Desktop primary"
+					>
 						{navItems.map(item => (
 							<Link
 								key={item.href}
@@ -102,22 +111,25 @@ export function SiteHeader() {
 						))}
 					</nav>
 
-					<Link
-						href="/"
-						aria-label={siteConfig.name}
-						className="be-logo-medallion be-logo-medallion-desktop justify-self-center inline-flex items-center justify-center"
-					>
-						<Image
-							src="/logo-text-v2.png"
-							alt={siteConfig.name}
-							width={340}
-							height={92}
-							priority
-							className="h-auto w-[230px] xl:w-[250px]"
-						/>
-					</Link>
+					<div className={styles.logoClipDesktop}>
+						<Link
+							href="/"
+							aria-label={siteConfig.name}
+							className={`be-logo-medallion ${styles.logoBadgeDesktop}`}
+						>
+							<Image
+								src="/logo-text-v2.png"
+								alt={siteConfig.name}
+								width={340}
+								height={92}
+								priority
+								className={`${styles.logoImage} ${styles.logoImageDesktop}`}
+							/>
+						</Link>
+					</div>
 
-					<div className="flex items-center justify-end">
+					<div className={styles.rightRail}>
+						<ThemeToggle align="right" />
 						<a
 							href={siteConfig.appointmentHref}
 							className="be-btn be-btn-primary be-topbar-cta shrink-0"

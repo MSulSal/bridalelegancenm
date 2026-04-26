@@ -1,0 +1,112 @@
+.mobileRow {
+	display: grid;
+	grid-template-columns: 3.15rem 1fr 3.15rem;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 3.85rem;
+}
+
+.mobileLeft {
+	justify-self: start;
+}
+
+.mobileRight {
+	justify-self: end;
+}
+
+.logoClipMobile {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: visible;
+}
+
+.logoBadgeMobile {
+	margin: 0;
+	transform: translateY(-0.42rem);
+	min-height: 4.18rem;
+	padding-inline: 0.58rem;
+	padding-block: 0.74rem 0.5rem;
+}
+
+.logoImage {
+	display: block;
+	height: auto;
+}
+
+.logoImageMobile {
+	width: clamp(118px, 37vw, 136px);
+	transform: translateY(0.3rem);
+}
+
+.logoImageDesktop {
+	width: clamp(142px, 10.5vw, 168px);
+	transform: translateY(0.2rem);
+}
+
+.desktopRow {
+	display: none;
+}
+
+@media (min-width: 1024px) {
+	.mobileRow {
+		display: none;
+	}
+
+	.desktopRow {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 10rem;
+		position: relative;
+		--badge-width: clamp(12.2rem, 16.8vw, 14.4rem);
+		--badge-half-width: clamp(6.1rem, 8.4vw, 7.2rem);
+		--badge-gap: 0.95rem;
+	}
+
+	.leftRail,
+	.rightRail {
+		display: flex;
+		align-items: center;
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.leftRail {
+		justify-content: flex-end;
+		gap: clamp(1rem, 2vw, 2.1rem);
+		padding-right: calc(var(--badge-half-width) + var(--badge-gap));
+	}
+
+	.rightRail {
+		justify-content: flex-start;
+		gap: var(--badge-gap);
+		padding-left: calc(var(--badge-half-width) + var(--badge-gap));
+	}
+
+	.logoClipDesktop {
+		position: absolute;
+		left: 50%;
+		top: 0;
+		width: var(--badge-width);
+		transform: translateX(-50%);
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		overflow: visible;
+		pointer-events: none;
+		z-index: 3;
+	}
+
+	.logoClipDesktop > a {
+		pointer-events: auto;
+	}
+
+	.logoBadgeDesktop {
+		margin-block: 0;
+		margin-top: -1.02rem;
+		min-height: 4.72rem;
+		padding-inline: 0.68rem;
+		padding-block: 0.8rem 0.52rem;
+	}
+}

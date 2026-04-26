@@ -26,6 +26,9 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Mobile header now hides on downward scroll and reappears on upward scroll.
 - Desktop header density has been tightened while preserving centered-logo composition.
 - Homepage section structure has expanded to support journey storytelling and stronger booking intent flow.
+- Theme toggle is implemented with three modes (Royal Blue, Blush, Monochrome) and persistent preference.
+- Theme dropdown closes on selection/outside click/Escape and supports keyboard semantics.
+- Header layout now uses component-scoped styling (`site-header.module.css`) for faster iterative visual tuning.
 
 ## Implementation Principles
 

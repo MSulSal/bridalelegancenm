@@ -18,11 +18,13 @@ This project is designed so content can be updated quickly without rebuilding ar
 
 1. Update source content files.
    Current primary source: `src/content/site-content.ts` for homepage and booking page copy.
-2. Run quality checks:
+2. If visual theme values need adjustment, edit token values in `src/app/globals.css` (`html[data-theme="blue" | "blush" | "monochrome"]`).
+3. If header spacing/placement needs adjustment, edit `src/components/layout/site-header.module.css` (avoid growing global CSS with header-only layout rules).
+4. Run quality checks:
    - `pnpm lint`
    - `pnpm build`
-3. Preview locally with `pnpm dev`.
-4. Commit only approved copy and metadata changes.
+5. Preview locally with `pnpm dev`.
+6. Commit only approved copy and metadata changes.
 
 ## Branding Assets
 
