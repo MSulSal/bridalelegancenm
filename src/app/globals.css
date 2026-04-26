@@ -149,6 +149,12 @@ a {
 	border-bottom: 1px solid var(--line-subtle);
 	background: rgba(255, 255, 255, 0.9);
 	backdrop-filter: blur(12px);
+	transition: transform 220ms ease;
+	will-change: transform;
+}
+
+.be-topbar-mobile-hidden {
+	transform: translateY(calc(-100% - 0.25rem));
 }
 
 .be-topbar-inner {
@@ -289,6 +295,33 @@ a {
 	gap: 0.5rem;
 }
 
+@media (min-width: 1024px) {
+	.be-topbar-mobile-hidden {
+		transform: none;
+	}
+
+	.be-topbar-inner {
+		padding-block: 0.28rem;
+	}
+
+	.be-logo-medallion-desktop {
+		min-height: 4.62rem;
+		margin-block: -0.62rem;
+		padding-inline: 0.88rem;
+	}
+
+	.be-nav-link {
+		font-size: 0.74rem;
+		letter-spacing: 0.13em;
+	}
+
+	.be-topbar-cta {
+		padding: 0.62rem 0.95rem;
+		font-size: 0.66rem;
+		letter-spacing: 0.14em;
+	}
+}
+
 @media (max-width: 640px) {
 	.be-topbar-inner {
 		padding-block: 0.35rem;
@@ -307,5 +340,8 @@ a {
 	*::after {
 		transition-duration: 0.01ms !important;
 		animation-duration: 0.01ms !important;
+	}
+	.be-topbar {
+		transition: none !important;
 	}
 }

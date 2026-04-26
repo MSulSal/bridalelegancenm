@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
+import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
 import { siteConfig } from "@/lib/site";
 
 const navItems = [
@@ -9,8 +13,19 @@ const navItems = [
 ] as const;
 
 export function SiteHeader() {
+	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+	const hideMobileHeader = useMobileHeaderVisibility(mobileMenuRef);
+
+	function closeMobileMenu() {
+		if (mobileMenuRef.current) {
+			mobileMenuRef.current.open = false;
+		}
+	}
+
 	return (
-		<header className="be-topbar">
+		<header
+			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
+		>
 			<div className="be-container be-topbar-inner">
 				<div className="grid grid-cols-[3rem_1fr_3rem] items-center gap-2 lg:hidden">
 					<span aria-hidden="true" className="h-12 w-12" />
@@ -19,6 +34,7 @@ export function SiteHeader() {
 						href="/"
 						aria-label={siteConfig.name}
 						className="be-logo-medallion be-logo-medallion-mobile justify-self-center inline-flex items-center justify-center"
+						onClick={closeMobileMenu}
 					>
 						<Image
 							src="/logo-text-v2.png"
@@ -30,7 +46,10 @@ export function SiteHeader() {
 						/>
 					</Link>
 
-					<details className="be-menu justify-self-end">
+					<details
+						ref={mobileMenuRef}
+						className="be-menu justify-self-end"
+					>
 						<summary
 							className="be-menu-trigger h-14 w-14"
 							aria-label="Open menu"
@@ -57,6 +76,7 @@ export function SiteHeader() {
 												<Link
 													href={item.href}
 													className="be-nav-link"
+													onClick={closeMobileMenu}
 												>
 													{item.label}
 												</Link>
@@ -69,8 +89,8 @@ export function SiteHeader() {
 					</details>
 				</div>
 
-				<div className="hidden grid-cols-[1fr_auto_1fr] items-center gap-6 lg:grid">
-					<nav className="flex items-center gap-7">
+				<div className="hidden grid-cols-[1fr_auto_1fr] items-center gap-5 lg:grid">
+					<nav className="flex items-center gap-6">
 						{navItems.map(item => (
 							<Link
 								key={item.href}
@@ -85,7 +105,7 @@ export function SiteHeader() {
 					<Link
 						href="/"
 						aria-label={siteConfig.name}
-						className="be-logo-medallion justify-self-center inline-flex items-center justify-center"
+						className="be-logo-medallion be-logo-medallion-desktop justify-self-center inline-flex items-center justify-center"
 					>
 						<Image
 							src="/logo-text-v2.png"
@@ -93,14 +113,14 @@ export function SiteHeader() {
 							width={340}
 							height={92}
 							priority
-							className="h-auto w-[236px] xl:w-[260px]"
+							className="h-auto w-[230px] xl:w-[250px]"
 						/>
 					</Link>
 
 					<div className="flex items-center justify-end">
 						<a
 							href={siteConfig.appointmentHref}
-							className="be-btn be-btn-primary shrink-0"
+							className="be-btn be-btn-primary be-topbar-cta shrink-0"
 						>
 							{siteConfig.appointmentLabel}
 						</a>

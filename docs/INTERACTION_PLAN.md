@@ -23,6 +23,8 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Sticky mobile appointment CTA bar is in place.
 - Mobile navigation now supports a dedicated dropdown sheet pattern.
 - Mobile burger trigger sizing is tuned for iPhone-class touch targets.
+- Mobile header now hides on downward scroll and reappears on upward scroll.
+- Desktop header density has been tightened while preserving centered-logo composition.
 - Homepage section structure has expanded to support journey storytelling and stronger booking intent flow.
 
 ## Implementation Principles
