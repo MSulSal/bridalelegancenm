@@ -46,8 +46,10 @@ export function SiteHeader() {
 		activeTheme === "monochrome" ? { borderColor: "#111111" } : undefined;
 
 	const mobileLogoStyle: CSSProperties = {
-		width: "clamp(102px, 31vw, 116px)",
-		transform: "translateY(0.18rem)",
+		width: "clamp(100px, 30vw, 114px)",
+		transform: "translateY(0.16rem)",
+		padding: "0.02rem 0.14rem 0",
+		boxSizing: "border-box",
 	};
 
 	return (

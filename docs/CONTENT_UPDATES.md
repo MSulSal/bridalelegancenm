@@ -39,6 +39,7 @@ This project is designed so content can be updated quickly without rebuilding ar
   - `public/logo-text-v5.png` -> Sage Atelier (`blue` id)
   - `public/logo-text-v4.png` -> Blush
   - `public/logo-text-v3.png` -> Monochrome
+- Mobile wordmark fit tuning currently lives in `src/components/layout/site-header.tsx` (`mobileLogoStyle`) to keep theme logos clear of badge borders.
 - Preferred naming pattern:
   - `logo-text.*`
   - `logo-notext.*`
