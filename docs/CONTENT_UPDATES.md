@@ -16,7 +16,8 @@ This project is designed so content can be updated quickly without rebuilding ar
 
 ## Working Pattern
 
-1. Update source content files (JSON/MDX when introduced in later commits).
+1. Update source content files.
+   Current primary source: `src/content/site-content.ts` for homepage and booking page copy.
 2. Run quality checks:
    - `pnpm lint`
    - `pnpm build`
