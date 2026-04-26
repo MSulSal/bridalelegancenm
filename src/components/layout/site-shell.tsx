@@ -8,12 +8,15 @@ type SiteShellProps = {
 
 export function SiteShell({ children }: SiteShellProps) {
 	return (
-		<div className="flex min-h-screen flex-col bg-stone-50 text-stone-900">
-			<SiteHeader />
-			<main
-				id="main-content"
-				className="mx-auto w-full max-w-6xl flex-1 px-6 py-16 sm:px-10"
+		<div className="min-h-screen text-[color:var(--ink-900)]">
+			<a
+				href="#main-content"
+				className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm"
 			>
+				Skip to content
+			</a>
+			<SiteHeader />
+			<main id="main-content" className="be-container pb-16">
 				{children}
 			</main>
 			<SiteFooter />

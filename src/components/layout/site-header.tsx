@@ -1,25 +1,47 @@
+import Image from "next/image";
+import Link from "next/link";
 import { siteConfig } from "@/lib/site";
+
+const navItems = [
+	{ href: "#collections-preview", label: "Collections" },
+	{ href: "#spotlights-preview", label: "Spotlights" },
+	{ href: "#about-preview", label: "About" },
+	{ href: "#appointment-intent", label: "Appointments" },
+] as const;
 
 export function SiteHeader() {
 	return (
-		<header className="border-b border-stone-200 bg-white/90 backdrop-blur">
-			<div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
-				<div className="flex flex-col">
-					<span className="text-xs uppercase tracking-[0.22em] text-stone-500">
-						{siteConfig.cityState}
-					</span>
-					<span className="text-lg font-semibold text-stone-900">
-						{siteConfig.name}
-					</span>
-				</div>
+		<header className="be-topbar">
+			<div className="be-container flex items-center justify-between">
+				<Link href="/" className="inline-flex items-center">
+					<Image
+						src="/logo-text-v2.png"
+						alt={siteConfig.name}
+						width={220}
+						height={56}
+						priority
+						className="h-auto w-[150px] sm:w-[150px]"
+					/>
+				</Link>
 
-				<button
-					type="button"
-					className="rounded-full border border-stone-300 px-4 py-2 text-xs uppercase tracking-[0.15em] text-stone-700"
-					aria-label={siteConfig.appointmentLabel}
+				<nav className="hidden items-center gap-6 lg:flex">
+					{navItems.map(item => (
+						<a
+							key={item.href}
+							href={item.href}
+							className="be-nav-link"
+						>
+							{item.label}
+						</a>
+					))}
+				</nav>
+
+				<a
+					href={siteConfig.appointmentAnchor}
+					className="be-btn be-btn-primary shrink-0"
 				>
 					{siteConfig.appointmentLabel}
-				</button>
+				</a>
 			</div>
 		</header>
 	);

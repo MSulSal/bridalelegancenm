@@ -4,5 +4,8 @@ export const siteConfig = {
 		"Bridal Elegance NM is a New Mexico bridal boutique with an editorial feel and appointment-first bridal experience.",
 	url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 	cityState: "New Mexico",
+	tagline:
+		"Editorial bridal styling with a personalized showroom experience.",
 	appointmentLabel: "Book Appointment",
+	appointmentAnchor: "#appointment-intent",
 } as const;

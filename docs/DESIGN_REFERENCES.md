@@ -31,6 +31,13 @@ Use these sources for inspiration only. Do not copy text, media, exact layout st
 - Luxury feel: restrained color system, premium typography pairings, confident pacing.
 - Mobile first: sticky/floating appointment CTA and easy-thumb navigation.
 
+## Color and Tone Targets
+
+- Favor refined neutrals and couture contrast over warm-heavy or muddy tones.
+- Keep surfaces clean and bright with subtle layering, not flat monochrome blocks.
+- Use accent color sparingly for appointment CTAs and key interaction highlights.
+- Maintain premium readability: strong text contrast and calm background hierarchy.
+
 ## Project Guardrails
 
 - No copied copywriting, photography, UI assets, or exact composition.
