@@ -4,11 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
 import { siteConfig } from "@/lib/site";
 import styles from "./site-header.module.css";
 
 const navItems = [
+	{ href: "/", label: "Home" },
 	{ href: "/#collections-preview", label: "Collections" },
 	{ href: "/#spotlights-preview", label: "Spotlights" },
 	{ href: "/#about-preview", label: "About" },
@@ -16,7 +16,6 @@ const navItems = [
 
 export function SiteHeader() {
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
-	const hideMobileHeader = useMobileHeaderVisibility(mobileMenuRef);
 
 	function closeMobileMenu() {
 		if (mobileMenuRef.current) {
@@ -25,9 +24,7 @@ export function SiteHeader() {
 	}
 
 	return (
-		<header
-			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
-		>
+		<header className="be-topbar">
 			<div className="be-container be-topbar-inner">
 				<div className={styles.mobileRow}>
 					<div className={styles.mobileLeft}>

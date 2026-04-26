@@ -14,6 +14,7 @@ This project is designed so content can be updated quickly without rebuilding ar
 - Dedicated booking page content at `/book-appointment`
 - Brand assets (logo variants and favicon)
 - Legacy migration dataset and image library
+- Hero lead image asset (`public/hero-image.png`)
 
 ## Working Pattern
 
@@ -23,11 +24,12 @@ This project is designed so content can be updated quickly without rebuilding ar
    - `src/content/migration/legacy-site/legacy-content.ts` for migrated legacy business data and image references
 2. If visual theme values need adjustment, edit token values in `src/app/globals.css` (`html[data-theme="blue" | "blush" | "monochrome"]`).
 3. If header spacing/placement needs adjustment, edit `src/components/layout/site-header.module.css` (avoid growing global CSS with header-only layout rules).
-4. Run quality checks:
+4. If homepage hero sizing/position/reveal behavior needs adjustment, edit `src/app/home.module.css` first.
+5. Run quality checks:
    - `pnpm lint`
    - `pnpm build`
-5. Preview locally with `pnpm dev`.
-6. Commit only approved copy and metadata changes.
+6. Preview locally with `pnpm dev`.
+7. Commit only approved copy and metadata changes.
 
 ## Branding Assets
 
@@ -46,3 +48,4 @@ This project is designed so content can be updated quickly without rebuilding ar
 - Do not copy competitor/reference wording.
 - Avoid hard promises that require operational capabilities not yet confirmed.
 - Do not publish outdated showroom address details while relocation is pending.
+- Keep hero image crop flattering across common mobile widths (iPhone 11 baseline) before publishing copy/image updates.

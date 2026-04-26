@@ -1,0 +1,164 @@
+.reveal {
+	opacity: 0;
+	transform: translate3d(0, 18px, 0);
+	animation: section-enter 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.delay0 {
+	animation-delay: 40ms;
+}
+
+.delay1 {
+	animation-delay: 120ms;
+}
+
+.delay2 {
+	animation-delay: 200ms;
+}
+
+.delay3 {
+	animation-delay: 280ms;
+}
+
+.delay4 {
+	animation-delay: 360ms;
+}
+
+.delay5 {
+	animation-delay: 440ms;
+}
+
+.sectionLift {
+	transition:
+		transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sectionLift:hover {
+	transform: translateY(-4px);
+}
+
+.heroSection {
+	margin-inline: calc(50% - 50vw);
+}
+
+.heroFrame {
+	position: relative;
+	margin: 0;
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+	border-radius: 0;
+}
+
+.heroViewport {
+	position: relative;
+	min-height: calc(100svh - 4.4rem);
+}
+
+.heroImage {
+	object-position: 50% 16%;
+	transform: scale(1);
+	transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.heroFrame:hover .heroImage {
+	transform: scale(1.015);
+}
+
+.heroOverlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(15, 15, 15, 0.08) 0%,
+		rgba(15, 15, 15, 0.26) 45%,
+		rgba(15, 15, 15, 0.62) 100%
+	);
+	pointer-events: none;
+}
+
+.heroCaption {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	padding: 1.25rem;
+	max-width: min(96%, 42rem);
+}
+
+.heroDescription {
+	max-width: 36ch;
+}
+
+.heroGhostButton {
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(2px);
+}
+
+.heroGhostButton:hover {
+	border-color: rgba(255, 255, 255, 0.92);
+	background: rgba(255, 255, 255, 0.18);
+}
+
+@media (min-width: 640px) {
+	.heroViewport {
+		min-height: calc(100svh - 4.6rem);
+	}
+
+	.heroCaption {
+		padding: 1.75rem;
+	}
+
+	.heroImage {
+		object-position: 50% 18%;
+	}
+}
+
+@media (min-width: 1024px) {
+	.heroViewport {
+		min-height: calc(100svh - 10.2rem);
+	}
+
+	.heroCaption {
+		padding: 2.15rem;
+	}
+
+	.heroImage {
+		object-position: 50% 20%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.reveal {
+		opacity: 1;
+		transform: none;
+		animation: none;
+	}
+
+	.sectionLift,
+	.heroImage,
+	.heroGhostButton {
+		transition: none;
+	}
+
+	.sectionLift:hover {
+		transform: none;
+	}
+
+	.heroFrame:hover .heroImage {
+		transform: none;
+	}
+}
+
+@keyframes section-enter {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 18px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}

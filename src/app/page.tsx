@@ -3,99 +3,105 @@ import { homeContent } from "@/content/site-content";
 import { SiteShell } from "@/components/layout/site-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { siteConfig } from "@/lib/site";
+import styles from "./home.module.css";
 
 export default function HomePage() {
-	const featuredImage = homeContent.homeGallery[0];
 	const galleryStrip = homeContent.homeGallery.slice(1, 5);
 
 	return (
 		<SiteShell>
-			<section className="be-section pt-12 md:pt-20">
-				<div className="grid items-start gap-8 lg:grid-cols-[0.98fr_1.02fr]">
-					<div>
-						<p className="be-kicker">{siteConfig.cityState}</p>
-						<h1 className="be-display mt-3">
-							{homeContent.hero.title}
-						</h1>
-						<p className="mt-3 text-xs uppercase tracking-[0.16em] text-[color:var(--ink-500)]">
-							{homeContent.hero.supportLine}
-						</p>
-						<p className="be-body mt-5">
-							{homeContent.hero.description}
-						</p>
-						<div className="mt-7 flex flex-wrap gap-3">
-							<a
-								href={siteConfig.appointmentHref}
-								className="be-btn be-btn-primary"
+			<section
+				className={`${styles.heroSection} ${styles.reveal} ${styles.delay0}`}
+			>
+				<figure
+					className={`m-0 be-card overflow-hidden ${styles.heroFrame}`}
+				>
+					<div className={styles.heroViewport}>
+						<Image
+							src="/hero-image.png"
+							alt="Bridal Elegance boutique hero image"
+							fill
+							priority
+							sizes="100vw"
+							className={`object-cover ${styles.heroImage}`}
+						/>
+						<div className={styles.heroOverlay} />
+						<figcaption className={styles.heroCaption}>
+							<p className="be-kicker !text-white/80">
+								{siteConfig.cityState}
+							</p>
+							<h1 className="mt-3 max-w-[14ch] font-[var(--font-display-serif)] text-[clamp(2.2rem,6vw,5rem)] leading-[0.95] text-white">
+								{homeContent.hero.title}
+							</h1>
+							<p className="mt-3 text-xs uppercase tracking-[0.16em] text-white/85">
+								{homeContent.hero.supportLine}
+							</p>
+							<p
+								className={`mt-5 text-sm leading-7 text-white/92 sm:text-base ${styles.heroDescription}`}
 							>
-								{siteConfig.appointmentLabel}
-							</a>
-							<a
-								href="#collections-preview"
-								className="be-btn be-btn-ghost"
-							>
-								{homeContent.hero.secondaryCtaLabel}
-							</a>
-						</div>
+								{homeContent.hero.description}
+							</p>
+							<div className="mt-7 flex flex-wrap gap-3">
+								<a
+									href={siteConfig.appointmentHref}
+									className="be-btn be-btn-primary"
+								>
+									{siteConfig.appointmentLabel}
+								</a>
+								<a
+									href="#collections-preview"
+									className={`be-btn ${styles.heroGhostButton}`}
+								>
+									{homeContent.hero.secondaryCtaLabel}
+								</a>
+							</div>
+						</figcaption>
 					</div>
+				</figure>
+			</section>
 
-					<aside className="grid gap-4" id="about-preview">
-						<figure className="be-card overflow-hidden">
-							<div className="relative aspect-[4/5]">
+			<section
+				id="about-preview"
+				className={`be-section pt-8 md:pt-12 ${styles.reveal} ${styles.delay1}`}
+			>
+				<div className="grid gap-4 lg:grid-cols-[1.02fr_0.98fr]">
+					<article
+						className={`be-card p-5 sm:p-7 ${styles.sectionLift}`}
+					>
+						<p className="be-kicker">
+							{homeContent.aboutPreview.kicker}
+						</p>
+						<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
+							{homeContent.aboutPreview.copy}
+						</p>
+						<p className="mt-4 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
+							{siteConfig.showroomUpdate}
+						</p>
+					</article>
+
+					<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+						{galleryStrip.map(image => (
+							<figure
+								key={image.localPath}
+								className={`m-0 be-lookbook-frame ${styles.sectionLift}`}
+							>
 								<Image
-									src={featuredImage.localPath}
-									alt={featuredImage.alt}
+									src={image.localPath}
+									alt={image.alt}
 									fill
-									priority
-									sizes="(min-width: 1024px) 44vw, 100vw"
+									sizes="(min-width: 640px) 22vw, 46vw"
 									className="object-cover"
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
-								<figcaption className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
-									<p className="be-kicker !text-white/80">
-										Boutique Gallery
-									</p>
-									<p className="mt-2 max-w-[24ch] text-2xl leading-tight sm:text-3xl">
-										A calm boutique setting focused on fit,
-										comfort, and confident choices.
-									</p>
-								</figcaption>
-							</div>
-						</figure>
-
-						<article className="be-card p-5 sm:p-7">
-							<p className="be-kicker">
-								{homeContent.aboutPreview.kicker}
-							</p>
-							<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
-								{homeContent.aboutPreview.copy}
-							</p>
-							<p className="mt-4 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-								{siteConfig.showroomUpdate}
-							</p>
-						</article>
-
-						<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-							{galleryStrip.map(image => (
-								<figure
-									key={image.localPath}
-									className="be-lookbook-frame"
-								>
-									<Image
-										src={image.localPath}
-										alt={image.alt}
-										fill
-										sizes="(min-width: 640px) 22vw, 46vw"
-										className="object-cover"
-									/>
-								</figure>
-							))}
-						</div>
-					</aside>
+							</figure>
+						))}
+					</div>
 				</div>
 			</section>
 
-			<section id="collections-preview" className="be-section">
+			<section
+				id="collections-preview"
+				className={`be-section ${styles.reveal} ${styles.delay2}`}
+			>
 				<SectionHeading
 					eyebrow={homeContent.collectionSection.heading.eyebrow}
 					title={homeContent.collectionSection.heading.title}
@@ -107,15 +113,16 @@ export default function HomePage() {
 					{homeContent.collectionSection.items.map(item => (
 						<article
 							key={item.title}
-							className="be-card overflow-hidden"
+							className={`be-card overflow-hidden ${styles.sectionLift}`}
 						>
-							<div className="relative aspect-[3/4] border-b border-[color:var(--line-subtle)]">
+							<div className="border-b border-[color:var(--line-subtle)]">
 								<Image
 									src={item.image.localPath}
 									alt={item.image.alt}
-									fill
+									width={1200}
+									height={1800}
 									sizes="(min-width: 768px) 30vw, 100vw"
-									className="object-cover"
+									className="block h-auto w-full"
 								/>
 							</div>
 							<div className="p-6">
@@ -142,7 +149,7 @@ export default function HomePage() {
 
 			<section
 				id="spotlights-preview"
-				className="be-section border-y border-[color:var(--line-subtle)]"
+				className={`be-section border-y border-[color:var(--line-subtle)] ${styles.reveal} ${styles.delay3}`}
 			>
 				<SectionHeading
 					eyebrow={homeContent.spotlightSection.heading.eyebrow}
@@ -155,15 +162,16 @@ export default function HomePage() {
 					{homeContent.spotlightSection.items.map(item => (
 						<article
 							key={item.title}
-							className="be-card overflow-hidden"
+							className={`be-card overflow-hidden ${styles.sectionLift}`}
 						>
-							<div className="relative aspect-[3/4] border-b border-[color:var(--line-subtle)]">
+							<div className="border-b border-[color:var(--line-subtle)]">
 								<Image
 									src={item.image.localPath}
 									alt={item.image.alt}
-									fill
+									width={1200}
+									height={1800}
 									sizes="(min-width: 768px) 30vw, 100vw"
-									className="object-cover"
+									className="block h-auto w-full"
 								/>
 							</div>
 							<div className="p-6">
@@ -196,7 +204,10 @@ export default function HomePage() {
 				</div>
 			</section>
 
-			<section className="be-section" aria-labelledby="journey-heading">
+			<section
+				className={`be-section ${styles.reveal} ${styles.delay4}`}
+				aria-labelledby="journey-heading"
+			>
 				<SectionHeading
 					eyebrow={homeContent.journeySection.heading.eyebrow}
 					title={homeContent.journeySection.heading.title}
@@ -204,7 +215,10 @@ export default function HomePage() {
 				/>
 				<ol className="mt-9 grid gap-4 md:grid-cols-2">
 					{homeContent.journeySection.steps.map(item => (
-						<li key={item.step} className="be-card p-6">
+						<li
+							key={item.step}
+							className={`be-card p-6 ${styles.sectionLift}`}
+						>
 							<p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-500)]">
 								Step {item.step}
 							</p>
@@ -219,7 +233,10 @@ export default function HomePage() {
 				</ol>
 			</section>
 
-			<section id="appointment-intent" className="be-section">
+			<section
+				id="appointment-intent"
+				className={`be-section ${styles.reveal} ${styles.delay5}`}
+			>
 				<div className="be-card p-6 sm:p-10">
 					<SectionHeading
 						eyebrow={homeContent.appointmentSection.heading.eyebrow}

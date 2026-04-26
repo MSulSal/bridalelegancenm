@@ -24,6 +24,7 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Mobile navigation now supports a dedicated dropdown sheet pattern.
 - Mobile burger trigger sizing is tuned for iPhone-class touch targets.
 - Mobile header now hides on downward scroll and reappears on upward scroll.
+- Mobile header now remains sticky/always available during scroll for navigation consistency.
 - Desktop header density has been tightened while preserving centered-logo composition.
 - Homepage section structure has expanded to support journey storytelling and stronger booking intent flow.
 - Theme toggle is implemented with three modes (Royal Blue, Blush, Monochrome) and persistent preference.
@@ -32,6 +33,9 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Default first-load theme is monochrome (persisted user preference still respected).
 - Instagram social entry point now exists in both desktop navbar and mobile menu.
 - Homepage hero is now image-led with a featured editorial panel and responsive supporting gallery strip.
+- Homepage hero now runs as a near full-viewport section with CTA/copy anchored in a bottom overlay to improve mobile storytelling and conversion focus.
+- Collections/spotlight card images now render with intrinsic dimensions to reduce hard-crop artifacts.
+- Primary nav now includes an explicit `Home` link for clarity in both desktop and mobile patterns.
 
 ## Implementation Principles
 
