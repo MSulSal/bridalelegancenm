@@ -22,6 +22,7 @@ export default function HomePage() {
 							fill
 							priority
 							sizes="100vw"
+							quality={95}
 							className={`object-cover ${styles.heroImage}`}
 						/>
 						<div className={styles.heroOverlay} />
