@@ -5,15 +5,21 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { siteConfig } from "@/lib/site";
 
 export default function HomePage() {
+	const featuredImage = homeContent.homeGallery[0];
+	const galleryStrip = homeContent.homeGallery.slice(1, 5);
+
 	return (
 		<SiteShell>
 			<section className="be-section pt-12 md:pt-20">
-				<div className="grid items-start gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+				<div className="grid items-start gap-8 lg:grid-cols-[0.98fr_1.02fr]">
 					<div>
 						<p className="be-kicker">{siteConfig.cityState}</p>
 						<h1 className="be-display mt-3">
 							{homeContent.hero.title}
 						</h1>
+						<p className="mt-3 text-xs uppercase tracking-[0.16em] text-[color:var(--ink-500)]">
+							{homeContent.hero.supportLine}
+						</p>
 						<p className="be-body mt-5">
 							{homeContent.hero.description}
 						</p>
@@ -34,30 +40,56 @@ export default function HomePage() {
 					</div>
 
 					<aside className="grid gap-4" id="about-preview">
-						<article className="be-card p-5 sm:p-7">
-							<div className="flex items-center gap-4">
+						<figure className="be-card overflow-hidden">
+							<div className="relative aspect-[4/5]">
 								<Image
-									src="/logo-notext.png"
-									alt=""
-									width={72}
-									height={72}
-									className="h-14 w-14 border border-[color:var(--line-subtle)] bg-white p-2"
+									src={featuredImage.localPath}
+									alt={featuredImage.alt}
+									fill
+									priority
+									sizes="(min-width: 1024px) 44vw, 100vw"
+									className="object-cover"
 								/>
-								<div>
-									<p className="be-kicker">
-										{homeContent.aboutPreview.kicker}
+								<div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
+								<figcaption className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6">
+									<p className="be-kicker !text-white/80">
+										Boutique Gallery
 									</p>
-									<p className="mt-2 text-sm leading-7 text-[color:var(--ink-700)]">
-										{homeContent.aboutPreview.copy}
+									<p className="mt-2 max-w-[24ch] text-2xl leading-tight sm:text-3xl">
+										A calm boutique setting focused on fit,
+										comfort, and confident choices.
 									</p>
-								</div>
+								</figcaption>
 							</div>
+						</figure>
+
+						<article className="be-card p-5 sm:p-7">
+							<p className="be-kicker">
+								{homeContent.aboutPreview.kicker}
+							</p>
+							<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
+								{homeContent.aboutPreview.copy}
+							</p>
+							<p className="mt-4 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
+								{siteConfig.showroomUpdate}
+							</p>
 						</article>
 
-						<div className="grid grid-cols-3 gap-3">
-							<div className="be-lookbook-frame" />
-							<div className="be-lookbook-frame" />
-							<div className="be-lookbook-frame" />
+						<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+							{galleryStrip.map(image => (
+								<figure
+									key={image.localPath}
+									className="be-lookbook-frame"
+								>
+									<Image
+										src={image.localPath}
+										alt={image.alt}
+										fill
+										sizes="(min-width: 640px) 22vw, 46vw"
+										className="object-cover"
+									/>
+								</figure>
+							))}
 						</div>
 					</aside>
 				</div>
@@ -73,14 +105,36 @@ export default function HomePage() {
 				/>
 				<div className="mt-9 grid gap-5 md:grid-cols-3">
 					{homeContent.collectionSection.items.map(item => (
-						<article key={item.title} className="be-card p-6">
-							<p className="be-kicker">{item.tag}</p>
-							<h3 className="mt-3 text-2xl leading-tight">
-								{item.title}
-							</h3>
-							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-								{item.copy}
-							</p>
+						<article
+							key={item.title}
+							className="be-card overflow-hidden"
+						>
+							<div className="relative aspect-[3/4] border-b border-[color:var(--line-subtle)]">
+								<Image
+									src={item.image.localPath}
+									alt={item.image.alt}
+									fill
+									sizes="(min-width: 768px) 30vw, 100vw"
+									className="object-cover"
+								/>
+							</div>
+							<div className="p-6">
+								<p className="be-kicker">{item.tag}</p>
+								<h3 className="mt-3 text-2xl leading-tight">
+									{item.title}
+								</h3>
+								<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
+									{item.copy}
+								</p>
+								<a
+									href={item.href}
+									target="_blank"
+									rel="noreferrer"
+									className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
+								>
+									Find out more
+								</a>
+							</div>
 						</article>
 					))}
 				</div>
@@ -99,20 +153,44 @@ export default function HomePage() {
 				/>
 				<div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
 					{homeContent.spotlightSection.items.map(item => (
-						<article key={item.title} className="be-card p-6">
-							<p className="be-kicker">Spotlight</p>
-							<h3 className="mt-3 text-2xl leading-tight">
-								{item.title}
-							</h3>
-							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-								{item.copy}
-							</p>
-							<a
-								href={siteConfig.appointmentHref}
-								className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
-							>
-								{homeContent.spotlightSection.ctaLabel}
-							</a>
+						<article
+							key={item.title}
+							className="be-card overflow-hidden"
+						>
+							<div className="relative aspect-[3/4] border-b border-[color:var(--line-subtle)]">
+								<Image
+									src={item.image.localPath}
+									alt={item.image.alt}
+									fill
+									sizes="(min-width: 768px) 30vw, 100vw"
+									className="object-cover"
+								/>
+							</div>
+							<div className="p-6">
+								<p className="be-kicker">Category</p>
+								<h3 className="mt-3 text-2xl leading-tight">
+									{item.title}
+								</h3>
+								<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
+									{item.copy}
+								</p>
+								<a
+									href={item.href}
+									target={
+										item.href.startsWith("http")
+											? "_blank"
+											: undefined
+									}
+									rel={
+										item.href.startsWith("http")
+											? "noreferrer"
+											: undefined
+									}
+									className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
+								>
+									{item.ctaLabel}
+								</a>
+							</div>
 						</article>
 					))}
 				</div>

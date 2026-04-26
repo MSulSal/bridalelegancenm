@@ -29,6 +29,9 @@ This plan defines how the site will feel premium and conversion-focused without 
 - Theme toggle is implemented with three modes (Royal Blue, Blush, Monochrome) and persistent preference.
 - Theme dropdown closes on selection/outside click/Escape and supports keyboard semantics.
 - Header layout now uses component-scoped styling (`site-header.module.css`) for faster iterative visual tuning.
+- Default first-load theme is monochrome (persisted user preference still respected).
+- Instagram social entry point now exists in both desktop navbar and mobile menu.
+- Homepage hero is now image-led with a featured editorial panel and responsive supporting gallery strip.
 
 ## Implementation Principles
 

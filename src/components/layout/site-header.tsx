@@ -77,6 +77,49 @@ export function SiteHeader() {
 							<div className="be-container">
 								<nav aria-label="Mobile">
 									<ul className="be-menu-list">
+										<li
+											className={
+												styles.mobileInstagramItem
+											}
+										>
+											<a
+												href={siteConfig.instagramHref}
+												target="_blank"
+												rel="noreferrer"
+												className={
+													styles.mobileInstagramLink
+												}
+												onClick={closeMobileMenu}
+											>
+												<svg
+													aria-hidden="true"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="1.8"
+												>
+													<rect
+														x="3"
+														y="3"
+														width="18"
+														height="18"
+														rx="5"
+													/>
+													<circle
+														cx="12"
+														cy="12"
+														r="4.25"
+													/>
+													<circle
+														cx="17.5"
+														cy="6.5"
+														r="1"
+													/>
+												</svg>
+												<span>Instagram</span>
+											</a>
+										</li>
+
 										{navItems.map(item => (
 											<li key={item.href}>
 												<Link
@@ -130,6 +173,31 @@ export function SiteHeader() {
 
 					<div className={styles.rightRail}>
 						<ThemeToggle align="right" />
+						<a
+							href={siteConfig.instagramHref}
+							target="_blank"
+							rel="noreferrer"
+							aria-label="Visit us on Instagram (opens in new tab)"
+							className={styles.instagramIconLink}
+						>
+							<svg
+								aria-hidden="true"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="1.8"
+							>
+								<rect
+									x="3"
+									y="3"
+									width="18"
+									height="18"
+									rx="5"
+								/>
+								<circle cx="12" cy="12" r="4.25" />
+								<circle cx="17.5" cy="6.5" r="1" />
+							</svg>
+						</a>
 						<a
 							href={siteConfig.appointmentHref}
 							className="be-btn be-btn-primary be-topbar-cta shrink-0"

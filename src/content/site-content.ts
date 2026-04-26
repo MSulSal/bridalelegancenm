@@ -1,103 +1,127 @@
+import { legacySiteContent } from "@/content/migration/legacy-site/legacy-content";
+
 export const homeContent = {
 	hero: {
-		title: "A Bridal Website Experience Designed To Make Booking Feel Obvious.",
+		title: "Bridal Elegance",
+		supportLine: legacySiteContent.business.authorizedLine,
 		description:
-			"Inspired by top bridal experiences without copying them, this direction prioritizes couture atmosphere, image-led storytelling, and strong appointment conversion.",
-		secondaryCtaLabel: "Explore Collections",
+			"Appointment-first bridal boutique service with curated designer selections, one-on-one guidance, and clear next steps.",
+		secondaryCtaLabel: "View Bridal Gowns",
 	},
 	aboutPreview: {
 		kicker: "Showroom Experience",
-		copy: "Classy, calm, appointment-first bridal service from first contact.",
+		copy: "A calm, one-on-one consultation experience shaped around your timeline and style preferences.",
 	},
+	homeGallery: legacySiteContent.imageLibrary.homeGallery,
 	collectionSection: {
 		heading: {
-			eyebrow: "Collections Direction",
-			title: "A Premium Browsing Feel, Not A Generic Local Brochure",
+			eyebrow: "Collections",
+			title: "Bridal Gowns, Mother Of The Bride, And Accessories",
 			description:
-				"These category blocks establish the visual rhythm for future collection and designer pages.",
+				"Migrated from the original Bridal Elegance site and elevated for a modern editorial boutique experience.",
 		},
 		items: [
 			{
-				title: "Romantic Classics",
-				copy: "Timeless silhouettes with modern shaping for elegant bridal portraits.",
-				tag: "Soft Structure",
+				title: "Sottero and Midgley",
+				copy: "Designer wedding gowns carried through our authorized salon relationship.",
+				tag: "Bridal Designer",
+				href: legacySiteContent.externalLinks.bridalDesigners[0].href,
+				image: legacySiteContent.imageLibrary.collectionHighlights
+					.bridalDesigners[0],
 			},
 			{
-				title: "Contemporary Minimal",
-				copy: "Sculptural gowns with clean lines and couture-level fabric movement.",
-				tag: "Modern Edit",
+				title: "Maggie Sottero",
+				copy: "Wedding gown collection from Maggie Sottero.",
+				tag: "Bridal Designer",
+				href: legacySiteContent.externalLinks.bridalDesigners[1].href,
+				image: legacySiteContent.imageLibrary.collectionHighlights
+					.bridalDesigners[1],
 			},
 			{
-				title: "Statement Glamour",
-				copy: "High-impact detailing for brides who want unforgettable entrance energy.",
-				tag: "Couture Drama",
+				title: "Rebecca Ingram",
+				copy: "Wedding gown collection from Rebecca Ingram.",
+				tag: "Bridal Designer",
+				href: legacySiteContent.externalLinks.bridalDesigners[2].href,
+				image: legacySiteContent.imageLibrary.collectionHighlights
+					.bridalDesigners[2],
 			},
 		],
 	},
 	spotlightSection: {
 		heading: {
-			eyebrow: "Editorial Strategy",
-			title: "Designer Spotlights Built For Bridal SEO + Storytelling",
+			eyebrow: "Featured Categories",
+			title: "Legacy Offerings Preserved And Presented With Better Clarity",
 			description:
-				"Content architecture mirrors premium bridal editorial patterns while staying fully original.",
+				"These offerings stay true to business continuity while modernizing the customer experience.",
 		},
 		ctaLabel: "Book Styling Appointment",
 		items: [
 			{
-				title: "Silhouette Spotlight",
-				copy: "How to choose a shape that complements venue, movement, and comfort.",
+				title: "Mother of the Bride",
+				copy: "Featured connection to Jasmine Bridal mother-of-the-bride styles.",
+				ctaLabel: "View Source Collection",
+				href: legacySiteContent.externalLinks.motherOfBride.href,
+				image: legacySiteContent.imageLibrary.collectionHighlights
+					.motherOfBride,
 			},
 			{
-				title: "Fabric Spotlight",
-				copy: "Texture, drape, and sheen explained in a bride-friendly editorial format.",
+				title: "Accessories",
+				copy: "Bel Aire Bridal veils and headpieces to complete your look.",
+				ctaLabel: "View Source Collection",
+				href: legacySiteContent.externalLinks.accessories.href,
+				image: legacySiteContent.imageLibrary.collectionHighlights
+					.accessories,
 			},
 			{
-				title: "Styling Spotlight",
-				copy: "How veil, accessories, and neckline decisions create a cohesive bridal look.",
+				title: "Appointment-Only Experience",
+				copy: "Personalized in-store guidance with direct boutique confirmation.",
+				ctaLabel: "Book Appointment",
+				href: "/book-appointment",
+				image: legacySiteContent.imageLibrary.hero,
 			},
 		],
 	},
 	journeySection: {
 		heading: {
 			eyebrow: "Boutique Journey",
-			title: "A Structured Process That Feels Personal, Not Transactional",
+			title: "A Personal Appointment-First Process",
 			description:
-				"This mirrors how a premium in-store experience should translate online.",
+				"Built around high-touch consultation and confident next-step guidance.",
 		},
 		steps: [
 			{
 				step: "01",
-				title: "Share Your Vision",
-				body: "Tell us about venue, date, style preferences, and how you want to feel in your gown.",
+				title: "Send Appointment Request",
+				body: "Share your timeline, style direction, and preferred appointment windows.",
 			},
 			{
 				step: "02",
-				title: "Curated Try-On",
-				body: "Your appointment is guided with intentional dress pulls, not overwhelming rack browsing.",
+				title: "Availability Confirmation",
+				body: "Our team confirms by phone or email based on boutique availability.",
 			},
 			{
 				step: "03",
-				title: "Refine The Look",
-				body: "We narrow silhouettes, neckline direction, and styling options that suit your priorities.",
+				title: "Guided Try-On Session",
+				body: "Receive one-on-one support with curated gowns and styling direction.",
 			},
 			{
 				step: "04",
-				title: "Confirm Next Steps",
-				body: "You leave with clarity on timeline, ordering path, and what happens after your request.",
+				title: "Plan Next Steps",
+				body: "Leave with clear recommendations for ordering, styling, and follow-up.",
 			},
 		],
 	},
 	appointmentSection: {
 		heading: {
-			eyebrow: "Appointment Conversion",
-			title: "Make Booking Feel Premium From The First Click",
+			eyebrow: "Contact + Booking",
+			title: "Appointment-Only Service",
 			description:
-				"Request-based booking now, with controlled slot-based booking to follow.",
+				"We preserved the legacy appointment-first model and made requests faster on every device.",
 		},
 		promises: [
-			"One-on-one boutique guidance from first try-on to final direction.",
-			"Clear, calm appointment pacing that feels premium from minute one.",
-			"Personalized recommendations aligned to style, timeline, and vision.",
+			legacySiteContent.business.showroomUpdate,
+			`Call us: ${legacySiteContent.business.phoneDisplay}`,
+			"Instagram: @bridalelegancenm",
 		],
 	},
 } as const;
@@ -106,31 +130,31 @@ export const appointmentPageContent = {
 	metadata: {
 		title: "Book Appointment",
 		description:
-			"Request a bridal appointment with Bridal Elegance NM. Our team confirms availability by email or phone.",
+			"Request a bridal appointment with Bridal Elegance NM. Our team confirms availability directly by phone or email.",
 	},
 	heading: {
 		eyebrow: "Book Appointment",
 		title: "Request Your Bridal Appointment",
 		description:
-			"Phase 1: submit your request and our team confirms availability directly by email or phone.",
+			"Appointment-only service in New Mexico. Submit your request and our team confirms directly.",
 	},
 	experienceCard: {
 		kicker: "Showroom Experience",
 		title: "Personal, calm, and intentionally guided.",
 		points: [
-			"One-on-one stylist support in a calm showroom setting.",
-			"Curated pulls based on your date, style, and priorities.",
-			"Clear next steps after your appointment request is reviewed.",
+			legacySiteContent.business.authorizedLine,
+			legacySiteContent.business.welcomeParagraphs[0],
+			legacySiteContent.business.welcomeParagraphs[1],
 		],
 	},
 	prepareCard: {
 		kicker: "Before You Submit",
 		title: "Bring These Details",
 		points: [
-			"Wedding date (or estimated timeline).",
-			"Any inspiration photos or silhouettes you love.",
+			"Wedding date or estimated timeline.",
 			"Preferred appointment days and times.",
-			"How many guests you plan to bring.",
+			`Phone: ${legacySiteContent.business.phoneDisplay}`,
+			legacySiteContent.business.showroomUpdate,
 		],
 	},
 } as const;

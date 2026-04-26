@@ -1,6 +1,6 @@
 export const themeStorageKey = "be-theme";
 export const themeChangeEvent = "be-theme-change";
-export const defaultTheme = "blue" as const;
+export const defaultTheme = "monochrome" as const;
 
 export const themeOptions = [
 	{

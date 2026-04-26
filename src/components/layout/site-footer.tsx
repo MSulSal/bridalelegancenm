@@ -13,7 +13,7 @@ export function SiteFooter() {
 	return (
 		<footer className="be-footer">
 			<div className="be-container py-12">
-				<div className="grid gap-10 md:grid-cols-[1.6fr_1fr]">
+				<div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
 					<div className="space-y-4">
 						<p className="be-kicker">Bridal Elegance NM</p>
 						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
@@ -33,6 +33,29 @@ export function SiteFooter() {
 							</li>
 						))}
 					</ul>
+
+					<div className="space-y-3 text-sm text-[color:var(--ink-700)]">
+						<p className="be-kicker">Contact</p>
+						<p>{siteConfig.showroomUpdate}</p>
+						<p>
+							<a
+								href={siteConfig.phoneHref}
+								className="hover:text-[color:var(--ink-900)]"
+							>
+								{siteConfig.phoneDisplay}
+							</a>
+						</p>
+						<p>
+							<a
+								href={siteConfig.instagramHref}
+								target="_blank"
+								rel="noreferrer"
+								className="hover:text-[color:var(--ink-900)]"
+							>
+								Instagram {siteConfig.instagramLabel}
+							</a>
+						</p>
+					</div>
 				</div>
 
 				<div className="mt-10 flex flex-col gap-2 border-t border-[color:var(--line-subtle)] pt-5 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)] sm:flex-row sm:items-center sm:justify-between">

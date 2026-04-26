@@ -44,6 +44,33 @@
 	transform: translateY(0.2rem);
 }
 
+.mobileInstagramItem {
+	margin-top: 0.2rem;
+	padding-top: 0.55rem;
+	border-top: 1px solid var(--line-subtle);
+}
+
+.mobileInstagramLink {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-700);
+	line-height: 1.2;
+	padding-block: 0.35rem;
+}
+
+.mobileInstagramLink svg {
+	height: 1rem;
+	width: 1rem;
+}
+
+.mobileInstagramLink:hover {
+	color: var(--ink-900);
+}
+
 .desktopRow {
 	display: none;
 }
@@ -108,5 +135,34 @@
 		min-height: 4.72rem;
 		padding-inline: 0.68rem;
 		padding-block: 0.8rem 0.52rem;
+	}
+
+	.instagramIconLink {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: 2.45rem;
+		width: 2.45rem;
+		border: 1px solid var(--line-subtle);
+		border-radius: 999px;
+		background: var(--surface-elevated);
+		color: var(--ink-900);
+		box-shadow: 0 10px 20px -16px rgba(0, 0, 0, 0.45);
+	}
+
+	.instagramIconLink svg {
+		height: 1.18rem;
+		width: 1.18rem;
+	}
+
+	.instagramIconLink:hover {
+		border-color: var(--color-gold);
+		color: var(--color-gold);
+		transform: translateY(-1px);
+	}
+
+	.instagramIconLink:focus-visible {
+		outline: 2px solid var(--color-gold);
+		outline-offset: 2px;
 	}
 }
