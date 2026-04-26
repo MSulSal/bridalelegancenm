@@ -7,14 +7,17 @@ const collectionHighlights = [
 	{
 		title: "Romantic Classics",
 		copy: "Timeless silhouettes with modern shaping for elegant bridal portraits.",
+		tag: "Soft Structure",
 	},
 	{
 		title: "Contemporary Minimal",
 		copy: "Sculptural gowns with clean lines and couture-level fabric movement.",
+		tag: "Modern Edit",
 	},
 	{
 		title: "Statement Glamour",
 		copy: "High-impact detailing for brides who want unforgettable entrance energy.",
+		tag: "Couture Drama",
 	},
 ] as const;
 
@@ -33,6 +36,29 @@ const spotlightTeasers = [
 	},
 ] as const;
 
+const journeySteps = [
+	{
+		step: "01",
+		title: "Share Your Vision",
+		body: "Tell us about venue, date, style preferences, and how you want to feel in your gown.",
+	},
+	{
+		step: "02",
+		title: "Curated Try-On",
+		body: "Your appointment is guided with intentional dress pulls, not overwhelming rack browsing.",
+	},
+	{
+		step: "03",
+		title: "Refine The Look",
+		body: "We narrow silhouettes, neckline direction, and styling options that suit your priorities.",
+	},
+	{
+		step: "04",
+		title: "Confirm Next Steps",
+		body: "You leave with clarity on timeline, ordering path, and what happens after your request.",
+	},
+] as const;
+
 const appointmentPromises = [
 	"One-on-one boutique guidance from first try-on to final direction.",
 	"Clear, calm appointment pacing that feels premium from minute one.",
@@ -43,12 +69,12 @@ export default function HomePage() {
 	return (
 		<SiteShell>
 			<section className="be-section pt-12 md:pt-20">
-				<div className="grid items-start gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+				<div className="grid items-start gap-8 lg:grid-cols-[1.05fr_0.95fr]">
 					<div>
 						<p className="be-kicker">{siteConfig.cityState}</p>
 						<h1 className="be-display mt-3">
-							Bridal Boutique Design That Feels Editorial,
-							Personal, And Luxurious.
+							A Bridal Website Experience Designed To Make Booking
+							Feel Obvious.
 						</h1>
 						<p className="be-body mt-5">
 							Inspired by top bridal experiences without copying
@@ -67,31 +93,37 @@ export default function HomePage() {
 								href="#collections-preview"
 								className="be-btn be-btn-ghost"
 							>
-								View Style Direction
+								Explore Collections
 							</a>
 						</div>
 					</div>
 
-					<aside className="be-card p-5 sm:p-7" id="about-preview">
-						<div className="border border-[color:var(--line-subtle)] bg-[color:var(--surface-soft)] p-6">
-							<Image
-								src="/logo-notext.png"
-								alt=""
-								width={84}
-								height={84}
-								className="h-16 w-16 border border-[color:var(--line-subtle)] bg-white p-2"
-							/>
-							<p className="be-kicker mt-6">
-								Showroom Experience
-							</p>
-							<h2 className="mt-3 text-3xl leading-tight">
-								Classy, Calm, Appointment-First Bridal Service
-							</h2>
-							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-								Every digital touchpoint should make booking
-								feel like the obvious next step, not an
-								afterthought.
-							</p>
+					<aside className="grid gap-4" id="about-preview">
+						<article className="be-card p-5 sm:p-7">
+							<div className="flex items-center gap-4">
+								<Image
+									src="/logo-notext.png"
+									alt=""
+									width={72}
+									height={72}
+									className="h-14 w-14 border border-[color:var(--line-subtle)] bg-white p-2"
+								/>
+								<div>
+									<p className="be-kicker">
+										Showroom Experience
+									</p>
+									<p className="mt-2 text-sm leading-7 text-[color:var(--ink-700)]">
+										Classy, calm, appointment-first bridal
+										service from first contact.
+									</p>
+								</div>
+							</div>
+						</article>
+
+						<div className="grid grid-cols-3 gap-3">
+							<div className="be-lookbook-frame" />
+							<div className="be-lookbook-frame" />
+							<div className="be-lookbook-frame" />
 						</div>
 					</aside>
 				</div>
@@ -106,7 +138,8 @@ export default function HomePage() {
 				<div className="mt-9 grid gap-5 md:grid-cols-3">
 					{collectionHighlights.map(item => (
 						<article key={item.title} className="be-card p-6">
-							<h3 className="text-2xl leading-tight">
+							<p className="be-kicker">{item.tag}</p>
+							<h3 className="mt-3 text-2xl leading-tight">
 								{item.title}
 							</h3>
 							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
@@ -117,7 +150,10 @@ export default function HomePage() {
 				</div>
 			</section>
 
-			<section id="spotlights-preview" className="be-section">
+			<section
+				id="spotlights-preview"
+				className="be-section border-y border-[color:var(--line-subtle)]"
+			>
 				<SectionHeading
 					eyebrow="Editorial Strategy"
 					title="Designer Spotlights Built For Bridal SEO + Storytelling"
@@ -133,9 +169,38 @@ export default function HomePage() {
 							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
 								{item.copy}
 							</p>
+							<a
+								href={siteConfig.appointmentHref}
+								className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
+							>
+								Book Styling Appointment
+							</a>
 						</article>
 					))}
 				</div>
+			</section>
+
+			<section className="be-section" aria-labelledby="journey-heading">
+				<SectionHeading
+					eyebrow="Boutique Journey"
+					title="A Structured Process That Feels Personal, Not Transactional"
+					description="This mirrors how a premium in-store experience should translate online."
+				/>
+				<ol className="mt-9 grid gap-4 md:grid-cols-2">
+					{journeySteps.map(item => (
+						<li key={item.step} className="be-card p-6">
+							<p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-500)]">
+								Step {item.step}
+							</p>
+							<h3 className="mt-3 text-2xl leading-tight">
+								{item.title}
+							</h3>
+							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
+								{item.body}
+							</p>
+						</li>
+					))}
+				</ol>
 			</section>
 
 			<section id="appointment-intent" className="be-section">

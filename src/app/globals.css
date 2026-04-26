@@ -144,19 +144,20 @@ a {
 .be-topbar {
 	position: sticky;
 	top: 0;
-	z-index: 40;
+	z-index: 70;
+	overflow: visible;
 	border-bottom: 1px solid var(--line-subtle);
-	background: rgba(255, 255, 255, 0.86);
+	background: rgba(255, 255, 255, 0.9);
 	backdrop-filter: blur(12px);
 }
 
 .be-topbar-inner {
-	padding-block: 0.5rem;
+	padding-block: 0.45rem;
 }
 
 .be-logo-medallion {
 	position: relative;
-	z-index: 50;
+	z-index: 80;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -178,11 +179,19 @@ a {
 	pointer-events: none;
 }
 
+.be-logo-medallion-mobile {
+	min-height: 4.55rem;
+	margin-block: -0.72rem;
+	padding-inline: 0.82rem;
+}
+
 .be-nav-link {
+	display: block;
 	font-size: 0.78rem;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--ink-700);
+	padding-block: 0.25rem;
 }
 
 .be-nav-link:hover {
@@ -190,7 +199,7 @@ a {
 }
 
 .be-menu {
-	position: relative;
+	position: static;
 }
 
 .be-menu > summary {
@@ -204,25 +213,58 @@ a {
 .be-menu-trigger {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.55rem;
-	border: 1px solid var(--line-subtle);
-	padding: 0.56rem 0.78rem;
-	font-size: 0.68rem;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var(--ink-700);
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border: none;
+	background: transparent;
+	padding: 0;
+	color: var(--ink-900);
 	cursor: pointer;
+}
+
+.be-menu-trigger:hover {
+	opacity: 0.75;
 }
 
 .be-menu-panel {
 	position: absolute;
+	left: 0;
 	right: 0;
-	top: calc(100% + 0.7rem);
-	width: min(86vw, 20rem);
+	top: 100%;
+	z-index: 40;
+	border-top: 1px solid var(--line-subtle);
+	border-bottom: 1px solid var(--line-subtle);
+	background: rgba(255, 255, 255, 0.98);
+	backdrop-filter: blur(10px);
+	padding-block: 0.35rem;
+	box-shadow: none;
+}
+
+.be-menu-list {
+	display: grid;
+	gap: 0.1rem;
+	padding-top: 1.05rem;
+	padding-bottom: 0.15rem;
+}
+
+.be-menu-list .be-nav-link {
+	padding-block: 0.6rem;
+}
+
+.be-lookbook-frame {
+	position: relative;
+	overflow: hidden;
 	border: 1px solid var(--line-subtle);
-	background: var(--surface-elevated);
-	box-shadow: var(--shadow-soft);
-	padding: 1rem;
+	background: linear-gradient(150deg, #ffffff 0%, #f2f1ee 52%, #e6e3dd 100%);
+	aspect-ratio: 4 / 5;
+}
+
+.be-lookbook-frame::before {
+	content: "";
+	position: absolute;
+	inset: 12%;
+	border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .be-footer {
@@ -230,15 +272,32 @@ a {
 	background: rgba(255, 255, 255, 0.8);
 }
 
+.be-mobile-booking-bar {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 45;
+	border-top: 1px solid var(--line-subtle);
+	background: rgba(255, 255, 255, 0.97);
+	backdrop-filter: blur(10px);
+	padding-block: 0.65rem;
+}
+
+.be-mobile-booking-inner {
+	display: grid;
+	gap: 0.5rem;
+}
+
 @media (max-width: 640px) {
 	.be-topbar-inner {
-		padding-block: 0.4rem;
+		padding-block: 0.35rem;
 	}
 
-	.be-logo-medallion {
-		min-height: 4.4rem;
-		margin-block: -0.7rem;
-		padding-inline: 0.75rem;
+	.be-logo-medallion-mobile {
+		min-height: 4.22rem;
+		margin-block: -0.58rem;
+		padding-inline: 0.62rem;
 	}
 }
 

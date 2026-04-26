@@ -5,6 +5,8 @@ This project is designed so content can be updated quickly without rebuilding ar
 ## Planned Content Surfaces
 
 - Homepage hero and CTA copy
+- Homepage journey/process steps
+- Showroom lookbook thumbnail row (currently placeholder frames)
 - Designer spotlight cards
 - Collection/category sections
 - FAQ entries

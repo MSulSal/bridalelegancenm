@@ -12,8 +12,67 @@ export function SiteHeader() {
 	return (
 		<header className="be-topbar">
 			<div className="be-container be-topbar-inner">
-				<div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
-					<nav className="hidden items-center gap-7 xl:flex">
+				<div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 lg:hidden">
+					<span
+						aria-hidden="true"
+						className="be-menu-slot justify-self-start"
+					/>
+
+					<Link
+						href="/"
+						aria-label={siteConfig.name}
+						className="be-logo-medallion be-logo-medallion-mobile justify-self-center inline-flex items-center justify-center"
+					>
+						<Image
+							src="/logo-text-v2.png"
+							alt={siteConfig.name}
+							width={280}
+							height={72}
+							priority
+							className="h-auto w-[168px] sm:w-[186px]"
+						/>
+					</Link>
+
+					<details className="be-menu justify-self-end">
+						<summary
+							className="be-menu-trigger"
+							aria-label="Open menu"
+						>
+							<span className="sr-only">Open menu</span>
+							<svg
+								aria-hidden="true"
+								viewBox="0 0 24 24"
+								className="be-menu-icon"
+								fill="none"
+								stroke="currentColor"
+							>
+								<path d="M4 7h16M4 12h16M4 17h16" />
+							</svg>
+						</summary>
+
+						<div className="be-menu-panel">
+							<div className="be-container">
+								<nav aria-label="Mobile">
+									<ul className="be-menu-list">
+										{navItems.map(item => (
+											<li key={item.href}>
+												<Link
+													href={item.href}
+													className="be-nav-link"
+												>
+													{item.label}
+												</Link>
+											</li>
+										))}
+									</ul>
+								</nav>
+							</div>
+						</div>
+					</details>
+				</div>
+
+				<div className="hidden grid-cols-[1fr_auto_1fr] items-center gap-6 lg:grid">
+					<nav className="flex items-center gap-7">
 						{navItems.map(item => (
 							<Link
 								key={item.href}
@@ -27,66 +86,26 @@ export function SiteHeader() {
 
 					<Link
 						href="/"
+						aria-label={siteConfig.name}
 						className="be-logo-medallion justify-self-center inline-flex items-center justify-center"
 					>
 						<Image
 							src="/logo-text-v2.png"
 							alt={siteConfig.name}
-							width={220}
-							height={56}
+							width={340}
+							height={92}
 							priority
-							className="h-auto w-[136px] sm:w-[172px] lg:w-[210px]"
+							className="h-auto w-[236px] xl:w-[260px]"
 						/>
 					</Link>
 
-					<div className="flex items-center justify-end gap-2">
+					<div className="flex items-center justify-end">
 						<a
 							href={siteConfig.appointmentHref}
-							className="be-btn be-btn-primary hidden shrink-0 xl:inline-flex"
+							className="be-btn be-btn-primary shrink-0"
 						>
 							{siteConfig.appointmentLabel}
 						</a>
-
-						<details className="be-menu xl:hidden">
-							<summary
-								className="be-menu-trigger"
-								aria-label="Open menu"
-							>
-								<span>Menu</span>
-								<svg
-									aria-hidden="true"
-									viewBox="0 0 24 24"
-									className="h-4 w-4"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="1.5"
-								>
-									<path d="M4 7h16M4 12h16M4 17h16" />
-								</svg>
-							</summary>
-
-							<div className="be-menu-panel">
-								<ul className="grid gap-3">
-									{navItems.map(item => (
-										<li key={item.href}>
-											<Link
-												href={item.href}
-												className="be-nav-link"
-											>
-												{item.label}
-											</Link>
-										</li>
-									))}
-								</ul>
-
-								<a
-									href={siteConfig.appointmentHref}
-									className="be-btn be-btn-primary mt-5 w-full"
-								>
-									{siteConfig.appointmentLabel}
-								</a>
-							</div>
-						</details>
 					</div>
 				</div>
 			</div>

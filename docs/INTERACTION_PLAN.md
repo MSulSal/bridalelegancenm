@@ -18,6 +18,12 @@ This plan defines how the site will feel premium and conversion-focused without 
 6. Dress category filter interactions for collections.
 7. Guided "Find your bridal style" quiz concept (phase rollout).
 
+## Implemented So Far
+
+- Sticky mobile appointment CTA bar is in place.
+- Mobile navigation now supports a dedicated dropdown sheet pattern.
+- Homepage section structure has expanded to support journey storytelling and stronger booking intent flow.
+
 ## Implementation Principles
 
 - Motion should support content hierarchy, not distract from it.

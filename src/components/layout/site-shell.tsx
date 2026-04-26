@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { MobileBookingBar } from "@/components/home/mobile-booking-bar";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 
@@ -16,9 +17,10 @@ export function SiteShell({ children }: SiteShellProps) {
 				Skip to content
 			</a>
 			<SiteHeader />
-			<main id="main-content" className="be-container pb-16">
+			<main id="main-content" className="be-container pb-28 md:pb-16">
 				{children}
 			</main>
+			<MobileBookingBar />
 			<SiteFooter />
 		</div>
 	);
