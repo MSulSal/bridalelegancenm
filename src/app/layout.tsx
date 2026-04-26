@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +13,21 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
+const metadataBase = (() => {
+	try {
+		return new URL(siteConfig.url);
+	} catch {
+		return new URL("http://localhost:3000");
+	}
+})();
+
 export const metadata: Metadata = {
-	title: "Bridal Elegance NM",
-	description:
-		"Bridal Elegance NM is a New Mexico bridal boutique website focused on designer spotlights and appointment-first conversion.",
+	metadataBase,
+	title: {
+		default: siteConfig.name,
+		template: `%s | ${siteConfig.name}`,
+	},
+	description: siteConfig.description,
 };
 
 export default function RootLayout({

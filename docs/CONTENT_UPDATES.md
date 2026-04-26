@@ -9,6 +9,7 @@ This project is designed so content can be updated quickly without rebuilding ar
 - Collection/category sections
 - FAQ entries
 - Appointment page copy and expectations
+- Brand assets (logo variants and favicon)
 
 ## Working Pattern
 
@@ -18,6 +19,15 @@ This project is designed so content can be updated quickly without rebuilding ar
    - `pnpm build`
 3. Preview locally with `pnpm dev`.
 4. Commit only approved copy and metadata changes.
+
+## Branding Assets
+
+- Place reusable logos in `public/` when used in page components.
+- Keep favicon/app icon files in `src/app/` when driven by App Router metadata conventions.
+- Preferred naming pattern:
+  - `logo-text.*`
+  - `logo-notext.*`
+  - `favicon.*` or a clearly versioned equivalent.
 
 ## Copy Quality Rules
 
