@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-	--surface-base: #f7f1e9;
-	--surface-elevated: #fffaf4;
-	--surface-soft: #efe2d4;
-	--ink-900: #211b16;
-	--ink-700: #4f4338;
-	--ink-500: #7a6858;
-	--line-subtle: #dccdbc;
-	--accent-500: #a78258;
-	--accent-600: #8e6b44;
-	--shadow-soft: 0 24px 50px -34px rgba(45, 30, 16, 0.55);
-	--radius-card: 0.25rem;
-	--radius-pill: 0.2rem;
+	--surface-base: #f8f8f6;
+	--surface-elevated: #ffffff;
+	--surface-soft: #f2f1ee;
+	--ink-900: #111111;
+	--ink-700: #2a2a2a;
+	--ink-500: #6b675f;
+	--line-subtle: #d9d4cc;
+	--accent-500: #171717;
+	--accent-600: #000000;
+	--shadow-soft: 0 24px 52px -36px rgba(0, 0, 0, 0.35);
+	--radius-card: 0.125rem;
+	--radius-pill: 0.125rem;
 }
 
 @theme inline {
@@ -35,11 +35,11 @@ body {
 body {
 	background:
 		radial-gradient(
-			120% 70% at 50% -5%,
+			120% 75% at 50% -10%,
 			#ffffff 0%,
-			rgba(255, 255, 255, 0) 70%
+			rgba(255, 255, 255, 0) 68%
 		),
-		linear-gradient(180deg, #f9f4ed 0%, #f7f1e9 40%, #f2e8dc 100%);
+		linear-gradient(180deg, #fbfbfa 0%, #f7f7f4 48%, #f3f1ed 100%);
 	color: var(--ink-900);
 	font-family: var(--font-body-sans), "Segoe UI", sans-serif;
 	line-height: 1.5;
@@ -83,7 +83,7 @@ a {
 
 .be-display {
 	max-width: 18ch;
-	font-size: clamp(2.3rem, 7vw, 5rem);
+	font-size: clamp(2.25rem, 7vw, 5rem);
 	line-height: 1.03;
 }
 
@@ -106,18 +106,22 @@ a {
 	align-items: center;
 	justify-content: center;
 	border-radius: var(--radius-pill);
-	padding: 0.74rem 1.18rem;
+	padding: 0.74rem 1.16rem;
 	font-size: 0.72rem;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
 	font-weight: 600;
-	transition: all 160ms ease;
+	transition:
+		transform 160ms ease,
+		background-color 160ms ease,
+		color 160ms ease,
+		border-color 160ms ease;
 }
 
 .be-btn-primary {
 	border: 1px solid var(--accent-500);
 	background: var(--accent-500);
-	color: #fff;
+	color: #ffffff;
 }
 
 .be-btn-primary:hover {
@@ -133,8 +137,8 @@ a {
 }
 
 .be-btn-ghost:hover {
-	border-color: var(--accent-500);
-	color: var(--accent-600);
+	border-color: var(--ink-700);
+	color: var(--ink-900);
 }
 
 .be-topbar {
@@ -142,24 +146,100 @@ a {
 	top: 0;
 	z-index: 40;
 	border-bottom: 1px solid var(--line-subtle);
-	background: rgba(255, 250, 244, 0.86);
+	background: rgba(255, 255, 255, 0.86);
 	backdrop-filter: blur(12px);
 }
 
+.be-topbar-inner {
+	padding-block: 0.5rem;
+}
+
+.be-logo-medallion {
+	position: relative;
+	z-index: 50;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 5.1rem;
+	padding-inline: 1rem;
+	margin-block: -0.95rem;
+	border: 1px solid var(--line-subtle);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.96);
+	box-shadow: 0 16px 34px -28px rgba(0, 0, 0, 0.45);
+}
+
+.be-logo-medallion::after {
+	content: "";
+	position: absolute;
+	inset: 0.36rem;
+	border: 1px solid rgba(0, 0, 0, 0.09);
+	border-radius: inherit;
+	pointer-events: none;
+}
+
 .be-nav-link {
-	font-size: 0.8rem;
-	letter-spacing: 0.12em;
+	font-size: 0.78rem;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--ink-700);
 }
 
 .be-nav-link:hover {
-	color: var(--accent-600);
+	color: var(--ink-900);
+}
+
+.be-menu {
+	position: relative;
+}
+
+.be-menu > summary {
+	list-style: none;
+}
+
+.be-menu > summary::-webkit-details-marker {
+	display: none;
+}
+
+.be-menu-trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+	border: 1px solid var(--line-subtle);
+	padding: 0.56rem 0.78rem;
+	font-size: 0.68rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-700);
+	cursor: pointer;
+}
+
+.be-menu-panel {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 0.7rem);
+	width: min(86vw, 20rem);
+	border: 1px solid var(--line-subtle);
+	background: var(--surface-elevated);
+	box-shadow: var(--shadow-soft);
+	padding: 1rem;
 }
 
 .be-footer {
 	border-top: 1px solid var(--line-subtle);
-	background: rgba(255, 250, 244, 0.72);
+	background: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 640px) {
+	.be-topbar-inner {
+		padding-block: 0.4rem;
+	}
+
+	.be-logo-medallion {
+		min-height: 4.4rem;
+		margin-block: -0.7rem;
+		padding-inline: 0.75rem;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {

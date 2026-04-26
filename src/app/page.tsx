@@ -58,7 +58,7 @@ export default function HomePage() {
 						</p>
 						<div className="mt-7 flex flex-wrap gap-3">
 							<a
-								href={siteConfig.appointmentAnchor}
+								href={siteConfig.appointmentHref}
 								className="be-btn be-btn-primary"
 							>
 								{siteConfig.appointmentLabel}
@@ -79,7 +79,7 @@ export default function HomePage() {
 								alt=""
 								width={84}
 								height={84}
-								className="h-16 w-16 rounded-sm border border-[color:var(--line-subtle)] bg-white p-2"
+								className="h-16 w-16 border border-[color:var(--line-subtle)] bg-white p-2"
 							/>
 							<p className="be-kicker mt-6">
 								Showroom Experience
@@ -143,13 +143,13 @@ export default function HomePage() {
 					<SectionHeading
 						eyebrow="Appointment Conversion"
 						title="Make Booking Feel Premium From The First Click"
-						description="Phase 1 uses a polished request experience; Phase 2 upgrades to controlled live scheduling."
+						description="Request-based booking now, with controlled slot-based booking to follow."
 					/>
 					<ul className="mt-8 grid gap-4 sm:grid-cols-3">
 						{appointmentPromises.map(item => (
 							<li
 								key={item}
-								className="border border-[color:var(--line-subtle)] px-4 py-4 text-sm leading-7 text-[color:var(--ink-700)]"
+								className="bg-[color:var(--surface-soft)] px-4 py-4 text-sm leading-7 text-[color:var(--ink-700)]"
 							>
 								{item}
 							</li>
@@ -157,7 +157,7 @@ export default function HomePage() {
 					</ul>
 					<div className="mt-8">
 						<a
-							href={siteConfig.appointmentAnchor}
+							href={siteConfig.appointmentHref}
 							className="be-btn be-btn-primary"
 						>
 							{siteConfig.appointmentLabel}

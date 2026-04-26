@@ -8,7 +8,7 @@ This project is designed so content can be updated quickly without rebuilding ar
 - Designer spotlight cards
 - Collection/category sections
 - FAQ entries
-- Appointment page copy and expectations
+- Appointment section copy and expectations (dedicated page can be added later if approved)
 - Brand assets (logo variants and favicon)
 
 ## Working Pattern
