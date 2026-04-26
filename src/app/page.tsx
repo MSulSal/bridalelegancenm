@@ -17,14 +17,15 @@ export default function HomePage() {
 				>
 					<div className={styles.heroViewport}>
 						<Image
-							src="/hero-image.png"
+							src="/hero-image-v3.png"
 							alt="Bridal Elegance boutique hero image"
 							fill
 							priority
-							sizes="100vw"
-							quality={95}
+							sizes="(max-width: 639px) 320vw, (max-width: 1023px) 180vw, 100vw"
+							quality={90}
 							className={`object-cover ${styles.heroImage}`}
 						/>
+
 						<div className={styles.heroOverlay} />
 						<figcaption className={styles.heroCaption}>
 							<p className="be-kicker !text-white/80">

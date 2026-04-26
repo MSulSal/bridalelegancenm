@@ -12,9 +12,10 @@ This project is designed so content can be updated quickly without rebuilding ar
 - FAQ entries
 - Appointment section copy and expectations
 - Dedicated booking page content at `/book-appointment`
+- Gallery page content at `/gallery`
 - Brand assets (logo variants and favicon)
 - Legacy migration dataset and image library
-- Hero lead image asset (`public/hero-image.png`)
+- Hero lead image assets (`public/hero-image.png`, `public/hero-image-v3.png`, `public/hero-image-v3.webp`)
 
 ## Working Pattern
 
@@ -22,14 +23,16 @@ This project is designed so content can be updated quickly without rebuilding ar
    Current primary sources:
    - `src/content/site-content.ts` for curated active UI copy
    - `src/content/migration/legacy-site/legacy-content.ts` for migrated legacy business data and image references
+   - `src/content/gallery-content.ts` for gallery page sectioning and card metadata
 2. If visual theme values need adjustment, edit token values in `src/app/globals.css` (`html[data-theme="blue" | "blush" | "monochrome"]`).
 3. If header spacing/placement needs adjustment, edit `src/components/layout/site-header.module.css` (avoid growing global CSS with header-only layout rules).
 4. If homepage hero sizing/position/reveal behavior needs adjustment, edit `src/app/home.module.css` first.
-5. Run quality checks:
+5. If mobile hero image fidelity drops, verify `next/image` `sizes` in `src/app/page.tsx` before replacing assets.
+6. Run quality checks:
    - `pnpm lint`
    - `pnpm build`
-6. Preview locally with `pnpm dev`.
-7. Commit only approved copy and metadata changes.
+7. Preview locally with `pnpm dev`.
+8. Commit only approved copy and metadata changes.
 
 ## Branding Assets
 

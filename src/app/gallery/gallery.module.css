@@ -1,0 +1,166 @@
+.heroSection {
+	margin-inline: calc(50% - 50vw);
+}
+
+.heroFrame {
+	position: relative;
+	margin: 0;
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+	border-radius: 0;
+	overflow: hidden;
+}
+
+.heroViewport {
+	position: relative;
+	min-height: clamp(24rem, 68svh, 44rem);
+}
+
+.heroImage {
+	object-position: 50% 34%;
+	filter: brightness(1.03) contrast(1.04) saturate(1.04);
+	transform: scale(1);
+	transition:
+		transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+		filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.heroFrame:hover .heroImage {
+	transform: scale(1.015);
+}
+
+.heroOverlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(12, 12, 12, 0.05) 0%,
+		rgba(12, 12, 12, 0.16) 45%,
+		rgba(12, 12, 12, 0.54) 100%
+	);
+	pointer-events: none;
+}
+
+.heroContent {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	max-width: min(96%, 48rem);
+	padding: 1.25rem 1.25rem calc(1.2rem + env(safe-area-inset-bottom));
+}
+
+.heroDescription {
+	max-width: 40ch;
+}
+
+.heroStrip {
+	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.stripCard {
+	border: 1px solid rgba(255, 255, 255, 0.42);
+	background: rgba(255, 255, 255, 0.9);
+}
+
+.stripImage {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.sectionGrid {
+	margin-top: 2.25rem;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+.galleryCard {
+	overflow: hidden;
+	transition:
+		transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.galleryCard:hover {
+	transform: translateY(-3px);
+}
+
+.imageWrap {
+	border-bottom: 1px solid var(--line-subtle);
+	background: var(--surface-soft);
+}
+
+.galleryImage {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.cardMeta {
+	padding: 1rem 1rem 1.15rem;
+}
+
+.cardTitle {
+	margin-top: 0.55rem;
+	font-size: clamp(1.15rem, 1.4vw, 1.5rem);
+	line-height: 1.2;
+}
+
+.cardLink {
+	margin-top: 0.8rem;
+	display: inline-block;
+	font-size: 0.7rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-900);
+}
+
+.ctaPanel {
+	padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+	.heroContent {
+		padding: 1.9rem 1.9rem calc(1.5rem + env(safe-area-inset-bottom));
+	}
+
+	.sectionGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.heroContent {
+		padding: 2.25rem;
+	}
+
+	.sectionGrid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.25rem;
+	}
+
+	.featuredCard {
+		grid-column: span 2;
+	}
+
+	.ctaPanel {
+		padding: 1.8rem 2rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.heroImage,
+	.galleryCard {
+		transition: none;
+	}
+
+	.heroFrame:hover .heroImage,
+	.galleryCard:hover {
+		transform: none;
+	}
+}
