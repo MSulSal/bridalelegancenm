@@ -1,0 +1,32 @@
+# Interaction Plan
+
+This plan defines how the site will feel premium and conversion-focused without unnecessary complexity.
+
+## Core Interaction Goals
+
+- Make booking feel like the natural next action.
+- Create an editorial, high-end bridal atmosphere.
+- Keep performance strong on mobile.
+
+## Planned Interactions
+
+1. Animated hero intro with subtle motion.
+2. Scroll reveal for section blocks and editorial cards.
+3. Image-led collection and spotlight cards with refined hover states.
+4. Sticky/floating mobile appointment CTA.
+5. FAQ accordion with smooth expand/collapse.
+6. Dress category filter interactions for collections.
+7. Guided "Find your bridal style" quiz concept (phase rollout).
+
+## Implementation Principles
+
+- Motion should support content hierarchy, not distract from it.
+- Keep animation lightweight (CSS and minimal JS where possible).
+- Prioritize accessibility: visible focus states, reduced-motion support, semantic structure.
+- Every interactive pattern must preserve fast load and strong CLS/LCP behavior.
+
+## Rollout Approach
+
+- Build static structure first.
+- Layer interactions after layout and typography foundation are stable.
+- Validate conversion pathways after each interaction pass.
