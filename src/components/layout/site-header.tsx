@@ -46,16 +46,15 @@ export function SiteHeader() {
 	const monochromeBadgeStyle: CSSProperties | undefined =
 		activeTheme === "monochrome" ? { borderColor: "#111111" } : undefined;
 
-	const mobileLogoStyle: CSSProperties = {
-		width: "clamp(100px, 30vw, 114px)",
-		transform: "translateY(0.16rem)",
-		padding: "0.02rem 0.14rem 0",
-		boxSizing: "border-box",
+	const topbarBackdropStyle: CSSProperties = {
+		backdropFilter: "var(--topbar-backdrop-filter)",
+		WebkitBackdropFilter: "var(--topbar-backdrop-filter)",
 	};
 
 	return (
 		<header
 			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
+			style={topbarBackdropStyle}
 		>
 			<div className={`be-topbar-inner ${styles.topbarInner}`}>
 				<div className={styles.mobileRow}>
@@ -77,7 +76,6 @@ export function SiteHeader() {
 								height={72}
 								priority
 								className={`${styles.logoImage} ${styles.logoImageMobile}`}
-								style={mobileLogoStyle}
 							/>
 						</Link>
 					</div>

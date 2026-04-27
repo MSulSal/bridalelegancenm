@@ -43,13 +43,16 @@
 }
 
 .logoImageMobile {
-	width: clamp(118px, 37vw, 136px);
-	transform: translateY(0.3rem);
+	width: clamp(102px, 30vw, 116px);
+	transform: translateY(0.14rem);
+	padding-inline: 0.16rem;
+	padding-top: 0.04rem;
 }
 
 .logoImageDesktop {
-	width: clamp(142px, 10.5vw, 168px);
-	transform: translateY(0.2rem);
+	width: clamp(136px, 9.8vw, 158px);
+	transform: translateY(0.14rem);
+	padding-inline: 0.12rem;
 }
 
 .mobileInstagramItem {

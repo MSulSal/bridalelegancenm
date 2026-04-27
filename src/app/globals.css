@@ -19,6 +19,7 @@ html[data-theme="blue"] {
 	--theme-toggle-circle: #5e766a;
 	--topbar-glass: rgba(249, 252, 248, 0.22);
 	--topbar-glass-edge: rgba(241, 247, 238, 0.16);
+	--topbar-backdrop-filter: blur(22px) saturate(165%) contrast(1.03);
 	--mono-ink: #050505;
 	--mono-charcoal: #181818;
 	--mono-border: #d6d0c5;
@@ -43,6 +44,7 @@ html[data-theme="blush"] {
 	--theme-toggle-circle: #e4afa9;
 	--topbar-glass: rgba(255, 246, 244, 0.24);
 	--topbar-glass-edge: rgba(252, 233, 228, 0.18);
+	--topbar-backdrop-filter: blur(22px) saturate(165%) contrast(1.03);
 	--shadow-soft: 0 24px 52px -36px rgba(130, 80, 75, 0.28);
 }
 
@@ -64,6 +66,7 @@ html[data-theme="monochrome"] {
 	--theme-toggle-circle: #111111;
 	--topbar-glass: rgba(255, 255, 255, 0.22);
 	--topbar-glass-edge: rgba(255, 255, 255, 0.16);
+	--topbar-backdrop-filter: blur(22px) saturate(165%) contrast(1.03);
 	--mono-ink: #050505;
 	--mono-charcoal: #181818;
 	--mono-border: #d6d0c5;
@@ -269,14 +272,12 @@ a {
 			rgba(255, 255, 255, 0.2) 0%,
 			rgba(255, 255, 255, 0) 62%
 		);
-	backdrop-filter: blur(28px) saturate(175%) contrast(1.04);
-	-webkit-backdrop-filter: blur(28px) saturate(175%) contrast(1.04);
+	backdrop-filter: var(--topbar-backdrop-filter);
+	-webkit-backdrop-filter: var(--topbar-backdrop-filter);
 	transition:
 		transform 220ms ease,
 		background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
 		border-color 300ms cubic-bezier(0.22, 1, 0.36, 1);
-	will-change: transform;
-	isolation: isolate;
 	box-shadow: 0 10px 24px -20px rgba(0, 0, 0, 0.2);
 }
 
