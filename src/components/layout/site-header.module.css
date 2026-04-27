@@ -1,6 +1,6 @@
 .topbar {
-	--topbar-glass-active: var(--topbar-glass);
-	--topbar-glass-edge-active: var(--topbar-glass-edge);
+	--topbar-glass-active: rgba(255, 255, 255, 0.44);
+	--topbar-glass-edge-active: rgba(255, 255, 255, 0.56);
 	--topbar-blur-active: blur(16px) saturate(128%) contrast(1.01);
 	position: sticky;
 	top: 0;
@@ -33,6 +33,21 @@
 		border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
 		box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
 	box-shadow: 0 12px 28px -24px rgba(0, 0, 0, 0.3);
+}
+
+:global(html[data-theme="blue"]) .topbar {
+	--topbar-glass-active: rgba(249, 252, 248, 0.44);
+	--topbar-glass-edge-active: rgba(241, 247, 238, 0.56);
+}
+
+:global(html[data-theme="blush"]) .topbar {
+	--topbar-glass-active: rgba(255, 246, 244, 0.46);
+	--topbar-glass-edge-active: rgba(252, 233, 228, 0.58);
+}
+
+:global(html[data-theme="monochrome"]) .topbar {
+	--topbar-glass-active: rgba(255, 255, 255, 0.44);
+	--topbar-glass-edge-active: rgba(255, 255, 255, 0.56);
 }
 
 .topbar::before {
