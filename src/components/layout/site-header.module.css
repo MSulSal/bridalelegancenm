@@ -1,7 +1,7 @@
 .topbar {
 	--topbar-glass-active: var(--topbar-glass);
 	--topbar-glass-edge-active: var(--topbar-glass-edge);
-	--topbar-blur-active: var(--topbar-backdrop-filter);
+	--topbar-blur-active: blur(16px) saturate(128%) contrast(1.01);
 	position: sticky;
 	top: 0;
 	left: 0;
@@ -32,7 +32,7 @@
 		background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
 		border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
 		box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
-	box-shadow: 0 10px 24px -20px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 12px 28px -24px rgba(0, 0, 0, 0.3);
 }
 
 .topbar::before {
@@ -252,22 +252,6 @@
 }
 
 @media (min-width: 1024px) {
-	.topbar {
-		--topbar-glass-active: rgba(255, 255, 255, 0.66);
-		--topbar-glass-edge-active: rgba(255, 255, 255, 0.82);
-		--topbar-blur-active: blur(24px) saturate(155%) contrast(1.04);
-		box-shadow: 0 14px 34px -26px rgba(0, 0, 0, 0.34);
-	}
-
-	.topbar::before {
-		background: linear-gradient(
-			180deg,
-			rgba(255, 255, 255, 0.22) 0%,
-			rgba(255, 255, 255, 0.11) 56%,
-			rgba(255, 255, 255, 0) 100%
-		);
-	}
-
 	.topbarMobileHidden {
 		transform: none;
 	}
@@ -365,23 +349,6 @@
 		padding: 0.72rem 1.04rem;
 		font-size: 0.72rem;
 		letter-spacing: 0.15em;
-	}
-}
-
-@media (max-width: 767px) {
-	.topbar {
-		--topbar-glass-active: rgba(255, 255, 255, 0.46);
-		--topbar-glass-edge-active: rgba(255, 255, 255, 0.58);
-		--topbar-blur-active: blur(12px) saturate(122%) contrast(1.01);
-	}
-
-	.topbar::before {
-		background: linear-gradient(
-			180deg,
-			rgba(255, 255, 255, 0.11) 0%,
-			rgba(255, 255, 255, 0.05) 56%,
-			rgba(255, 255, 255, 0) 100%
-		);
 	}
 }
 
