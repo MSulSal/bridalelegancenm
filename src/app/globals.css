@@ -17,9 +17,8 @@ html[data-theme="blue"] {
 	--color-logo-border: #5e766a;
 	--color-logo-border-soft: #43584f;
 	--theme-toggle-circle: #5e766a;
-	--topbar-glass: rgba(249, 252, 248, 0.44);
-	--topbar-glass-edge: rgba(241, 247, 238, 0.56);
-	--topbar-backdrop-filter: blur(16px) saturate(128%) contrast(1.01);
+	--topbar-glass: rgba(249, 252, 248, 0.62);
+	--topbar-glass-edge: rgba(241, 247, 238, 0.78);
 	--mono-ink: #050505;
 	--mono-charcoal: #181818;
 	--mono-border: #d6d0c5;
@@ -42,9 +41,8 @@ html[data-theme="blush"] {
 	--color-logo-border: #d8b56a;
 	--color-logo-border-soft: #d8b56a;
 	--theme-toggle-circle: #e4afa9;
-	--topbar-glass: rgba(255, 246, 244, 0.46);
-	--topbar-glass-edge: rgba(252, 233, 228, 0.58);
-	--topbar-backdrop-filter: blur(16px) saturate(128%) contrast(1.01);
+	--topbar-glass: rgba(255, 246, 244, 0.64);
+	--topbar-glass-edge: rgba(252, 233, 228, 0.8);
 	--shadow-soft: 0 24px 52px -36px rgba(130, 80, 75, 0.28);
 }
 
@@ -64,9 +62,8 @@ html[data-theme="monochrome"] {
 	--color-logo-border: #111111;
 	--color-logo-border-soft: #111111;
 	--theme-toggle-circle: #111111;
-	--topbar-glass: rgba(255, 255, 255, 0.44);
-	--topbar-glass-edge: rgba(255, 255, 255, 0.56);
-	--topbar-backdrop-filter: blur(16px) saturate(128%) contrast(1.01);
+	--topbar-glass: rgba(255, 255, 255, 0.6);
+	--topbar-glass-edge: rgba(255, 255, 255, 0.76);
 	--mono-ink: #050505;
 	--mono-charcoal: #181818;
 	--mono-border: #d6d0c5;
