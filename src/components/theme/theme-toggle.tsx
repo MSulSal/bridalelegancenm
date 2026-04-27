@@ -15,6 +15,7 @@ import {
 	themeOptions,
 	type ThemeId,
 } from "@/lib/theme";
+import styles from "./theme-toggle.module.css";
 
 type ThemeToggleProps = {
 	align?: "left" | "right";
@@ -78,16 +79,16 @@ export function ThemeToggle({
 
 	const triggerClass =
 		size === "compact"
-			? "be-theme-trigger be-theme-trigger-compact"
-			: "be-theme-trigger";
+			? `${styles.trigger} ${styles.triggerCompact}`
+			: styles.trigger;
 
 	const popoverClass =
 		align === "left"
-			? "be-theme-popover be-theme-popover-left"
-			: "be-theme-popover be-theme-popover-right";
+			? `${styles.popover} ${styles.popoverLeft}`
+			: `${styles.popover} ${styles.popoverRight}`;
 
 	return (
-		<div ref={rootRef} className="be-theme-toggle">
+		<div ref={rootRef} className={styles.root}>
 			<button
 				type="button"
 				className={triggerClass}
@@ -103,7 +104,7 @@ export function ThemeToggle({
 					role="menu"
 					aria-label="Theme options"
 				>
-					<ul className="be-theme-options" role="none">
+					<ul className={styles.options} role="none">
 						{themeOptions.map(option => {
 							const isActive = option.id === theme;
 
@@ -113,17 +114,17 @@ export function ThemeToggle({
 										type="button"
 										role="menuitemradio"
 										aria-checked={isActive}
-										className={`be-theme-option ${isActive ? "is-active" : ""}`}
+										className={`${styles.option} ${isActive ? styles.active : ""}`}
 										onClick={() => applyAndClose(option.id)}
 									>
 										<span
-											className="be-theme-swatch"
+											className={styles.swatch}
 											style={{
 												backgroundColor: option.swatch,
 											}}
 											aria-hidden="true"
 										/>
-										<span className="be-theme-label">
+										<span className={styles.label}>
 											{option.name}
 										</span>
 									</button>

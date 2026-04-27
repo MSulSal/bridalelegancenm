@@ -48,9 +48,9 @@ export function SiteHeader() {
 
 	return (
 		<header
-			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
+			className={`${styles.topbar} ${hideMobileHeader ? styles.topbarMobileHidden : ""}`}
 		>
-			<div className={`be-topbar-inner ${styles.topbarInner}`}>
+			<div className={styles.topbarInner}>
 				<div className={styles.mobileRow}>
 					<div className={styles.mobileLeft}>
 						<ThemeToggle align="left" size="compact" />
@@ -60,7 +60,7 @@ export function SiteHeader() {
 						<Link
 							href="/"
 							aria-label={siteConfig.name}
-							className={`be-logo-medallion be-logo-medallion-mobile ${styles.logoBadgeMobile}`}
+							className={`${styles.logoMedallion} ${styles.logoBadgeMobile}`}
 							style={monochromeBadgeStyle}
 						>
 							<Image
@@ -76,10 +76,10 @@ export function SiteHeader() {
 
 					<details
 						ref={mobileMenuRef}
-						className={`be-menu ${styles.mobileRight}`}
+						className={`${styles.menu} ${styles.mobileRight}`}
 					>
 						<summary
-							className="be-menu-trigger h-12 w-12"
+							className={styles.menuTrigger}
 							style={{ color: "var(--theme-toggle-circle)" }}
 							aria-label="Open menu"
 						>
@@ -96,10 +96,10 @@ export function SiteHeader() {
 							</svg>
 						</summary>
 
-						<div className="be-menu-panel">
+						<div className={styles.menuPanel}>
 							<div className="be-container">
 								<nav aria-label="Mobile">
-									<ul className="be-menu-list">
+									<ul className={styles.menuList}>
 										<li
 											className={
 												styles.mobileInstagramItem
@@ -146,7 +146,7 @@ export function SiteHeader() {
 											<li key={item.href}>
 												<Link
 													href={item.href}
-													className="be-nav-link"
+													className={styles.navLink}
 												>
 													{item.label}
 												</Link>
@@ -168,7 +168,7 @@ export function SiteHeader() {
 							<Link
 								key={item.href}
 								href={item.href}
-								className="be-nav-link"
+								className={styles.navLink}
 							>
 								{item.label}
 							</Link>
@@ -179,7 +179,7 @@ export function SiteHeader() {
 						<Link
 							href="/"
 							aria-label={siteConfig.name}
-							className={`be-logo-medallion ${styles.logoBadgeDesktop}`}
+							className={`${styles.logoMedallion} ${styles.logoBadgeDesktop}`}
 							style={monochromeBadgeStyle}
 						>
 							<Image
@@ -222,7 +222,7 @@ export function SiteHeader() {
 						</a>
 						<a
 							href={siteConfig.appointmentHref}
-							className="be-btn be-btn-primary be-topbar-cta shrink-0"
+							className={`be-btn be-btn-primary ${styles.topbarCta} shrink-0`}
 						>
 							{siteConfig.appointmentLabel}
 						</a>
