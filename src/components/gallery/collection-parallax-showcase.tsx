@@ -21,6 +21,7 @@ const FOREGROUND_INERTIA = 0.1;
 const INTERNAL_SCROLL_LOOPS = 28;
 const RECENTER_MIN_RATIO = 0.22;
 const RECENTER_MAX_RATIO = 0.78;
+const TOTAL_TRACK_CYCLES = INTERNAL_SCROLL_LOOPS + TRACK_BUFFER_CYCLES * 2;
 
 function clamp(value: number, min: number, max: number) {
 	return Math.min(Math.max(value, min), max);
@@ -69,18 +70,14 @@ export function CollectionParallaxShowcase({
 			return [] as GalleryShowcaseCollection[];
 		}
 
-		const cycles = SCROLL_LOOPS + TRACK_BUFFER_CYCLES * 2;
 		const stacked: GalleryShowcaseCollection[] = [];
-		for (let i = 0; i < cycles; i += 1) {
+		for (let i = 0; i < TOTAL_TRACK_CYCLES; i += 1) {
 			stacked.push(...collections);
 		}
 		return stacked;
 	}, [collectionCount, collections]);
 
 	const activeCollection = collections[activeIndex] ?? collections[0];
-	const nextCollection =
-		collections[wrapProgress(activeIndex + 1, collectionCount)] ??
-		activeCollection;
 	const hoverSlides = activeCollection?.hoverSlides ?? [];
 	const canPlayVideo =
 		Boolean(activeCollection?.hoverVideoSrc) && !videoFailed && isHovered;
@@ -135,6 +132,7 @@ export function CollectionParallaxShowcase({
 
 		const applyProgress = (rawProgress: number) => {
 			const nextProgress = wrapProgress(rawProgress, loopSpan);
+			virtualProgressRef.current = nextProgress;
 			const progressBase = Math.floor(nextProgress);
 			const progressFraction = nextProgress - progressBase;
 
@@ -364,12 +362,14 @@ export function CollectionParallaxShowcase({
 									</div>
 								</div>
 								<div className={styles.mobileNowNext}>
-									<p className={styles.mobileNowNextKicker}>Next</p>
+									<p className={styles.mobileNowNextKicker}>
+										Collection
+									</p>
 									<p className={styles.mobileNowNextTitle}>
-										{nextCollection.name}
+										{activeCollection.name}
 									</p>
 									<p className={styles.mobileNowNextMeta}>
-										{nextCollection.descriptor}
+										{activeCollection.descriptor}
 									</p>
 								</div>
 							</div>
