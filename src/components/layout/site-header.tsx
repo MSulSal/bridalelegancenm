@@ -57,7 +57,7 @@ export function SiteHeader() {
 		<header
 			className={`be-topbar ${hideMobileHeader ? "be-topbar-mobile-hidden" : ""}`}
 		>
-			<div className="be-container be-topbar-inner">
+			<div className={`be-topbar-inner ${styles.topbarInner}`}>
 				<div className={styles.mobileRow}>
 					<div className={styles.mobileLeft}>
 						<ThemeToggle align="left" size="compact" />

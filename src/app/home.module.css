@@ -10,7 +10,7 @@
 
 .heroSection {
 	margin-inline: calc(50% - 50vw);
-	margin-top: -4.4rem;
+	margin-top: 0;
 }
 
 .heroFrame {
@@ -24,7 +24,7 @@
 
 .heroViewport {
 	position: relative;
-	min-height: 100svh;
+	min-height: calc(100svh - 4.4rem);
 }
 
 .heroImage {
@@ -91,7 +91,11 @@
 
 @media (min-width: 640px) {
 	.heroSection {
-		margin-top: -4.6rem;
+		margin-top: 0;
+	}
+
+	.heroViewport {
+		min-height: calc(100svh - 4.6rem);
 	}
 
 	.heroCaption {
@@ -105,7 +109,11 @@
 
 @media (min-width: 1024px) {
 	.heroSection {
-		margin-top: -10.2rem;
+		margin-top: 0;
+	}
+
+	.heroViewport {
+		min-height: calc(100svh - 10.2rem);
 	}
 
 	.heroCaption {
