@@ -8,6 +8,21 @@ type GalleryItem = {
 	href?: string;
 };
 
+export type GalleryShowcaseCollection = {
+	id: string;
+	name: string;
+	descriptor: string;
+	cover: {
+		localPath: string;
+		alt: string;
+	};
+	hoverSlides: Array<{
+		localPath: string;
+		alt: string;
+	}>;
+	hoverVideoSrc?: string;
+};
+
 const designerNames = legacySiteContent.externalLinks.bridalDesigners.map(
 	designer => designer.label,
 );
@@ -111,3 +126,23 @@ export const galleryPageContent = {
 		},
 	],
 } as const;
+
+export const galleryShowcaseCollections: GalleryShowcaseCollection[] =
+	galleryPageContent.sections.map(section => {
+		const [cover, ...rest] = section.items;
+		const fallbackSlides = [cover, ...rest].slice(0, 4);
+
+		return {
+			id: section.id,
+			name: section.heading.title,
+			descriptor: section.heading.eyebrow,
+			cover: {
+				localPath: cover.localPath,
+				alt: cover.alt,
+			},
+			hoverSlides: fallbackSlides.map(item => ({
+				localPath: item.localPath,
+				alt: item.alt,
+			})),
+		};
+	});

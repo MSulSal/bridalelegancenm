@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { galleryPageContent } from "@/content/gallery-content";
+import {
+	galleryPageContent,
+	galleryShowcaseCollections,
+} from "@/content/gallery-content";
+import { CollectionParallaxShowcase } from "@/components/gallery/collection-parallax-showcase";
 import { SiteShell } from "@/components/layout/site-shell";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -65,54 +69,18 @@ export default function GalleryPage() {
 				</figure>
 			</section>
 
-			{galleryPageContent.sections.map((section, sectionIndex) => (
-				<ScrollReveal key={section.id} delayMs={70 + sectionIndex * 35}>
-					<section id={section.id} className="be-section">
-						<SectionHeading
-							eyebrow={section.heading.eyebrow}
-							title={section.heading.title}
-							description={section.heading.description}
-						/>
-
-						<div className={styles.sectionGrid}>
-							{section.items.map((item, itemIndex) => (
-								<article
-									key={`${section.id}-${item.localPath}-${itemIndex}`}
-									className={`be-card ${styles.galleryCard} ${itemIndex === 0 ? styles.featuredCard : ""}`}
-								>
-									<div className={styles.imageWrap}>
-										<Image
-											src={item.localPath}
-											alt={item.alt}
-											width={1400}
-											height={1800}
-											sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-											className={styles.galleryImage}
-										/>
-									</div>
-
-									<div className={styles.cardMeta}>
-										<p className="be-kicker">{item.tag}</p>
-										<h3 className={styles.cardTitle}>
-											{item.title}
-										</h3>
-										{item.href ? (
-											<a
-												href={item.href}
-												target="_blank"
-												rel="noreferrer"
-												className={styles.cardLink}
-											>
-												View Source
-											</a>
-										) : null}
-									</div>
-								</article>
-							))}
-						</div>
-					</section>
-				</ScrollReveal>
-			))}
+			<ScrollReveal delayMs={80}>
+				<section className="be-section pt-10">
+					<SectionHeading
+						eyebrow="Collection Stories"
+						title="Scroll Through The Bridal Collection Stage"
+						description="Large blurred atmosphere in motion, with a fixed center cover card and collection progression as you scroll."
+					/>
+					<CollectionParallaxShowcase
+						collections={galleryShowcaseCollections}
+					/>
+				</section>
+			</ScrollReveal>
 
 			<ScrollReveal delayMs={180}>
 				<section className="be-section pt-0">
