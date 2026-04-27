@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
 import {
@@ -34,6 +34,7 @@ function getServerThemeSnapshot(): ThemeId {
 }
 
 export function SiteHeader() {
+	const headerRef = useRef<HTMLElement>(null);
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
 	const hideMobileHeader = useMobileHeaderVisibility(mobileMenuRef);
 
@@ -46,8 +47,31 @@ export function SiteHeader() {
 	const monochromeBadgeStyle: CSSProperties | undefined =
 		activeTheme === "monochrome" ? { borderColor: "#111111" } : undefined;
 
+	useEffect(() => {
+		const headerEl = headerRef.current;
+		if (!headerEl) return;
+
+		const setHeaderHeightVar = () => {
+			document.documentElement.style.setProperty(
+				"--site-header-height",
+				`${headerEl.offsetHeight}px`,
+			);
+		};
+
+		setHeaderHeightVar();
+		const observer = new ResizeObserver(setHeaderHeightVar);
+		observer.observe(headerEl);
+		window.addEventListener("resize", setHeaderHeightVar, { passive: true });
+
+		return () => {
+			observer.disconnect();
+			window.removeEventListener("resize", setHeaderHeightVar);
+		};
+	}, []);
+
 	return (
 		<header
+			ref={headerRef}
 			className={`${styles.topbar} ${hideMobileHeader ? styles.topbarMobileHidden : ""}`}
 		>
 			<div className={styles.topbarInner}>

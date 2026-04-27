@@ -1,8 +1,10 @@
 .root {
-	--gallery-navbar-offset: 4.7rem;
+	--gallery-navbar-offset: var(--site-header-height, 6rem);
 	position: relative;
+	top: calc(var(--gallery-navbar-offset) * -1);
 	height: calc(100svh + var(--gallery-navbar-offset));
-	margin-top: calc(var(--gallery-navbar-offset) * -1);
+	margin-top: 0;
+	margin-bottom: calc(var(--gallery-navbar-offset) * -1);
 }
 
 .scrollViewport {
@@ -199,10 +201,6 @@
 }
 
 @media (min-width: 1024px) {
-	.root {
-		--gallery-navbar-offset: 9.9rem;
-	}
-
 	.stageContent {
 		grid-template-columns: minmax(0, 58%) minmax(0, 42%);
 	}
