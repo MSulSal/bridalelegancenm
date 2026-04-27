@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	type CSSProperties,
+} from "react";
 import type { GalleryShowcaseCollection } from "@/content/gallery-content";
 import styles from "./collection-parallax-showcase.module.css";
 
@@ -9,31 +15,97 @@ type CollectionParallaxShowcaseProps = {
 	collections: GalleryShowcaseCollection[];
 };
 
+const SCROLL_LOOPS = 5;
+const TRACK_BUFFER_CYCLES = 2;
+const FOREGROUND_INERTIA = 0.1;
+const INTERNAL_SCROLL_LOOPS = 28;
+const RECENTER_MIN_RATIO = 0.22;
+const RECENTER_MAX_RATIO = 0.78;
+
+function clamp(value: number, min: number, max: number) {
+	return Math.min(Math.max(value, min), max);
+}
+
+function wrapProgress(value: number, count: number) {
+	if (count <= 0) return 0;
+	return ((value % count) + count) % count;
+}
+
 export function CollectionParallaxShowcase({
 	collections,
 }: CollectionParallaxShowcaseProps) {
 	const rootRef = useRef<HTMLDivElement>(null);
-	const markerRefs = useRef<Array<HTMLElement | null>>([]);
-	const [activeIndex, setActiveIndex] = useState(0);
+	const scrollViewportRef = useRef<HTMLDivElement>(null);
+	const stageRef = useRef<HTMLDivElement>(null);
+	const coverViewportRef = useRef<HTMLDivElement>(null);
+	const [progress, setProgress] = useState(0);
+	const [foregroundProgress, setForegroundProgress] = useState(0);
 	const [isHovered, setIsHovered] = useState(false);
 	const [slideIndex, setSlideIndex] = useState(0);
 	const [videoFailed, setVideoFailed] = useState(false);
-	const [backgroundShift, setBackgroundShift] = useState(0);
+	const foregroundTargetRef = useRef(0);
+	const virtualProgressRef = useRef(0);
+	const lastScrollTopRef = useRef(0);
+	const initializedRef = useRef(false);
+
+	const collectionCount = collections.length;
+	const loopSpan = Math.max(collectionCount * SCROLL_LOOPS, collectionCount);
+	const cycleProgress = wrapProgress(progress, collectionCount);
+	const foregroundCycleProgress =
+		wrapProgress(foregroundProgress, collectionCount);
+	const activeIndex =
+		collectionCount > 0
+			? Math.round(foregroundCycleProgress) % collectionCount
+			: 0;
+	const trackStartIndex = collectionCount * TRACK_BUFFER_CYCLES;
+	const backgroundTrackProgress = trackStartIndex + progress;
+	const coverTrackProgress = trackStartIndex + foregroundProgress;
+	const activeTrackIndex = Math.round(coverTrackProgress);
+
+	const trackCollections = useMemo(() => {
+		if (collectionCount === 0) {
+			return [] as GalleryShowcaseCollection[];
+		}
+
+		const cycles = SCROLL_LOOPS + TRACK_BUFFER_CYCLES * 2;
+		const stacked: GalleryShowcaseCollection[] = [];
+		for (let i = 0; i < cycles; i += 1) {
+			stacked.push(...collections);
+		}
+		return stacked;
+	}, [collectionCount, collections]);
 
 	const activeCollection = collections[activeIndex] ?? collections[0];
+	const nextCollection =
+		collections[wrapProgress(activeIndex + 1, collectionCount)] ??
+		activeCollection;
+	const hoverSlides = activeCollection?.hoverSlides ?? [];
 	const canPlayVideo =
 		Boolean(activeCollection?.hoverVideoSrc) && !videoFailed && isHovered;
-	const hoverSlides = activeCollection?.hoverSlides ?? [];
 
 	const activeFrame = useMemo(() => {
-		if (!isHovered || hoverSlides.length === 0) {
-			return activeCollection?.cover;
+		if (!activeCollection) return undefined;
+		if (!isHovered || hoverSlides.length === 0 || canPlayVideo) {
+			return activeCollection.cover;
 		}
-		if (canPlayVideo) {
-			return activeCollection?.cover;
-		}
-		return hoverSlides[slideIndex] ?? activeCollection?.cover;
+		return hoverSlides[slideIndex] ?? activeCollection.cover;
 	}, [activeCollection, canPlayVideo, hoverSlides, isHovered, slideIndex]);
+
+	useEffect(() => {
+		let frameId = 0;
+
+		const tick = () => {
+			setForegroundProgress(current => {
+			const target = foregroundTargetRef.current;
+			const eased = current + (target - current) * FOREGROUND_INERTIA;
+			return Math.abs(target - eased) < 0.0008 ? target : eased;
+			});
+			frameId = window.requestAnimationFrame(tick);
+		};
+
+		frameId = window.requestAnimationFrame(tick);
+		return () => window.cancelAnimationFrame(frameId);
+	}, []);
 
 	useEffect(() => {
 		setSlideIndex(0);
@@ -44,163 +116,350 @@ export function CollectionParallaxShowcase({
 		if (!isHovered || canPlayVideo || hoverSlides.length < 2) {
 			return;
 		}
+
 		const intervalId = window.setInterval(() => {
 			setSlideIndex(current => (current + 1) % hoverSlides.length);
-		}, 1550);
+		}, 1400);
+
 		return () => window.clearInterval(intervalId);
 	}, [canPlayVideo, hoverSlides, isHovered]);
 
 	useEffect(() => {
-		const markers = markerRefs.current.filter(
-			(marker): marker is HTMLElement => marker !== null,
-		);
-		if (markers.length === 0) {
-			return;
-		}
-
-		const observer = new IntersectionObserver(
-			entries => {
-				entries.forEach(entry => {
-					if (!entry.isIntersecting) return;
-					const marker = entry.target as HTMLElement;
-					const markerIndex = Number(marker.dataset.index ?? "0");
-					if (Number.isNaN(markerIndex)) return;
-					setActiveIndex(markerIndex);
-				});
-			},
-			{
-				root: null,
-				rootMargin: "-42% 0px -42% 0px",
-				threshold: 0.01,
-			},
-		);
-
-		markers.forEach(marker => observer.observe(marker));
-		return () => observer.disconnect();
-	}, [collections.length]);
-
-	useEffect(() => {
 		let ticking = false;
+		let resizeRaf = 0;
+		let isDesktopMode = false;
+		let detachScroll: (() => void) | null = null;
 
-		const updateShift = () => {
-			ticking = false;
-			if (!rootRef.current) return;
-			const rect = rootRef.current.getBoundingClientRect();
-			const viewportHeight = window.innerHeight;
-			const distance = (viewportHeight * 0.56 - rect.top) * 0.1;
-			const clamped = Math.max(-36, Math.min(36, distance));
-			setBackgroundShift(clamped);
+		if (collectionCount <= 0) return;
+
+		const applyProgress = (rawProgress: number) => {
+			const nextProgress = wrapProgress(rawProgress, loopSpan);
+			const progressBase = Math.floor(nextProgress);
+			const progressFraction = nextProgress - progressBase;
+
+			let mappedForegroundProgress = nextProgress;
+			const stageRect = stageRef.current?.getBoundingClientRect();
+			const coverRect = coverViewportRef.current?.getBoundingClientRect();
+
+			if (stageRect && coverRect && coverRect.height > 0) {
+				const stageHeight = stageRect.height;
+				const coverTop = coverRect.top - stageRect.top;
+				const coverBottom = coverTop + coverRect.height;
+				const dividerY = (1 - progressFraction) * stageHeight;
+
+				let revealWithinCover = 0;
+				if (dividerY <= coverTop) {
+					revealWithinCover = 1;
+				} else if (dividerY < coverBottom) {
+					revealWithinCover = clamp(
+						(coverBottom - dividerY) / coverRect.height,
+						0,
+						1,
+					);
+				}
+
+				mappedForegroundProgress = progressBase + revealWithinCover;
+			}
+			mappedForegroundProgress = wrapProgress(
+				mappedForegroundProgress,
+				loopSpan,
+			);
+
+			setProgress(current =>
+				Math.abs(current - nextProgress) > 0.001 ? nextProgress : current,
+			);
+			foregroundTargetRef.current = mappedForegroundProgress;
+		};
+
+		const initializeDesktopScroller = () => {
+			const viewport = scrollViewportRef.current;
+			if (!viewport) return;
+			const maxTop = Math.max(viewport.scrollHeight - viewport.clientHeight, 1);
+			const center = maxTop * 0.5;
+			viewport.scrollTop = center;
+			lastScrollTopRef.current = center;
+			virtualProgressRef.current = progress;
+			initializedRef.current = true;
+		};
+
+		const updateDesktop = () => {
+			const viewport = scrollViewportRef.current;
+			if (!viewport) return;
+
+			if (!initializedRef.current) {
+				initializeDesktopScroller();
+				return;
+			}
+
+			const maxTop = Math.max(viewport.scrollHeight - viewport.clientHeight, 1);
+			const currentTop = viewport.scrollTop;
+			const delta = currentTop - lastScrollTopRef.current;
+			lastScrollTopRef.current = currentTop;
+			if (Math.abs(delta) < 0.001) return;
+
+			const pixelsPerCollection = Math.max(viewport.clientHeight * 0.64, 170);
+			virtualProgressRef.current += delta / pixelsPerCollection;
+			applyProgress(virtualProgressRef.current);
+
+			if (
+				currentTop < maxTop * RECENTER_MIN_RATIO ||
+				currentTop > maxTop * RECENTER_MAX_RATIO
+			) {
+				const center = maxTop * 0.5;
+				viewport.scrollTop = center;
+				lastScrollTopRef.current = center;
+			}
+		};
+
+		const updateMobile = () => {
+			const root = rootRef.current;
+			if (!root) return;
+
+			const rect = root.getBoundingClientRect();
+			const maxTravel = Math.max(rect.height - window.innerHeight, 1);
+			const traveled = clamp(-rect.top, 0, maxTravel);
+			const scrollRatio = traveled / maxTravel;
+			const rawProgress = scrollRatio * collectionCount * SCROLL_LOOPS;
+			applyProgress(rawProgress);
 		};
 
 		const onScroll = () => {
 			if (ticking) return;
 			ticking = true;
-			window.requestAnimationFrame(updateShift);
+			window.requestAnimationFrame(() => {
+				ticking = false;
+				if (isDesktopMode) {
+					updateDesktop();
+					return;
+				}
+				updateMobile();
+			});
 		};
 
-		onScroll();
-		window.addEventListener("scroll", onScroll, { passive: true });
-		window.addEventListener("resize", onScroll);
-		return () => {
-			window.removeEventListener("scroll", onScroll);
-			window.removeEventListener("resize", onScroll);
+		const attachMode = () => {
+			detachScroll?.();
+			detachScroll = null;
+			initializedRef.current = false;
+			isDesktopMode = window.innerWidth >= 1024;
+
+			if (isDesktopMode) {
+				const viewport = scrollViewportRef.current;
+				if (!viewport) return;
+				initializeDesktopScroller();
+				viewport.addEventListener("scroll", onScroll, { passive: true });
+				detachScroll = () => {
+					viewport.removeEventListener("scroll", onScroll);
+				};
+				return;
+			}
+
+			updateMobile();
+			window.addEventListener("scroll", onScroll, { passive: true });
+			detachScroll = () => {
+				window.removeEventListener("scroll", onScroll);
+			};
 		};
-	}, []);
+
+		attachMode();
+		const onResize = () => {
+			if (resizeRaf) window.cancelAnimationFrame(resizeRaf);
+			resizeRaf = window.requestAnimationFrame(attachMode);
+		};
+		window.addEventListener("resize", onResize);
+
+		return () => {
+			detachScroll?.();
+			window.removeEventListener("resize", onResize);
+			if (resizeRaf) window.cancelAnimationFrame(resizeRaf);
+		};
+	}, [collectionCount, loopSpan, progress]);
 
 	if (collections.length === 0 || !activeCollection || !activeFrame) {
 		return null;
 	}
 
 	return (
-		<div ref={rootRef} className={styles.root}>
-			<div className={styles.stickyStage}>
-				<div className={styles.backgroundLayer} aria-hidden="true">
-					{collections.map((collection, index) => (
-						<Image
-							key={collection.id}
-							src={collection.cover.localPath}
-							alt=""
-							fill
-							sizes="100vw"
-							className={`${styles.backgroundImage} ${index === activeIndex ? styles.backgroundImageActive : ""}`}
-							style={
-								{
-									"--bg-shift": `${backgroundShift}px`,
-								} as CSSProperties
-							}
-						/>
-					))}
-					<div className={styles.backgroundVeil} />
-				</div>
-
-				<div className={styles.stageContent}>
-					<div className={styles.centerCardWrap}>
-						<article
-							className={styles.centerCard}
-							onMouseEnter={() => setIsHovered(true)}
-							onMouseLeave={() => setIsHovered(false)}
-							onFocusCapture={() => setIsHovered(true)}
-							onBlurCapture={() => setIsHovered(false)}
-						>
-							<div className={styles.cardMedia}>
-								{canPlayVideo ? (
-									<video
-										key={activeCollection.hoverVideoSrc}
-										src={activeCollection.hoverVideoSrc}
-										poster={activeCollection.cover.localPath}
-										autoPlay
-										loop
-										muted
-										playsInline
-										className={styles.mediaAsset}
-										onError={() => setVideoFailed(true)}
-									/>
-								) : (
-									<Image
-										key={`${activeCollection.id}-${activeFrame.localPath}-${slideIndex}`}
-										src={activeFrame.localPath}
-										alt={activeFrame.alt}
-										fill
-										sizes="(min-width: 1024px) 46vw, 88vw"
-										className={`${styles.mediaAsset} ${styles.mediaImage}`}
-									/>
-								)}
+		<div
+			ref={rootRef}
+			className={styles.root}
+			style={
+				{
+					"--collection-count": String(Math.max(collections.length, 1)),
+					"--scroll-loops": String(SCROLL_LOOPS),
+					"--internal-scroll-loops": String(INTERNAL_SCROLL_LOOPS),
+					"--background-progress": String(backgroundTrackProgress),
+					"--cover-progress": String(coverTrackProgress),
+				} as CSSProperties
+			}
+		>
+			<div ref={scrollViewportRef} className={styles.scrollViewport}>
+				<div className={styles.scrollRail}>
+					<div ref={stageRef} className={styles.stickyStage}>
+						<div className={styles.backgroundViewport} aria-hidden="true">
+							<div className={styles.backgroundTrack}>
+								{trackCollections.map((collection, index) => (
+									<div
+										key={`${collection.id}-bg-${index}`}
+										className={styles.backgroundSlot}
+									>
+										<Image
+											src={collection.cover.localPath}
+											alt=""
+											fill
+											sizes="100vw"
+											className={styles.backgroundImage}
+										/>
+									</div>
+								))}
 							</div>
-						</article>
-					</div>
+						</div>
 
-					<aside className={styles.collectionRail} aria-label="Collections">
-						<ol className={styles.collectionList}>
-							{collections.map((collection, index) => (
-								<li
-									key={collection.id}
-									className={`${styles.collectionItem} ${index === activeIndex ? styles.collectionItemActive : ""}`}
+						<div className={styles.stageContent}>
+							<div className={styles.coverPane}>
+								<div
+									ref={coverViewportRef}
+									className={styles.coverViewport}
+									onMouseEnter={() => setIsHovered(true)}
+									onMouseLeave={() => setIsHovered(false)}
+									onFocusCapture={() => setIsHovered(true)}
+									onBlurCapture={() => setIsHovered(false)}
 								>
-									<p className={styles.collectionDescriptor}>
-										{collection.descriptor}
-									</p>
-									<h2 className={styles.collectionName}>
-										{collection.name}
-									</h2>
-								</li>
-							))}
-						</ol>
-					</aside>
-				</div>
-			</div>
+									<div className={styles.coverTrack}>
+										{trackCollections.map((collection, index) => {
+											const isTrackActive =
+												index === activeTrackIndex;
 
-			<div className={styles.scrollTrack} aria-hidden="true">
-				{collections.map((collection, index) => (
-					<section key={collection.id} className={styles.scrollStep}>
-						<div
-							ref={element => {
-								markerRefs.current[index] = element;
-							}}
-							data-index={index}
-							className={styles.scrollMarker}
-						/>
-					</section>
-				))}
+											return (
+												<div
+													key={`${collection.id}-cover-${index}`}
+													className={styles.coverSlot}
+												>
+													<article
+														className={`${styles.centerCard} ${isTrackActive ? styles.centerCardActive : ""}`}
+													>
+														<div className={styles.cardMedia}>
+															{isTrackActive && canPlayVideo ? (
+																<video
+																	key={
+																		activeCollection.hoverVideoSrc
+																	}
+																	src={
+																		activeCollection.hoverVideoSrc
+																	}
+																	poster={
+																		activeCollection
+																			.cover.localPath
+																	}
+																	autoPlay
+																	loop
+																	muted
+																	playsInline
+																	className={
+																		styles.mediaAsset
+																	}
+																	onError={() =>
+																		setVideoFailed(
+																			true,
+																		)
+																	}
+																/>
+															) : (
+																<Image
+																	key={`${collection.id}-${isTrackActive ? activeFrame.localPath : collection.cover.localPath}-${slideIndex}`}
+																	src={
+																		isTrackActive
+																			? activeFrame.localPath
+																			: collection
+																					.cover
+																					.localPath
+																	}
+																	alt={
+																		isTrackActive
+																			? activeFrame.alt
+																			: collection
+																					.cover
+																					.alt
+																	}
+																	fill
+																	sizes="(min-width: 1024px) 24rem, 68vw"
+																	className={`${styles.mediaAsset} ${styles.mediaImage}`}
+																/>
+															)}
+														</div>
+													</article>
+												</div>
+											);
+										})}
+									</div>
+								</div>
+								<div className={styles.mobileNowNext}>
+									<p className={styles.mobileNowNextKicker}>Next</p>
+									<p className={styles.mobileNowNextTitle}>
+										{nextCollection.name}
+									</p>
+									<p className={styles.mobileNowNextMeta}>
+										{nextCollection.descriptor}
+									</p>
+								</div>
+							</div>
+
+							<aside
+								className={styles.collectionRail}
+								aria-label="Collections"
+							>
+								<ol className={styles.collectionList}>
+									{collections.map((collection, index) => {
+										const directDistance = Math.abs(
+											index - foregroundCycleProgress,
+										);
+										const wrappedDistance = Math.abs(
+											collectionCount - directDistance,
+										);
+										const distance = Math.min(
+											directDistance,
+											wrappedDistance,
+										);
+										const opacity = clamp(
+											1 - distance * 0.48,
+											0.22,
+											1,
+										);
+										const shift = clamp(
+											(index - foregroundCycleProgress) *
+												5.4,
+											-14,
+											14,
+										);
+
+										return (
+											<li
+												key={collection.id}
+												className={`${styles.collectionItem} ${index === activeIndex ? styles.collectionItemActive : ""}`}
+												style={
+													{
+														opacity,
+														transform: `translateX(${-shift}px)`,
+													} as CSSProperties
+												}
+											>
+												<p
+													className={
+														styles.collectionDescriptor
+													}
+												>
+													{collection.descriptor}
+												</p>
+												<h2 className={styles.collectionName}>
+													{collection.name}
+												</h2>
+											</li>
+										);
+									})}
+								</ol>
+							</aside>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

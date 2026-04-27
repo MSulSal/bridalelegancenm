@@ -1,50 +1,63 @@
 .root {
+	--gallery-navbar-offset: 4.7rem;
 	position: relative;
-	margin-top: clamp(3rem, 6vw, 5.5rem);
+	height: calc(var(--collection-count, 1) * var(--scroll-loops, 5) * 98svh);
+	margin-top: 0;
+}
+
+.scrollViewport {
+	position: relative;
+	height: 100%;
+}
+
+.scrollRail {
+	position: relative;
+	min-height: 100%;
 }
 
 .stickyStage {
 	position: sticky;
-	top: clamp(4.7rem, 8vw, 6rem);
-	height: calc(100svh - clamp(5.4rem, 9vw, 7rem));
-	border: 1px solid var(--line-subtle);
+	top: var(--gallery-navbar-offset);
+	height: calc(100svh - var(--gallery-navbar-offset));
 	overflow: hidden;
-	background: var(--surface-elevated);
+	border-top: 1px solid var(--line-subtle);
+	border-bottom: 1px solid var(--line-subtle);
+	background: var(--color-bg);
 }
 
-.backgroundLayer {
+.backgroundViewport {
 	position: absolute;
 	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.backgroundTrack {
+	position: absolute;
+	inset: 0;
+	will-change: transform;
+	transform: translate3d(
+		0,
+		calc(var(--background-progress, 0) * -100%),
+		0
+	);
+}
+
+.backgroundSlot {
+	position: relative;
+	height: 100%;
+	min-height: 100%;
+	width: 100%;
+	overflow: hidden;
+	isolation: isolate;
+	border-top: 1px solid rgba(255, 255, 255, 0.35);
+	border-bottom: 1px solid rgba(10, 10, 10, 0.16);
 }
 
 .backgroundImage {
-	opacity: 0;
-	transform: translate3d(0, var(--bg-shift, 0px), 0) scale(1.18);
-	filter: blur(34px) saturate(108%) brightness(1.02);
-	transition:
-		opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
-		transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.backgroundImageActive {
-	opacity: 1;
-}
-
-.backgroundVeil {
-	position: absolute;
-	inset: 0;
-	background:
-		linear-gradient(
-			100deg,
-			rgba(245, 245, 245, 0.84) 0%,
-			rgba(245, 245, 245, 0.52) 46%,
-			rgba(245, 245, 245, 0.34) 100%
-		),
-		radial-gradient(
-			78% 95% at 78% 50%,
-			rgba(0, 0, 0, 0.1) 0%,
-			rgba(0, 0, 0, 0) 62%
-		);
+	object-fit: cover;
+	filter: blur(38px) saturate(106%) brightness(1.02);
+	transform: scale(1.08);
 }
 
 .stageContent {
@@ -56,31 +69,59 @@
 	align-items: center;
 }
 
-.centerCardWrap {
+.coverPane {
+	width: 100%;
+	height: 100%;
 	display: grid;
 	place-items: center;
-	padding-inline: clamp(0.9rem, 3vw, 1.5rem);
+	align-content: center;
+	gap: 0.7rem;
+	padding-bottom: calc(6.9rem + env(safe-area-inset-bottom));
+}
+
+.coverViewport {
+	position: relative;
+	width: min(76vw, 18rem);
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	border: 1px solid rgba(255, 255, 255, 0.76);
+	background: rgba(255, 255, 255, 0.86);
+	box-shadow:
+		0 26px 54px -40px rgba(0, 0, 0, 0.62),
+		0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.coverViewport::before {
+	content: "";
+	position: absolute;
+	inset: 0.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.62);
+	pointer-events: none;
+	z-index: 3;
+}
+
+.coverTrack {
+	position: absolute;
+	inset: 0;
+	will-change: transform;
+	transform: translate3d(0, calc(var(--cover-progress, 0) * -100%), 0);
+}
+
+.coverSlot {
+	position: relative;
+	height: 100%;
+	min-height: 100%;
+	width: 100%;
 }
 
 .centerCard {
-	position: relative;
-	width: min(100%, 44rem);
-	aspect-ratio: 4 / 5;
-	border: 1px solid rgba(255, 255, 255, 0.76);
-	background: rgba(255, 255, 255, 0.8);
-	box-shadow:
-		0 38px 70px -46px rgba(0, 0, 0, 0.6),
-		0 0 0 1px rgba(0, 0, 0, 0.06);
+	position: absolute;
+	inset: 0;
 	overflow: hidden;
 }
 
-.centerCard::before {
-	content: "";
-	position: absolute;
-	inset: 0.6rem;
-	border: 1px solid rgba(255, 255, 255, 0.66);
-	pointer-events: none;
-	z-index: 3;
+.centerCardActive {
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
 .cardMedia {
@@ -97,11 +138,11 @@
 
 .mediaImage {
 	transition:
-		transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
-		filter 680ms cubic-bezier(0.22, 1, 0.36, 1);
+		transform 480ms cubic-bezier(0.22, 1, 0.36, 1),
+		filter 480ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.centerCard:hover .mediaImage {
+.centerCardActive:hover .mediaImage {
 	transform: scale(1.03);
 	filter: saturate(1.06);
 }
@@ -115,23 +156,19 @@
 	margin: 0;
 	padding: 0;
 	display: grid;
-	gap: 0.7rem;
+	gap: 0.84rem;
 }
 
 .collectionItem {
-	padding: 0.5rem 0.6rem 0.58rem;
+	padding: 0.5rem 0.65rem 0.6rem;
 	border-left: 1px solid transparent;
-	opacity: 0.54;
-	transform: translateX(0);
 	transition:
-		opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
-		transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
-		border-color 300ms cubic-bezier(0.22, 1, 0.36, 1);
+		opacity 220ms linear,
+		transform 220ms linear,
+		border-color 220ms linear;
 }
 
 .collectionItemActive {
-	opacity: 1;
-	transform: translateX(-4px);
 	border-left-color: var(--accent-500);
 }
 
@@ -150,66 +187,119 @@
 	font-family: var(--font-display-serif), Georgia, serif;
 }
 
-.scrollTrack {
-	position: relative;
-	margin-top: calc(-1 * (100svh - clamp(5.4rem, 9vw, 7rem)));
-}
-
-.scrollStep {
-	height: 108svh;
-}
-
-.scrollMarker {
-	position: relative;
-	top: 50%;
-	height: 1px;
-}
-
 @media (min-width: 1024px) {
-	.stageContent {
-		grid-template-columns: minmax(0, 1fr) minmax(12.5rem, 19vw);
+	.root {
+		--gallery-navbar-offset: 9.9rem;
+		height: calc(100svh - var(--gallery-navbar-offset));
 	}
 
-	.centerCard {
-		width: min(100%, 39rem);
+	.scrollViewport {
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+
+	.scrollViewport::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+	}
+
+	.scrollRail {
+		min-height: calc(
+			var(--collection-count, 1) * var(--internal-scroll-loops, 28) * 100svh
+		);
+	}
+
+	.stageContent {
+		grid-template-columns: minmax(0, 58%) minmax(0, 42%);
+	}
+
+	.coverPane {
+		justify-items: center;
+		gap: 0;
+		padding-bottom: 0;
+	}
+
+	.coverViewport {
+		width: min(30vw, 22rem);
+	}
+
+	.stickyStage {
+		top: 0;
+		height: 100svh;
 	}
 
 	.collectionRail {
 		display: block;
 		align-self: center;
-		justify-self: end;
-		padding-right: clamp(1.1rem, 2.2vw, 2rem);
+		justify-self: start;
+		padding-right: clamp(1rem, 2vw, 1.75rem);
+		padding-left: clamp(0.8rem, 1.8vw, 1.5rem);
+		width: min(34rem, 92%);
 	}
 }
 
 @media (max-width: 640px) {
-	.root {
-		margin-top: 2.6rem;
-	}
-
-	.stickyStage {
-		top: 4.8rem;
-		height: calc(100svh - 5.4rem);
-	}
-
-	.centerCard {
-		width: min(100%, 22.4rem);
+	.coverViewport {
+		width: min(74vw, 16.8rem);
 	}
 
 	.backgroundImage {
-		filter: blur(28px) saturate(104%) brightness(1.01);
-		transform: translate3d(0, var(--bg-shift, 0px), 0) scale(1.2);
+		filter: blur(32px) saturate(103%) brightness(1.01);
+	}
+}
+
+.mobileNowNext {
+	width: min(76vw, 18rem);
+	padding: 0;
+	background: transparent;
+	border: 0;
+	text-shadow:
+		0 1px 1px rgba(255, 255, 255, 0.7),
+		0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.mobileNowNextKicker {
+	margin: 0;
+	font-size: 0.64rem;
+	letter-spacing: 0.13em;
+	text-transform: uppercase;
+	color: var(--ink-700);
+	font-weight: 600;
+}
+
+.mobileNowNextTitle {
+	margin: 0.26rem 0 0;
+	font-family: var(--font-display-serif), Georgia, serif;
+	font-size: 1.1rem;
+	line-height: 1.2;
+	color: var(--ink-900);
+	font-weight: 600;
+}
+
+.mobileNowNextMeta {
+	margin: 0.24rem 0 0;
+	font-size: 0.72rem;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--ink-700);
+	font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+	.mobileNowNext {
+		display: none;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.backgroundImage,
 	.collectionItem,
 	.mediaImage {
 		transition: none !important;
 	}
 
-	.centerCard:hover .mediaImage {
+	.centerCardActive:hover .mediaImage {
 		transform: none;
 		filter: none;
 	}
