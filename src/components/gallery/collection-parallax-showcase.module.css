@@ -1,8 +1,8 @@
 .root {
 	--gallery-navbar-offset: 4.7rem;
 	position: relative;
-	height: 100svh;
-	margin-top: 0;
+	height: calc(100svh + var(--gallery-navbar-offset));
+	margin-top: calc(var(--gallery-navbar-offset) * -1);
 }
 
 .scrollViewport {
@@ -29,7 +29,7 @@
 .stickyStage {
 	position: sticky;
 	top: 0;
-	height: 100%;
+	height: 100svh;
 	overflow: hidden;
 	border-top: 1px solid var(--line-subtle);
 	border-bottom: 1px solid var(--line-subtle);
@@ -201,7 +201,6 @@
 @media (min-width: 1024px) {
 	.root {
 		--gallery-navbar-offset: 9.9rem;
-		height: 100svh;
 	}
 
 	.stageContent {
