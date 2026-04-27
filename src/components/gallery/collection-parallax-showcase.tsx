@@ -48,7 +48,10 @@ export function CollectionParallaxShowcase({
 	const initializedRef = useRef(false);
 
 	const collectionCount = collections.length;
-	const loopSpan = Math.max(collectionCount * SCROLL_LOOPS, collectionCount);
+	const loopSpan = Math.max(
+		collectionCount * INTERNAL_SCROLL_LOOPS,
+		collectionCount,
+	);
 	const cycleProgress = wrapProgress(progress, collectionCount);
 	const foregroundCycleProgress =
 		wrapProgress(foregroundProgress, collectionCount);
@@ -95,9 +98,9 @@ export function CollectionParallaxShowcase({
 
 		const tick = () => {
 			setForegroundProgress(current => {
-			const target = foregroundTargetRef.current;
-			const eased = current + (target - current) * FOREGROUND_INERTIA;
-			return Math.abs(target - eased) < 0.0008 ? target : eased;
+				const target = foregroundTargetRef.current;
+				const eased = current + (target - current) * FOREGROUND_INERTIA;
+				return Math.abs(target - eased) < 0.0008 ? target : eased;
 			});
 			frameId = window.requestAnimationFrame(tick);
 		};
@@ -174,7 +177,10 @@ export function CollectionParallaxShowcase({
 			const center = maxTop * 0.5;
 			viewport.scrollTop = center;
 			lastScrollTopRef.current = center;
-			virtualProgressRef.current = progress;
+			virtualProgressRef.current = wrapProgress(
+				virtualProgressRef.current,
+				loopSpan,
+			);
 			initializedRef.current = true;
 		};
 
@@ -190,13 +196,23 @@ export function CollectionParallaxShowcase({
 			lastScrollTopRef.current = currentTop;
 			if (Math.abs(delta) < 0.001) return;
 
-			const pixelsPerCollection = Math.max(viewport.clientHeight * 0.64, 170);
+			const pixelsPerCollection = Math.max(
+				viewport.clientHeight * (window.innerWidth >= 1024 ? 0.64 : 0.86),
+				170,
+			);
 			virtualProgressRef.current += delta / pixelsPerCollection;
 			applyProgress(virtualProgressRef.current);
+			window.dispatchEvent(
+				new CustomEvent("be:virtual-scroll", {
+					detail: { deltaY: delta },
+				}),
+			);
 
+			const shouldRecenter = window.innerWidth >= 1024;
 			if (
+				shouldRecenter &&
 				currentTop < maxTop * RECENTER_MIN_RATIO ||
-				currentTop > maxTop * RECENTER_MAX_RATIO
+				(shouldRecenter && currentTop > maxTop * RECENTER_MAX_RATIO)
 			) {
 				const center = maxTop * 0.5;
 				viewport.scrollTop = center;
@@ -228,7 +244,7 @@ export function CollectionParallaxShowcase({
 			window.removeEventListener("resize", onResize);
 			if (resizeRaf) window.cancelAnimationFrame(resizeRaf);
 		};
-	}, [collectionCount, loopSpan, progress]);
+	}, [collectionCount, loopSpan]);
 
 	if (collections.length === 0 || !activeCollection || !activeFrame) {
 		return null;

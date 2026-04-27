@@ -1,7 +1,7 @@
 .root {
 	--gallery-navbar-offset: 4.7rem;
 	position: relative;
-	height: calc(100svh - var(--gallery-navbar-offset));
+	height: 100svh;
 	margin-top: 0;
 }
 
@@ -87,7 +87,7 @@
 	place-items: center;
 	align-content: center;
 	gap: 0.7rem;
-	padding-bottom: calc(6.9rem + env(safe-area-inset-bottom));
+	padding-bottom: calc(5.35rem + env(safe-area-inset-bottom));
 }
 
 .coverViewport {
@@ -201,6 +201,7 @@
 @media (min-width: 1024px) {
 	.root {
 		--gallery-navbar-offset: 9.9rem;
+		height: 100svh;
 	}
 
 	.stageContent {
