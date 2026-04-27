@@ -34,7 +34,6 @@ function wrapProgress(value: number, count: number) {
 export function CollectionParallaxShowcase({
 	collections,
 }: CollectionParallaxShowcaseProps) {
-	const rootRef = useRef<HTMLDivElement>(null);
 	const scrollViewportRef = useRef<HTMLDivElement>(null);
 	const stageRef = useRef<HTMLDivElement>(null);
 	const coverViewportRef = useRef<HTMLDivElement>(null);
@@ -127,10 +126,9 @@ export function CollectionParallaxShowcase({
 	useEffect(() => {
 		let ticking = false;
 		let resizeRaf = 0;
-		let isDesktopMode = false;
-		let detachScroll: (() => void) | null = null;
+		const viewport = scrollViewportRef.current;
 
-		if (collectionCount <= 0) return;
+		if (!viewport || collectionCount <= 0) return;
 
 		const applyProgress = (rawProgress: number) => {
 			const nextProgress = wrapProgress(rawProgress, loopSpan);
@@ -171,9 +169,7 @@ export function CollectionParallaxShowcase({
 			foregroundTargetRef.current = mappedForegroundProgress;
 		};
 
-		const initializeDesktopScroller = () => {
-			const viewport = scrollViewportRef.current;
-			if (!viewport) return;
+		const initializeScroller = () => {
 			const maxTop = Math.max(viewport.scrollHeight - viewport.clientHeight, 1);
 			const center = maxTop * 0.5;
 			viewport.scrollTop = center;
@@ -182,12 +178,9 @@ export function CollectionParallaxShowcase({
 			initializedRef.current = true;
 		};
 
-		const updateDesktop = () => {
-			const viewport = scrollViewportRef.current;
-			if (!viewport) return;
-
+		const updateInternal = () => {
 			if (!initializedRef.current) {
-				initializeDesktopScroller();
+				initializeScroller();
 				return;
 			}
 
@@ -211,64 +204,27 @@ export function CollectionParallaxShowcase({
 			}
 		};
 
-		const updateMobile = () => {
-			const root = rootRef.current;
-			if (!root) return;
-
-			const rect = root.getBoundingClientRect();
-			const maxTravel = Math.max(rect.height - window.innerHeight, 1);
-			const traveled = clamp(-rect.top, 0, maxTravel);
-			const scrollRatio = traveled / maxTravel;
-			const rawProgress = scrollRatio * collectionCount * SCROLL_LOOPS;
-			applyProgress(rawProgress);
-		};
-
 		const onScroll = () => {
 			if (ticking) return;
 			ticking = true;
 			window.requestAnimationFrame(() => {
 				ticking = false;
-				if (isDesktopMode) {
-					updateDesktop();
-					return;
-				}
-				updateMobile();
+				updateInternal();
 			});
 		};
 
-		const attachMode = () => {
-			detachScroll?.();
-			detachScroll = null;
-			initializedRef.current = false;
-			isDesktopMode = window.innerWidth >= 1024;
-
-			if (isDesktopMode) {
-				const viewport = scrollViewportRef.current;
-				if (!viewport) return;
-				initializeDesktopScroller();
-				viewport.addEventListener("scroll", onScroll, { passive: true });
-				detachScroll = () => {
-					viewport.removeEventListener("scroll", onScroll);
-				};
-				return;
-			}
-
-			updateMobile();
-			window.addEventListener("scroll", onScroll, { passive: true });
-			detachScroll = () => {
-				window.removeEventListener("scroll", onScroll);
-			};
-		};
-
-		attachMode();
+		initializeScroller();
+		viewport.addEventListener("scroll", onScroll, { passive: true });
 		const onResize = () => {
 			if (resizeRaf) window.cancelAnimationFrame(resizeRaf);
-			resizeRaf = window.requestAnimationFrame(attachMode);
+			resizeRaf = window.requestAnimationFrame(() => {
+				initializeScroller();
+			});
 		};
 		window.addEventListener("resize", onResize);
 
 		return () => {
-			detachScroll?.();
+			viewport.removeEventListener("scroll", onScroll);
 			window.removeEventListener("resize", onResize);
 			if (resizeRaf) window.cancelAnimationFrame(resizeRaf);
 		};
@@ -280,7 +236,6 @@ export function CollectionParallaxShowcase({
 
 	return (
 		<div
-			ref={rootRef}
 			className={styles.root}
 			style={
 				{

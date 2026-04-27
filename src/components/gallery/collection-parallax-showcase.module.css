@@ -1,24 +1,35 @@
 .root {
 	--gallery-navbar-offset: 4.7rem;
 	position: relative;
-	height: calc(var(--collection-count, 1) * var(--scroll-loops, 5) * 98svh);
+	height: calc(100svh - var(--gallery-navbar-offset));
 	margin-top: 0;
 }
 
 .scrollViewport {
 	position: relative;
 	height: 100%;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+
+.scrollViewport::-webkit-scrollbar {
+	width: 0;
+	height: 0;
 }
 
 .scrollRail {
 	position: relative;
-	min-height: 100%;
+	min-height: calc(
+		var(--collection-count, 1) * var(--internal-scroll-loops, 28) * 100svh
+	);
 }
 
 .stickyStage {
 	position: sticky;
-	top: var(--gallery-navbar-offset);
-	height: calc(100svh - var(--gallery-navbar-offset));
+	top: 0;
+	height: 100%;
 	overflow: hidden;
 	border-top: 1px solid var(--line-subtle);
 	border-bottom: 1px solid var(--line-subtle);
@@ -190,25 +201,6 @@
 @media (min-width: 1024px) {
 	.root {
 		--gallery-navbar-offset: 9.9rem;
-		height: calc(100svh - var(--gallery-navbar-offset));
-	}
-
-	.scrollViewport {
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: none;
-	}
-
-	.scrollViewport::-webkit-scrollbar {
-		width: 0;
-		height: 0;
-	}
-
-	.scrollRail {
-		min-height: calc(
-			var(--collection-count, 1) * var(--internal-scroll-loops, 28) * 100svh
-		);
 	}
 
 	.stageContent {
@@ -223,11 +215,6 @@
 
 	.coverViewport {
 		width: min(30vw, 22rem);
-	}
-
-	.stickyStage {
-		top: 0;
-		height: 100svh;
 	}
 
 	.collectionRail {
@@ -255,9 +242,6 @@
 	padding: 0;
 	background: transparent;
 	border: 0;
-	text-shadow:
-		0 1px 1px rgba(255, 255, 255, 0.7),
-		0 8px 18px rgba(0, 0, 0, 0.28);
 }
 
 .mobileNowNextKicker {
@@ -265,17 +249,17 @@
 	font-size: 0.64rem;
 	letter-spacing: 0.13em;
 	text-transform: uppercase;
-	color: var(--ink-700);
-	font-weight: 600;
+	color: var(--ink-900);
+	font-weight: 700;
 }
 
 .mobileNowNextTitle {
 	margin: 0.26rem 0 0;
 	font-family: var(--font-display-serif), Georgia, serif;
-	font-size: 1.1rem;
+	font-size: 1.14rem;
 	line-height: 1.2;
 	color: var(--ink-900);
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .mobileNowNextMeta {
@@ -283,8 +267,9 @@
 	font-size: 0.72rem;
 	letter-spacing: 0.09em;
 	text-transform: uppercase;
-	color: var(--ink-700);
-	font-weight: 600;
+	color: var(--ink-900);
+	font-weight: 700;
+	opacity: 0.86;
 }
 
 @media (min-width: 1024px) {
