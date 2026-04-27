@@ -1,7 +1,7 @@
 .topbar {
 	--topbar-glass-active: rgba(255, 255, 255, 0.44);
 	--topbar-glass-edge-active: rgba(255, 255, 255, 0.56);
-	--topbar-blur-active: blur(16px) saturate(128%) contrast(1.01);
+	--topbar-blur-active: blur(5px) saturate(128%) contrast(1.01);
 	position: sticky;
 	top: 0;
 	left: 0;
