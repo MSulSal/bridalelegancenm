@@ -9,6 +9,12 @@ export const metadata: Metadata = {
 	description: appointmentPageContent.metadata.description,
 };
 
+const nextStepPoints = [
+	"We review your requested date, timeline, and style direction.",
+	"We contact you by your preferred method to confirm final time.",
+	"If needed, we suggest the next closest available appointment window.",
+] as const;
+
 export default function BookAppointmentPage() {
 	return (
 		<SiteShell>
@@ -45,23 +51,19 @@ export default function BookAppointmentPage() {
 						</article>
 
 						<article className="be-card p-6 sm:p-7">
-							<p className="be-kicker">
-								{appointmentPageContent.prepareCard.kicker}
-							</p>
+							<p className="be-kicker">After You Submit</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								{appointmentPageContent.prepareCard.title}
+								We confirm directly with you.
 							</h3>
 							<ul className="mt-5 grid gap-3">
-								{appointmentPageContent.prepareCard.points.map(
-									item => (
-										<li
-											key={item}
-											className="text-sm leading-7 text-[color:var(--ink-700)]"
-										>
-											{item}
-										</li>
-									),
-								)}
+								{nextStepPoints.map(item => (
+									<li
+										key={item}
+										className="text-sm leading-7 text-[color:var(--ink-700)]"
+									>
+										{item}
+									</li>
+								))}
 							</ul>
 						</article>
 					</aside>

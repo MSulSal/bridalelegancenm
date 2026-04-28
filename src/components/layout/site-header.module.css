@@ -279,10 +279,18 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 		align-items: center;
-		min-height: 10rem;
+		--desktop-row-collapsed-height: 4rem;
+		--desktop-row-expanded-height: 10rem;
+		min-height: var(--desktop-row-collapsed-height);
 		width: 100%;
-		column-gap: clamp(0.85rem, 1.8vw, 1.8rem);
-		--rail-gap: clamp(1.25rem, 2.3vw, 2.4rem);
+		column-gap: clamp(0.75rem, 1.6vw, 1.4rem);
+		--rail-gap: clamp(1.05rem, 1.9vw, 2rem);
+		transition: min-height 420ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.topbar:hover .desktopRow,
+	.topbar:focus-within .desktopRow {
+		min-height: var(--desktop-row-expanded-height);
 	}
 
 	.leftRail,
@@ -291,6 +299,8 @@
 		align-items: center;
 		gap: var(--rail-gap);
 		min-width: 0;
+		position: relative;
+		z-index: 2;
 	}
 
 	.leftRail {
@@ -303,6 +313,7 @@
 
 	.logoClipDesktop {
 		display: flex;
+		align-self: start;
 		align-items: flex-start;
 		justify-content: center;
 		overflow: visible;
@@ -311,11 +322,56 @@
 	}
 
 	.logoBadgeDesktop {
+		--desktop-badge-collapsed-height: 4.5rem;
+		--desktop-badge-expanded-height: 24rem;
 		margin-block: 0;
-		margin-top: -1.02rem;
-		min-height: 4.72rem;
-		padding-inline: 0.68rem;
-		padding-block: 0.8rem 0.52rem;
+		margin-top: -0.92rem;
+		width: clamp(10.2rem, 11.3vw, 11.9rem);
+		min-height: 0;
+		max-height: var(--desktop-badge-collapsed-height);
+		padding-inline: 0.62rem;
+		padding-block: 0.2rem 0.9rem;
+		overflow: hidden;
+		align-items: center;
+		box-shadow: 0 14px 30px -24px rgba(0, 0, 0, 0.4);
+		transition:
+			max-height 420ms cubic-bezier(0.22, 1, 0.36, 1),
+			padding 420ms cubic-bezier(0.22, 1, 0.36, 1),
+			margin-top 420ms cubic-bezier(0.22, 1, 0.36, 1),
+			background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+			border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+			box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.logoImageDesktop {
+		width: clamp(136px, 9.8vw, 158px);
+		transform: translateY(-1rem);
+		clip-path: inset(59% 0 25% 0);
+		-webkit-clip-path: inset(59% 0 25% 0);
+		padding-inline: 0.12rem;
+		transition:
+			transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+			clip-path 420ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.topbar:hover .logoBadgeDesktop,
+	.topbar:focus-within .logoBadgeDesktop,
+	.logoClipDesktop:hover .logoBadgeDesktop,
+	.logoClipDesktop:focus-within .logoBadgeDesktop {
+		max-height: var(--desktop-badge-expanded-height);
+		margin-top: -1.2rem;
+		padding-block: 1rem 0.74rem;
+		align-items: center;
+		overflow: visible;
+	}
+
+	.topbar:hover .logoImageDesktop,
+	.topbar:focus-within .logoImageDesktop,
+	.logoClipDesktop:hover .logoImageDesktop,
+	.logoClipDesktop:focus-within .logoImageDesktop {
+		transform: translateY(0.14rem);
+		clip-path: none;
+		-webkit-clip-path: none;
 	}
 
 	.instagramIconLink {
@@ -391,6 +447,11 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.topbar {
+		transition: none !important;
+	}
+
+	.logoBadgeDesktop,
+	.logoImageDesktop {
 		transition: none !important;
 	}
 }

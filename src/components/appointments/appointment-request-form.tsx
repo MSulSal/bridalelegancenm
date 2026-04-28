@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { AppointmentCalendarField } from "./appointment-calendar-field";
 
 type ApiResponse = {
 	ok?: boolean;
@@ -17,6 +18,31 @@ const windows = [
 	{ value: "flexible", label: "Flexible" },
 ] as const;
 
+const shoppingFocusOptions = [
+	{ value: "bridal-gown", label: "Bridal Gown" },
+	{ value: "mother-of-bride", label: "Mother of the Bride" },
+	{ value: "accessories", label: "Accessories" },
+	{ value: "special-occasion", label: "Special Occasion" },
+	{ value: "not-sure", label: "Not Sure Yet" },
+] as const;
+
+const timelineOptions = [
+	{ value: "asap", label: "As soon as possible" },
+	{ value: "1-3-months", label: "1 to 3 months out" },
+	{ value: "4-6-months", label: "4 to 6 months out" },
+	{ value: "7-12-months", label: "7 to 12 months out" },
+	{ value: "over-12-months", label: "More than 12 months out" },
+	{ value: "just-browsing", label: "Just browsing for now" },
+] as const;
+
+const budgetRanges = [
+	{ value: "under-1500", label: "Under $1,500" },
+	{ value: "1500-2500", label: "$1,500 to $2,500" },
+	{ value: "2500-4000", label: "$2,500 to $4,000" },
+	{ value: "4000-plus", label: "$4,000+" },
+	{ value: "not-sure", label: "Not sure yet" },
+] as const;
+
 const fieldClass =
 	"mt-2 w-full border border-[color:var(--line-subtle)] bg-white px-3 py-2 text-sm text-[color:var(--ink-900)] outline-none transition focus:border-[color:var(--ink-900)]";
 const labelClass =
@@ -24,6 +50,8 @@ const labelClass =
 
 export function AppointmentRequestForm() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [preferredDate, setPreferredDate] = useState("");
+	const [preferredDateError, setPreferredDateError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
 	const [errorList, setErrorList] = useState<string[]>([]);
@@ -36,9 +64,20 @@ export function AppointmentRequestForm() {
 		setSuccessMessage("");
 		setErrorMessage("");
 		setErrorList([]);
+		setPreferredDateError("");
+
+		if (!preferredDate) {
+			setIsSubmitting(false);
+			setPreferredDateError(
+				"Please choose your preferred appointment date.",
+			);
+			setErrorMessage("Please select your preferred appointment date.");
+			return;
+		}
 
 		const form = event.currentTarget;
 		const formData = new FormData(form);
+		formData.set("preferredDate", preferredDate);
 		const payload = Object.fromEntries(formData.entries());
 
 		try {
@@ -56,10 +95,20 @@ export function AppointmentRequestForm() {
 						"We couldn't submit your request right now. Please try again.",
 				);
 				setErrorList(json.errors ?? []);
+
+				const hasDateError = (json.errors ?? []).some(item =>
+					item.toLowerCase().includes("appointment date"),
+				);
+				if (hasDateError) {
+					setPreferredDateError(
+						"Please choose a valid appointment date.",
+					);
+				}
 				return;
 			}
 
 			form.reset();
+			setPreferredDate("");
 			setSuccessMessage(
 				json.message ??
 					"Appointment request received. We will follow up shortly.",
@@ -133,28 +182,44 @@ export function AppointmentRequestForm() {
 				</div>
 
 				<div>
-					<label htmlFor="weddingDate" className={labelClass}>
-						Wedding Date
+					<label htmlFor="shoppingFocus" className={labelClass}>
+						Shopping For *
 					</label>
-					<input
-						id="weddingDate"
-						name="weddingDate"
-						type="date"
+					<select
+						id="shoppingFocus"
+						name="shoppingFocus"
+						required
+						defaultValue=""
 						className={fieldClass}
-					/>
+					>
+						<option value="" disabled>
+							Select one
+						</option>
+						{shoppingFocusOptions.map(option => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
 				</div>
 
-				<div>
-					<label htmlFor="preferredDate" className={labelClass}>
-						Preferred Appointment Date *
-					</label>
-					<input
+				<div className="md:col-span-2">
+					<AppointmentCalendarField
 						id="preferredDate"
 						name="preferredDate"
-						type="date"
+						label="Preferred Appointment Date"
 						required
-						className={fieldClass}
+						value={preferredDate}
+						onChange={nextValue => {
+							setPreferredDate(nextValue);
+							setPreferredDateError("");
+						}}
 					/>
+					{preferredDateError ? (
+						<p className="mt-2 text-xs uppercase tracking-[0.12em] text-red-700">
+							{preferredDateError}
+						</p>
+					) : null}
 				</div>
 
 				<div>
@@ -180,6 +245,40 @@ export function AppointmentRequestForm() {
 				</div>
 
 				<div>
+					<label htmlFor="timeline" className={labelClass}>
+						Purchase Timeline *
+					</label>
+					<select
+						id="timeline"
+						name="timeline"
+						required
+						defaultValue=""
+						className={fieldClass}
+					>
+						<option value="" disabled>
+							Select timeline
+						</option>
+						{timelineOptions.map(option => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
+				</div>
+
+				<div>
+					<label htmlFor="weddingDate" className={labelClass}>
+						Event / Wedding Date
+					</label>
+					<input
+						id="weddingDate"
+						name="weddingDate"
+						type="date"
+						className={fieldClass}
+					/>
+				</div>
+
+				<div>
 					<label htmlFor="guestCount" className={labelClass}>
 						Guests Bringing (0-6)
 					</label>
@@ -190,6 +289,53 @@ export function AppointmentRequestForm() {
 						min={0}
 						max={6}
 						step={1}
+						className={fieldClass}
+					/>
+				</div>
+
+				<div>
+					<label htmlFor="budgetRange" className={labelClass}>
+						Estimated Budget Range
+					</label>
+					<select
+						id="budgetRange"
+						name="budgetRange"
+						defaultValue=""
+						className={fieldClass}
+					>
+						<option value="">Prefer not to say</option>
+						{budgetRanges.map(option => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
+				</div>
+
+				<div>
+					<label htmlFor="preferredDesigners" className={labelClass}>
+						Designers / Styles You Like
+					</label>
+					<input
+						id="preferredDesigners"
+						name="preferredDesigners"
+						type="text"
+						maxLength={200}
+						placeholder="Maggie Sottero, fitted silhouette, sleeves, etc."
+						className={fieldClass}
+					/>
+				</div>
+
+				<div>
+					<label htmlFor="instagramHandle" className={labelClass}>
+						Instagram Handle (Optional)
+					</label>
+					<input
+						id="instagramHandle"
+						name="instagramHandle"
+						type="text"
+						maxLength={80}
+						placeholder="@yourhandle"
 						className={fieldClass}
 					/>
 				</div>
