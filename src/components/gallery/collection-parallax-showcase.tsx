@@ -381,23 +381,28 @@ export function CollectionParallaxShowcase({
 																		styles.cardMedia
 																	}
 																>
-																	<Image
-																		src={
-																			collection
-																				.cover
-																				.localPath
+											<Image
+												src={
+													collection
+														.cover
+														.localPath
 																		}
 																		alt={
 																			collection
 																				.cover
 																				.alt
 																		}
-																		fill
-																		sizes="(min-width: 1024px) 24rem, 68vw"
-																		className={
-																			styles.mediaAsset
-																		}
-																	/>
+												fill
+												sizes="(min-width: 1024px) 24rem, 68vw"
+												className={
+													styles.mediaAsset
+												}
+												style={{
+													objectPosition:
+														collection.coverFocus ??
+														"50% 24%",
+												}}
+											/>
 																</div>
 															</a>
 														</article>

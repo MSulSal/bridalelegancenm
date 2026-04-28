@@ -6,6 +6,7 @@ export type GalleryShowcaseCollection = {
 	descriptor: string;
 	summary: string;
 	collectionHref: string;
+	coverFocus?: string;
 	cover: {
 		localPath: string;
 		alt: string;
@@ -34,6 +35,7 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Bold couture direction with sculpted structure and modern statement silhouettes.",
+			coverFocus: "50% 24%",
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -49,6 +51,7 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Romantic craftsmanship with timeless bridal lines and soft editorial movement.",
+			coverFocus: "50% 22%",
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -64,6 +67,7 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Refined silhouettes designed for effortless elegance and approachable luxury.",
+			coverFocus: "50% 24%",
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -83,6 +87,7 @@ export const galleryShowcaseCollections: GalleryShowcaseCollection[] =
 		descriptor: collection.descriptor,
 		summary: collection.summary,
 		collectionHref: collection.collectionHref,
+		coverFocus: collection.coverFocus,
 		cover: {
 			localPath: collection.cover.localPath,
 			alt: collection.cover.alt,
