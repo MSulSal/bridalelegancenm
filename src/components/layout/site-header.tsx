@@ -27,6 +27,7 @@ const logoByTheme: Record<ThemeId, string> = {
 	blue: "/logo-text-v5.png",
 	blush: "/logo-text-v4.png",
 	turquoise: "/logo-text-v3.png",
+	sapphire: "/logo-text-v3.png",
 	sand: "/logo-text-v3.png",
 	"red-rock": "/logo-text-v3.png",
 	brown: "/logo-text-v3.png",

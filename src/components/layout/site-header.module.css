@@ -50,6 +50,11 @@
 	--topbar-glass-edge-active: rgba(224, 243, 239, 0.58);
 }
 
+:global(html[data-theme="sapphire"]) .topbar {
+	--topbar-glass-active: rgba(244, 248, 255, 0.46);
+	--topbar-glass-edge-active: rgba(226, 235, 252, 0.58);
+}
+
 :global(html[data-theme="sand"]) .topbar {
 	--topbar-glass-active: rgba(252, 248, 241, 0.46);
 	--topbar-glass-edge-active: rgba(245, 234, 215, 0.58);

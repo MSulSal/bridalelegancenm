@@ -20,6 +20,11 @@ export const themeOptions = [
 		swatch: "#1E8A83",
 	},
 	{
+		id: "sapphire",
+		name: "Sapphire",
+		swatch: "#1F4FA3",
+	},
+	{
 		id: "sand",
 		name: "Sand",
 		swatch: "#B8905A",
@@ -57,6 +62,7 @@ export const themeIds: ThemeId[] = [
 	"blue",
 	"blush",
 	"turquoise",
+	"sapphire",
 	"sand",
 	"red-rock",
 	"brown",
