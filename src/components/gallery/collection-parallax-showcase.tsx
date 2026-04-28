@@ -21,6 +21,8 @@ const FOREGROUND_INERTIA = 0.1;
 const INTERNAL_SCROLL_LOOPS = 28;
 const RECENTER_MIN_RATIO = 0.22;
 const RECENTER_MAX_RATIO = 0.78;
+const DESKTOP_SCROLL_FACTOR = 1.06;
+const MOBILE_SCROLL_FACTOR = 0.9;
 const TOTAL_TRACK_CYCLES = INTERNAL_SCROLL_LOOPS + TRACK_BUFFER_CYCLES * 2;
 
 function clamp(value: number, min: number, max: number) {
@@ -113,7 +115,8 @@ export function CollectionParallaxShowcase({
 			return;
 		}
 
-		const durationMs = 430;
+		const travelDistance = Math.abs(target - current);
+		const durationMs = clamp(520 + travelDistance * 260, 520, 1040);
 		const startedAt = performance.now();
 
 		if (hoverTweenFrameRef.current !== null) {
@@ -123,7 +126,7 @@ export function CollectionParallaxShowcase({
 		const animate = (timestamp: number) => {
 			const elapsed = timestamp - startedAt;
 			const t = clamp(elapsed / durationMs, 0, 1);
-			const eased = 1 - Math.pow(1 - t, 3);
+			const eased = t * t * (3 - 2 * t);
 			const nextProgress = current + (target - current) * eased;
 			applyProgressRef.current(nextProgress);
 
@@ -225,8 +228,10 @@ export function CollectionParallaxShowcase({
 			lastScrollTopRef.current = currentTop;
 			if (Math.abs(delta) < 0.001) return;
 
+			const isDesktop = window.innerWidth >= 1024;
 			const pixelsPerCollection = Math.max(
-				viewport.clientHeight * (window.innerWidth >= 1024 ? 0.64 : 0.86),
+				viewport.clientHeight *
+					(isDesktop ? DESKTOP_SCROLL_FACTOR : MOBILE_SCROLL_FACTOR),
 				170,
 			);
 			virtualProgressRef.current += delta / pixelsPerCollection;
