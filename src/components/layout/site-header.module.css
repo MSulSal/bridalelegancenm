@@ -45,6 +45,36 @@
 	--topbar-glass-edge-active: rgba(252, 233, 228, 0.58);
 }
 
+:global(html[data-theme="turquoise"]) .topbar {
+	--topbar-glass-active: rgba(244, 251, 250, 0.46);
+	--topbar-glass-edge-active: rgba(224, 243, 239, 0.58);
+}
+
+:global(html[data-theme="sand"]) .topbar {
+	--topbar-glass-active: rgba(252, 248, 241, 0.46);
+	--topbar-glass-edge-active: rgba(245, 234, 215, 0.58);
+}
+
+:global(html[data-theme="red-rock"]) .topbar {
+	--topbar-glass-active: rgba(251, 243, 239, 0.46);
+	--topbar-glass-edge-active: rgba(244, 225, 216, 0.58);
+}
+
+:global(html[data-theme="brown"]) .topbar {
+	--topbar-glass-active: rgba(247, 242, 237, 0.46);
+	--topbar-glass-edge-active: rgba(238, 228, 219, 0.58);
+}
+
+:global(html[data-theme="lilac"]) .topbar {
+	--topbar-glass-active: rgba(247, 244, 251, 0.46);
+	--topbar-glass-edge-active: rgba(233, 224, 245, 0.58);
+}
+
+:global(html[data-theme="lavender"]) .topbar {
+	--topbar-glass-active: rgba(251, 248, 255, 0.46);
+	--topbar-glass-edge-active: rgba(240, 230, 251, 0.58);
+}
+
 :global(html[data-theme="monochrome"]) .topbar {
 	--topbar-glass-active: rgba(255, 255, 255, 0.44);
 	--topbar-glass-edge-active: rgba(255, 255, 255, 0.56);

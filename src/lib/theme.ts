@@ -15,6 +15,36 @@ export const themeOptions = [
 		swatch: "#E4AFA9",
 	},
 	{
+		id: "turquoise",
+		name: "Turquoise",
+		swatch: "#1E8A83",
+	},
+	{
+		id: "sand",
+		name: "Sand",
+		swatch: "#B8905A",
+	},
+	{
+		id: "red-rock",
+		name: "Red Rock",
+		swatch: "#B5523E",
+	},
+	{
+		id: "brown",
+		name: "Brown",
+		swatch: "#7A5338",
+	},
+	{
+		id: "lilac",
+		name: "Lilac",
+		swatch: "#8C6FB2",
+	},
+	{
+		id: "lavender",
+		name: "Lavender",
+		swatch: "#A07ACB",
+	},
+	{
 		id: "monochrome",
 		name: "Monochrome",
 		swatch: "#111111",
@@ -23,7 +53,17 @@ export const themeOptions = [
 
 export type ThemeId = (typeof themeOptions)[number]["id"];
 
-export const themeIds: ThemeId[] = ["blue", "blush", "monochrome"];
+export const themeIds: ThemeId[] = [
+	"blue",
+	"blush",
+	"turquoise",
+	"sand",
+	"red-rock",
+	"brown",
+	"lilac",
+	"lavender",
+	"monochrome",
+];
 
 export function isThemeId(value: unknown): value is ThemeId {
 	return typeof value === "string" && themeIds.includes(value as ThemeId);

@@ -26,6 +26,12 @@ const navItems = [
 const logoByTheme: Record<ThemeId, string> = {
 	blue: "/logo-text-v5.png",
 	blush: "/logo-text-v4.png",
+	turquoise: "/logo-text-v3.png",
+	sand: "/logo-text-v3.png",
+	"red-rock": "/logo-text-v3.png",
+	brown: "/logo-text-v3.png",
+	lilac: "/logo-text-v3.png",
+	lavender: "/logo-text-v3.png",
 	monochrome: "/logo-text-v3.png",
 };
 
