@@ -17,12 +17,11 @@ type CollectionParallaxShowcaseProps = {
 
 const SCROLL_LOOPS = 5;
 const TRACK_BUFFER_CYCLES = 2;
-const FOREGROUND_INERTIA_DESKTOP = 0.065;
-const FOREGROUND_INERTIA_MOBILE = 0.09;
+const FOREGROUND_INERTIA = 0.1;
 const INTERNAL_SCROLL_LOOPS = 28;
 const RECENTER_MIN_RATIO = 0.22;
 const RECENTER_MAX_RATIO = 0.78;
-const DESKTOP_SCROLL_FACTOR = 1.32;
+const DESKTOP_SCROLL_FACTOR = 1.14;
 const MOBILE_SCROLL_FACTOR = 0.9;
 const TOTAL_TRACK_CYCLES = INTERNAL_SCROLL_LOOPS + TRACK_BUFFER_CYCLES * 2;
 
@@ -117,7 +116,7 @@ export function CollectionParallaxShowcase({
 		}
 
 		const travelDistance = Math.abs(target - current);
-		const durationMs = clamp(760 + travelDistance * 360, 760, 1600);
+		const durationMs = clamp(520 + travelDistance * 260, 520, 1040);
 		const startedAt = performance.now();
 
 		if (hoverTweenFrameRef.current !== null) {
@@ -127,7 +126,7 @@ export function CollectionParallaxShowcase({
 		const animate = (timestamp: number) => {
 			const elapsed = timestamp - startedAt;
 			const t = clamp(elapsed / durationMs, 0, 1);
-			const eased = t * t * (3 - 2 * t);
+			const eased = 1 - Math.pow(1 - t, 3);
 			const nextProgress = current + (target - current) * eased;
 			applyProgressRef.current(nextProgress);
 
@@ -147,11 +146,7 @@ export function CollectionParallaxShowcase({
 		const tick = () => {
 			setForegroundProgress(current => {
 				const target = foregroundTargetRef.current;
-				const inertia =
-					window.innerWidth >= 1024
-						? FOREGROUND_INERTIA_DESKTOP
-						: FOREGROUND_INERTIA_MOBILE;
-				const eased = current + (target - current) * inertia;
+				const eased = current + (target - current) * FOREGROUND_INERTIA;
 				return Math.abs(target - eased) < 0.0008 ? target : eased;
 			});
 			frameId = window.requestAnimationFrame(tick);
