@@ -59,16 +59,16 @@ export const homeContent = {
 			{
 				title: "Mother of the Bride",
 				copy: "Featured connection to Jasmine Bridal mother-of-the-bride styles.",
-				ctaLabel: "View Source Collection",
-				href: legacySiteContent.externalLinks.motherOfBride.href,
+				ctaLabel: "View Collection",
+				href: "/mother-of-the-bride",
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.motherOfBride,
 			},
 			{
 				title: "Accessories",
 				copy: "Bel Aire Bridal veils and headpieces to complete your look.",
-				ctaLabel: "View Source Collection",
-				href: legacySiteContent.externalLinks.accessories.href,
+				ctaLabel: "View Collection",
+				href: "/accessories",
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.accessories,
 			},
@@ -124,6 +124,52 @@ export const homeContent = {
 			"Instagram: @bridalelegancenm",
 		],
 	},
+} as const;
+
+export const motherOfBridePageContent = {
+	metadata: {
+		title: "Mother of the Bride",
+		description:
+			"Explore Mother of the Bride styling direction from Bridal Elegance NM.",
+	},
+	heading: {
+		eyebrow: "Occasion Styling",
+		title: "Mother of the Bride",
+		description:
+			"Elegant occasion styling with a boutique appointment experience and personalized guidance.",
+	},
+	summary:
+		"We help you refine silhouette, fit, and finish so your look feels confident, polished, and event-ready.",
+	featurePoints: [
+		"One-on-one appointment-first support.",
+		"Classic and modern occasion styling direction.",
+		"Accessory coordination for a complete look.",
+	],
+	previewImage: legacySiteContent.imageLibrary.collectionHighlights.motherOfBride,
+	externalCollection: legacySiteContent.externalLinks.motherOfBride,
+} as const;
+
+export const accessoriesPageContent = {
+	metadata: {
+		title: "Accessories",
+		description:
+			"Browse accessory styling direction from Bridal Elegance NM, including veils and finishing pieces.",
+	},
+	heading: {
+		eyebrow: "Finishing Pieces",
+		title: "Accessories",
+		description:
+			"Complete your bridal look with thoughtful finishing pieces selected to complement your gown.",
+	},
+	summary:
+		"From veils to detail pieces, we help align your accessories with silhouette, venue, and overall style direction.",
+	featurePoints: [
+		"Styling guidance matched to your gown profile.",
+		"Veil and detail-piece recommendations in appointment.",
+		"Balanced finishing touches for a cohesive look.",
+	],
+	previewImage: legacySiteContent.imageLibrary.collectionHighlights.accessories,
+	externalCollection: legacySiteContent.externalLinks.accessories,
 } as const;
 
 export const appointmentPageContent = {

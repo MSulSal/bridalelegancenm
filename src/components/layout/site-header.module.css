@@ -210,6 +210,7 @@
 	font-size: 0.8rem;
 	letter-spacing: 0.15em;
 	text-transform: uppercase;
+	white-space: nowrap;
 	color: var(--ink-700);
 	padding-block: 0.2rem;
 	line-height: 1.25;

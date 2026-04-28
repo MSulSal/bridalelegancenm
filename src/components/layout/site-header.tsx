@@ -18,7 +18,8 @@ import styles from "./site-header.module.css";
 const navItems = [
 	{ href: "/", label: "Home" },
 	{ href: "/collections", label: "Collections" },
-	{ href: "/#spotlights-preview", label: "Spotlights" },
+	{ href: "/mother-of-the-bride", label: "Mother of the Bride" },
+	{ href: "/accessories", label: "Accessories" },
 	{ href: "/#about-preview", label: "About" },
 ] as const;
 
