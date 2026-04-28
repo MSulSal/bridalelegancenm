@@ -17,11 +17,11 @@ type CollectionParallaxShowcaseProps = {
 
 const SCROLL_LOOPS = 5;
 const TRACK_BUFFER_CYCLES = 2;
-const FOREGROUND_INERTIA = 0.1;
+const FOREGROUND_INERTIA = 0.05;
 const INTERNAL_SCROLL_LOOPS = 28;
 const RECENTER_MIN_RATIO = 0.22;
 const RECENTER_MAX_RATIO = 0.78;
-const DESKTOP_SCROLL_FACTOR = 1.14;
+const DESKTOP_SCROLL_FACTOR = 2;
 const MOBILE_SCROLL_FACTOR = 0.9;
 const TOTAL_TRACK_CYCLES = INTERNAL_SCROLL_LOOPS + TRACK_BUFFER_CYCLES * 2;
 
@@ -54,8 +54,10 @@ export function CollectionParallaxShowcase({
 		collectionCount * INTERNAL_SCROLL_LOOPS,
 		collectionCount,
 	);
-	const foregroundCycleProgress =
-		wrapProgress(foregroundProgress, collectionCount);
+	const foregroundCycleProgress = wrapProgress(
+		foregroundProgress,
+		collectionCount,
+	);
 	const activeIndex =
 		collectionCount > 0
 			? Math.round(foregroundCycleProgress) % collectionCount
@@ -99,7 +101,11 @@ export function CollectionParallaxShowcase({
 		while (bounded < 0) bounded += step;
 		while (bounded >= loopSpan) bounded -= step;
 
-		const wrapCandidates = [bounded, bounded + loopSpan, bounded - loopSpan];
+		const wrapCandidates = [
+			bounded,
+			bounded + loopSpan,
+			bounded - loopSpan,
+		];
 		let target = wrapCandidates[0];
 		for (const candidate of wrapCandidates) {
 			if (Math.abs(candidate - current) < Math.abs(target - current)) {
@@ -131,7 +137,8 @@ export function CollectionParallaxShowcase({
 			applyProgressRef.current(nextProgress);
 
 			if (t < 1) {
-				hoverTweenFrameRef.current = window.requestAnimationFrame(animate);
+				hoverTweenFrameRef.current =
+					window.requestAnimationFrame(animate);
 			} else {
 				hoverTweenFrameRef.current = null;
 			}
@@ -198,14 +205,19 @@ export function CollectionParallaxShowcase({
 			);
 
 			setProgress(current =>
-				Math.abs(current - nextProgress) > 0.001 ? nextProgress : current,
+				Math.abs(current - nextProgress) > 0.001
+					? nextProgress
+					: current,
 			);
 			foregroundTargetRef.current = mappedForegroundProgress;
 		};
 		applyProgressRef.current = applyProgress;
 
 		const initializeScroller = () => {
-			const maxTop = Math.max(viewport.scrollHeight - viewport.clientHeight, 1);
+			const maxTop = Math.max(
+				viewport.scrollHeight - viewport.clientHeight,
+				1,
+			);
 			const center = maxTop * 0.5;
 			viewport.scrollTop = center;
 			lastScrollTopRef.current = center;
@@ -222,7 +234,10 @@ export function CollectionParallaxShowcase({
 				return;
 			}
 
-			const maxTop = Math.max(viewport.scrollHeight - viewport.clientHeight, 1);
+			const maxTop = Math.max(
+				viewport.scrollHeight - viewport.clientHeight,
+				1,
+			);
 			const currentTop = viewport.scrollTop;
 			const delta = currentTop - lastScrollTopRef.current;
 			lastScrollTopRef.current = currentTop;
@@ -293,7 +308,9 @@ export function CollectionParallaxShowcase({
 			className={styles.root}
 			style={
 				{
-					"--collection-count": String(Math.max(collections.length, 1)),
+					"--collection-count": String(
+						Math.max(collections.length, 1),
+					),
 					"--scroll-loops": String(SCROLL_LOOPS),
 					"--internal-scroll-loops": String(INTERNAL_SCROLL_LOOPS),
 					"--background-progress": String(backgroundTrackProgress),
@@ -304,7 +321,10 @@ export function CollectionParallaxShowcase({
 			<div ref={scrollViewportRef} className={styles.scrollViewport}>
 				<div className={styles.scrollRail}>
 					<div ref={stageRef} className={styles.stickyStage}>
-						<div className={styles.backgroundViewport} aria-hidden="true">
+						<div
+							className={styles.backgroundViewport}
+							aria-hidden="true"
+						>
 							<div className={styles.backgroundTrack}>
 								{trackCollections.map((collection, index) => (
 									<div
@@ -330,39 +350,61 @@ export function CollectionParallaxShowcase({
 									className={styles.coverViewport}
 								>
 									<div className={styles.coverTrack}>
-										{trackCollections.map((collection, index) => {
-											const isTrackActive =
-												index === activeTrackIndex;
+										{trackCollections.map(
+											(collection, index) => {
+												const isTrackActive =
+													index === activeTrackIndex;
 
-											return (
-												<div
-													key={`${collection.id}-cover-${index}`}
-													className={styles.coverSlot}
-												>
-													<article
-														className={`${styles.centerCard} ${isTrackActive ? styles.centerCardActive : ""}`}
+												return (
+													<div
+														key={`${collection.id}-cover-${index}`}
+														className={
+															styles.coverSlot
+														}
 													>
-														<a
-															href={collection.collectionHref}
-															target="_blank"
-															rel="noreferrer"
-															aria-label={`View ${collection.name} collection`}
-															className={styles.cardLink}
+														<article
+															className={`${styles.centerCard} ${isTrackActive ? styles.centerCardActive : ""}`}
 														>
-															<div className={styles.cardMedia}>
-																<Image
-																	src={collection.cover.localPath}
-																	alt={collection.cover.alt}
-																	fill
-																	sizes="(min-width: 1024px) 24rem, 68vw"
-																	className={styles.mediaAsset}
-																/>
-															</div>
-														</a>
-													</article>
-												</div>
-											);
-										})}
+															<a
+																href={
+																	collection.collectionHref
+																}
+																target="_blank"
+																rel="noreferrer"
+																aria-label={`View ${collection.name} collection`}
+																className={
+																	styles.cardLink
+																}
+															>
+																<div
+																	className={
+																		styles.cardMedia
+																	}
+																>
+																	<Image
+																		src={
+																			collection
+																				.cover
+																				.localPath
+																		}
+																		alt={
+																			collection
+																				.cover
+																				.alt
+																		}
+																		fill
+																		sizes="(min-width: 1024px) 24rem, 68vw"
+																		className={
+																			styles.mediaAsset
+																		}
+																	/>
+																</div>
+															</a>
+														</article>
+													</div>
+												);
+											},
+										)}
 									</div>
 								</div>
 								<div className={styles.mobileNowNext}>
@@ -376,13 +418,21 @@ export function CollectionParallaxShowcase({
 										className={styles.mobileNowNextLink}
 										aria-label={`View ${activeCollection.name} collection`}
 									>
-										<p className={styles.mobileNowNextTitle}>
+										<p
+											className={
+												styles.mobileNowNextTitle
+											}
+										>
 											{activeCollection.name}
 										</p>
 										<p className={styles.mobileNowNextMeta}>
 											{activeCollection.descriptor}
 										</p>
-										<p className={styles.mobileNowNextSummary}>
+										<p
+											className={
+												styles.mobileNowNextSummary
+											}
+										>
 											{activeCollection.summary}
 										</p>
 									</a>
@@ -435,10 +485,14 @@ export function CollectionParallaxShowcase({
 												}
 											>
 												<a
-													href={collection.collectionHref}
+													href={
+														collection.collectionHref
+													}
 													target="_blank"
 													rel="noreferrer"
-													className={styles.collectionTextLink}
+													className={
+														styles.collectionTextLink
+													}
 													aria-label={`View ${collection.name} collection`}
 												>
 													<p
