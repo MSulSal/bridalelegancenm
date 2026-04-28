@@ -305,7 +305,8 @@
 	}
 
 	.leftRail {
-		justify-content: flex-start;
+		justify-content: flex-end;
+		padding-right: 0.35rem;
 	}
 
 	.rightRail {
@@ -421,6 +422,35 @@
 		padding: 0.72rem 1.04rem;
 		font-size: 0.72rem;
 		letter-spacing: 0.15em;
+	}
+}
+
+@media (min-width: 1024px) and (max-width: 1699px) {
+	.desktopRow {
+		column-gap: clamp(0.48rem, 1vw, 0.9rem);
+		--rail-gap: clamp(0.62rem, 0.9vw, 1.12rem);
+	}
+
+	.navLink {
+		font-size: clamp(0.64rem, 0.24vw + 0.48rem, 0.82rem);
+		letter-spacing: clamp(0.08em, 0.1vw, 0.12em);
+		padding-block: 0.34rem;
+	}
+
+	.instagramIconLink {
+		height: 2.2rem;
+		width: 2.2rem;
+	}
+
+	.instagramIconLink svg {
+		height: 1rem;
+		width: 1rem;
+	}
+
+	.topbarCta {
+		padding: 0.64rem 0.86rem;
+		font-size: 0.66rem;
+		letter-spacing: 0.13em;
 	}
 }
 
