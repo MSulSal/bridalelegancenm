@@ -41,6 +41,8 @@ export function CollectionParallaxShowcase({
 	const [progress, setProgress] = useState(0);
 	const [foregroundProgress, setForegroundProgress] = useState(0);
 	const foregroundTargetRef = useRef(0);
+	const applyProgressRef = useRef<(rawProgress: number) => void>(() => {});
+	const hoverTweenFrameRef = useRef<number | null>(null);
 	const virtualProgressRef = useRef(0);
 	const lastScrollTopRef = useRef(0);
 	const initializedRef = useRef(false);
@@ -74,6 +76,66 @@ export function CollectionParallaxShowcase({
 	}, [collectionCount, collections]);
 
 	const activeCollection = collections[activeIndex] ?? collections[0];
+
+	const tweenToCollection = (targetIndex: number) => {
+		if (collectionCount <= 0) return;
+
+		const current = virtualProgressRef.current;
+		const step = collectionCount;
+		const base = ((targetIndex % step) + step) % step;
+		const centered = base + Math.round((current - base) / step) * step;
+
+		const localCandidates = [centered - step, centered, centered + step];
+		let closest = localCandidates[0];
+		for (const candidate of localCandidates) {
+			if (Math.abs(candidate - current) < Math.abs(closest - current)) {
+				closest = candidate;
+			}
+		}
+
+		let bounded = closest;
+		while (bounded < 0) bounded += step;
+		while (bounded >= loopSpan) bounded -= step;
+
+		const wrapCandidates = [bounded, bounded + loopSpan, bounded - loopSpan];
+		let target = wrapCandidates[0];
+		for (const candidate of wrapCandidates) {
+			if (Math.abs(candidate - current) < Math.abs(target - current)) {
+				target = candidate;
+			}
+		}
+
+		const prefersReducedMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+		if (prefersReducedMotion) {
+			applyProgressRef.current(target);
+			return;
+		}
+
+		const durationMs = 430;
+		const startedAt = performance.now();
+
+		if (hoverTweenFrameRef.current !== null) {
+			window.cancelAnimationFrame(hoverTweenFrameRef.current);
+		}
+
+		const animate = (timestamp: number) => {
+			const elapsed = timestamp - startedAt;
+			const t = clamp(elapsed / durationMs, 0, 1);
+			const eased = 1 - Math.pow(1 - t, 3);
+			const nextProgress = current + (target - current) * eased;
+			applyProgressRef.current(nextProgress);
+
+			if (t < 1) {
+				hoverTweenFrameRef.current = window.requestAnimationFrame(animate);
+			} else {
+				hoverTweenFrameRef.current = null;
+			}
+		};
+
+		hoverTweenFrameRef.current = window.requestAnimationFrame(animate);
+	};
 
 	useEffect(() => {
 		let frameId = 0;
@@ -137,6 +199,7 @@ export function CollectionParallaxShowcase({
 			);
 			foregroundTargetRef.current = mappedForegroundProgress;
 		};
+		applyProgressRef.current = applyProgress;
 
 		const initializeScroller = () => {
 			const maxTop = Math.max(viewport.scrollHeight - viewport.clientHeight, 1);
@@ -208,6 +271,11 @@ export function CollectionParallaxShowcase({
 			viewport.removeEventListener("scroll", onScroll);
 			window.removeEventListener("resize", onResize);
 			if (resizeRaf) window.cancelAnimationFrame(resizeRaf);
+			if (hoverTweenFrameRef.current !== null) {
+				window.cancelAnimationFrame(hoverTweenFrameRef.current);
+			}
+			hoverTweenFrameRef.current = null;
+			applyProgressRef.current = () => {};
 		};
 	}, [collectionCount, loopSpan]);
 
@@ -296,15 +364,23 @@ export function CollectionParallaxShowcase({
 									<p className={styles.mobileNowNextKicker}>
 										Collection
 									</p>
-									<p className={styles.mobileNowNextTitle}>
-										{activeCollection.name}
-									</p>
-									<p className={styles.mobileNowNextMeta}>
-										{activeCollection.descriptor}
-									</p>
-									<p className={styles.mobileNowNextSummary}>
-										{activeCollection.summary}
-									</p>
+									<a
+										href={activeCollection.collectionHref}
+										target="_blank"
+										rel="noreferrer"
+										className={styles.mobileNowNextLink}
+										aria-label={`View ${activeCollection.name} collection`}
+									>
+										<p className={styles.mobileNowNextTitle}>
+											{activeCollection.name}
+										</p>
+										<p className={styles.mobileNowNextMeta}>
+											{activeCollection.descriptor}
+										</p>
+										<p className={styles.mobileNowNextSummary}>
+											{activeCollection.summary}
+										</p>
+									</a>
 								</div>
 							</div>
 
@@ -340,6 +416,12 @@ export function CollectionParallaxShowcase({
 											<li
 												key={collection.id}
 												className={`${styles.collectionItem} ${index === activeIndex ? styles.collectionItemActive : ""}`}
+												onMouseEnter={() =>
+													tweenToCollection(index)
+												}
+												onFocus={() =>
+													tweenToCollection(index)
+												}
 												style={
 													{
 														opacity,
@@ -347,17 +429,35 @@ export function CollectionParallaxShowcase({
 													} as CSSProperties
 												}
 											>
-												<p
-													className={styles.collectionDescriptor}
+												<a
+													href={collection.collectionHref}
+													target="_blank"
+													rel="noreferrer"
+													className={styles.collectionTextLink}
+													aria-label={`View ${collection.name} collection`}
 												>
-													{collection.descriptor}
-												</p>
-												<h2 className={styles.collectionName}>
-													{collection.name}
-												</h2>
-												<p className={styles.collectionSummary}>
-													{collection.summary}
-												</p>
+													<p
+														className={
+															styles.collectionDescriptor
+														}
+													>
+														{collection.descriptor}
+													</p>
+													<h2
+														className={
+															styles.collectionName
+														}
+													>
+														{collection.name}
+													</h2>
+													<p
+														className={
+															styles.collectionSummary
+														}
+													>
+														{collection.summary}
+													</p>
+												</a>
 											</li>
 										);
 									})}

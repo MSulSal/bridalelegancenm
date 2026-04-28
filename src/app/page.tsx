@@ -50,7 +50,7 @@ export default function HomePage() {
 									{siteConfig.appointmentLabel}
 								</a>
 								<a
-									href="#collections-preview"
+									href="/collections"
 									className={`be-btn ${styles.heroGhostButton}`}
 								>
 									{homeContent.hero.secondaryCtaLabel}
