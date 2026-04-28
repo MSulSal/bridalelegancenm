@@ -1,8 +1,7 @@
 import { siteConfig } from "@/lib/site";
 
 const footerLinks = [
-	{ href: "/gallery", label: "Gallery" },
-	{ href: "/#collections-preview", label: "Collections" },
+	{ href: "/collections", label: "Collections" },
 	{ href: "/#spotlights-preview", label: "Designer Spotlights" },
 	{ href: "/#about-preview", label: "About" },
 	{ href: siteConfig.appointmentHref, label: siteConfig.appointmentLabel },

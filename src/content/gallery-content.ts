@@ -1,17 +1,11 @@
 import { legacySiteContent } from "@/content/migration/legacy-site/legacy-content";
 
-type GalleryItem = {
-	title: string;
-	tag: string;
-	localPath: string;
-	alt: string;
-	href?: string;
-};
-
 export type GalleryShowcaseCollection = {
 	id: string;
 	name: string;
 	descriptor: string;
+	summary: string;
+	collectionHref: string;
 	cover: {
 		localPath: string;
 		alt: string;
@@ -23,126 +17,80 @@ export type GalleryShowcaseCollection = {
 	hoverVideoSrc?: string;
 };
 
-const designerNames = legacySiteContent.externalLinks.bridalDesigners.map(
-	designer => designer.label,
-);
-
-const bridalDesignerItems: GalleryItem[] =
-	legacySiteContent.imageLibrary.collectionHighlights.bridalDesigners.map(
-		(image, index) => ({
-			title: designerNames[index] ?? `Designer ${index + 1}`,
-			tag: "Bridal Designer",
-			localPath: image.localPath,
-			alt: image.alt,
-			href: legacySiteContent.externalLinks.bridalDesigners[index]?.href,
-		}),
-	);
-
-const occasionItems: GalleryItem[] = [
-	{
-		title: "Mother of the Bride",
-		tag: "Occasion Dressing",
-		localPath:
-			legacySiteContent.imageLibrary.collectionHighlights.motherOfBride
-				.localPath,
-		alt: legacySiteContent.imageLibrary.collectionHighlights.motherOfBride
-			.alt,
-		href: legacySiteContent.externalLinks.motherOfBride.href,
-	},
-	{
-		title: "Accessories",
-		tag: "Finishing Pieces",
-		localPath:
-			legacySiteContent.imageLibrary.collectionHighlights.accessories
-				.localPath,
-		alt: legacySiteContent.imageLibrary.collectionHighlights.accessories
-			.alt,
-		href: legacySiteContent.externalLinks.accessories.href,
-	},
-];
-
-const boutiqueItems: GalleryItem[] = [
-	{
-		title: "Showroom Signature",
-		tag: "Boutique Moment",
-		localPath: legacySiteContent.imageLibrary.hero.localPath,
-		alt: legacySiteContent.imageLibrary.hero.alt,
-	},
-	...legacySiteContent.imageLibrary.homeGallery.map((image, index) => ({
-		title: `Boutique Edit ${index + 1}`,
-		tag: "Boutique Moment",
-		localPath: image.localPath,
-		alt: image.alt,
-	})),
-];
+const MAGGIE_SOTTERO_HREF =
+	legacySiteContent.externalLinks.bridalDesigners[1]?.href ??
+	"https://www.maggiesottero.com";
 
 export const galleryPageContent = {
 	metadata: {
-		title: "Gallery",
+		title: "Collections",
 		description:
-			"Browse bridal lookbook imagery from Bridal Elegance NM, including designer gowns, occasion styling, and boutique moments.",
+			"Explore Bridal Elegance NM collections featuring Sottero and Midgley, Maggie Sottero, and Rebecca Ingram.",
 	},
-	hero: {
-		eyebrow: "Gallery",
-		title: "An Editorial Bridal Lookbook For New Mexico Brides",
-		description:
-			"Curated visuals from our migrated legacy collection, presented in a cleaner modern browsing experience.",
-		images: [
-			legacySiteContent.imageLibrary.hero,
-			legacySiteContent.imageLibrary.homeGallery[0],
-			legacySiteContent.imageLibrary.homeGallery[1],
-		],
-	},
-	sections: [
+	collections: [
 		{
-			id: "bridal-designers",
-			heading: {
-				eyebrow: "Designer Gallery",
-				title: "Bridal Designer Highlights",
-				description:
-					"Signature silhouettes and styling direction from authorized designer collections.",
+			id: "sottero-and-midgley",
+			name: "Sottero and Midgley",
+			descriptor: "Designer Collection",
+			summary:
+				"Bold couture direction with sculpted structure and modern statement silhouettes.",
+			cover: {
+				localPath:
+					legacySiteContent.imageLibrary.collectionHighlights
+						.bridalDesigners[0].localPath,
+				alt: legacySiteContent.imageLibrary.collectionHighlights
+					.bridalDesigners[0].alt,
 			},
-			items: bridalDesignerItems,
+			collectionHref: MAGGIE_SOTTERO_HREF,
 		},
 		{
-			id: "occasion",
-			heading: {
-				eyebrow: "Occasion Styling",
-				title: "Mother Of The Bride + Accessories",
-				description:
-					"Supporting categories for complete event styling and finishing details.",
+			id: "maggie-sottero",
+			name: "Maggie Sottero",
+			descriptor: "Designer Collection",
+			summary:
+				"Romantic craftsmanship with timeless bridal lines and soft editorial movement.",
+			cover: {
+				localPath:
+					legacySiteContent.imageLibrary.collectionHighlights
+						.bridalDesigners[1].localPath,
+				alt: legacySiteContent.imageLibrary.collectionHighlights
+					.bridalDesigners[1].alt,
 			},
-			items: occasionItems,
+			collectionHref: MAGGIE_SOTTERO_HREF,
 		},
 		{
-			id: "boutique",
-			heading: {
-				eyebrow: "Boutique Moments",
-				title: "Showroom Atmosphere",
-				description:
-					"A closer look at boutique mood, craftsmanship details, and bridal presentation.",
+			id: "rebecca-ingram",
+			name: "Rebecca Ingram",
+			descriptor: "Designer Collection",
+			summary:
+				"Refined silhouettes designed for effortless elegance and approachable luxury.",
+			cover: {
+				localPath:
+					legacySiteContent.imageLibrary.collectionHighlights
+						.bridalDesigners[2].localPath,
+				alt: legacySiteContent.imageLibrary.collectionHighlights
+					.bridalDesigners[2].alt,
 			},
-			items: boutiqueItems,
+			collectionHref: MAGGIE_SOTTERO_HREF,
 		},
 	],
 } as const;
 
 export const galleryShowcaseCollections: GalleryShowcaseCollection[] =
-	galleryPageContent.sections.map(section => {
-		const [cover, ...rest] = section.items;
-		const fallbackSlides = [cover, ...rest].slice(0, 4);
-
-		return {
-			id: section.id,
-			name: section.heading.title,
-			descriptor: section.heading.eyebrow,
-			cover: {
-				localPath: cover.localPath,
-				alt: cover.alt,
+	galleryPageContent.collections.map(collection => ({
+		id: collection.id,
+		name: collection.name,
+		descriptor: collection.descriptor,
+		summary: collection.summary,
+		collectionHref: collection.collectionHref,
+		cover: {
+			localPath: collection.cover.localPath,
+			alt: collection.cover.alt,
+		},
+		hoverSlides: [
+			{
+				localPath: collection.cover.localPath,
+				alt: collection.cover.alt,
 			},
-			hoverSlides: fallbackSlides.map(item => ({
-				localPath: item.localPath,
-				alt: item.alt,
-			})),
-		};
-	});
+		],
+	}));

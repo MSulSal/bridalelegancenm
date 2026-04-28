@@ -17,7 +17,7 @@ export default function HomePage() {
 				>
 					<div className={styles.heroViewport}>
 						<Image
-							src="/hero-image-v3.png"
+							src="/hero-image-v6.png"
 							alt="Bridal Elegance boutique hero image"
 							fill
 							priority

@@ -40,9 +40,6 @@ export function CollectionParallaxShowcase({
 	const coverViewportRef = useRef<HTMLDivElement>(null);
 	const [progress, setProgress] = useState(0);
 	const [foregroundProgress, setForegroundProgress] = useState(0);
-	const [isHovered, setIsHovered] = useState(false);
-	const [slideIndex, setSlideIndex] = useState(0);
-	const [videoFailed, setVideoFailed] = useState(false);
 	const foregroundTargetRef = useRef(0);
 	const virtualProgressRef = useRef(0);
 	const lastScrollTopRef = useRef(0);
@@ -53,7 +50,6 @@ export function CollectionParallaxShowcase({
 		collectionCount * INTERNAL_SCROLL_LOOPS,
 		collectionCount,
 	);
-	const cycleProgress = wrapProgress(progress, collectionCount);
 	const foregroundCycleProgress =
 		wrapProgress(foregroundProgress, collectionCount);
 	const activeIndex =
@@ -78,17 +74,6 @@ export function CollectionParallaxShowcase({
 	}, [collectionCount, collections]);
 
 	const activeCollection = collections[activeIndex] ?? collections[0];
-	const hoverSlides = activeCollection?.hoverSlides ?? [];
-	const canPlayVideo =
-		Boolean(activeCollection?.hoverVideoSrc) && !videoFailed && isHovered;
-
-	const activeFrame = useMemo(() => {
-		if (!activeCollection) return undefined;
-		if (!isHovered || hoverSlides.length === 0 || canPlayVideo) {
-			return activeCollection.cover;
-		}
-		return hoverSlides[slideIndex] ?? activeCollection.cover;
-	}, [activeCollection, canPlayVideo, hoverSlides, isHovered, slideIndex]);
 
 	useEffect(() => {
 		let frameId = 0;
@@ -105,23 +90,6 @@ export function CollectionParallaxShowcase({
 		frameId = window.requestAnimationFrame(tick);
 		return () => window.cancelAnimationFrame(frameId);
 	}, []);
-
-	useEffect(() => {
-		setSlideIndex(0);
-		setVideoFailed(false);
-	}, [activeIndex]);
-
-	useEffect(() => {
-		if (!isHovered || canPlayVideo || hoverSlides.length < 2) {
-			return;
-		}
-
-		const intervalId = window.setInterval(() => {
-			setSlideIndex(current => (current + 1) % hoverSlides.length);
-		}, 1400);
-
-		return () => window.clearInterval(intervalId);
-	}, [canPlayVideo, hoverSlides, isHovered]);
 
 	useEffect(() => {
 		let ticking = false;
@@ -208,8 +176,7 @@ export function CollectionParallaxShowcase({
 
 			const shouldRecenter = window.innerWidth >= 1024;
 			if (
-				shouldRecenter &&
-				currentTop < maxTop * RECENTER_MIN_RATIO ||
+				(shouldRecenter && currentTop < maxTop * RECENTER_MIN_RATIO) ||
 				(shouldRecenter && currentTop > maxTop * RECENTER_MAX_RATIO)
 			) {
 				const center = maxTop * 0.5;
@@ -244,7 +211,7 @@ export function CollectionParallaxShowcase({
 		};
 	}, [collectionCount, loopSpan]);
 
-	if (collections.length === 0 || !activeCollection || !activeFrame) {
+	if (collections.length === 0 || !activeCollection) {
 		return null;
 	}
 
@@ -288,10 +255,6 @@ export function CollectionParallaxShowcase({
 								<div
 									ref={coverViewportRef}
 									className={styles.coverViewport}
-									onMouseEnter={() => setIsHovered(true)}
-									onMouseLeave={() => setIsHovered(false)}
-									onFocusCapture={() => setIsHovered(true)}
-									onBlurCapture={() => setIsHovered(false)}
 								>
 									<div className={styles.coverTrack}>
 										{trackCollections.map((collection, index) => {
@@ -306,55 +269,23 @@ export function CollectionParallaxShowcase({
 													<article
 														className={`${styles.centerCard} ${isTrackActive ? styles.centerCardActive : ""}`}
 													>
-														<div className={styles.cardMedia}>
-															{isTrackActive && canPlayVideo ? (
-																<video
-																	key={
-																		activeCollection.hoverVideoSrc
-																	}
-																	src={
-																		activeCollection.hoverVideoSrc
-																	}
-																	poster={
-																		activeCollection
-																			.cover.localPath
-																	}
-																	autoPlay
-																	loop
-																	muted
-																	playsInline
-																	className={
-																		styles.mediaAsset
-																	}
-																	onError={() =>
-																		setVideoFailed(
-																			true,
-																		)
-																	}
-																/>
-															) : (
+														<a
+															href={collection.collectionHref}
+															target="_blank"
+															rel="noreferrer"
+															aria-label={`View ${collection.name} collection`}
+															className={styles.cardLink}
+														>
+															<div className={styles.cardMedia}>
 																<Image
-																	key={`${collection.id}-${isTrackActive ? activeFrame.localPath : collection.cover.localPath}-${slideIndex}`}
-																	src={
-																		isTrackActive
-																			? activeFrame.localPath
-																			: collection
-																					.cover
-																					.localPath
-																	}
-																	alt={
-																		isTrackActive
-																			? activeFrame.alt
-																			: collection
-																					.cover
-																					.alt
-																	}
+																	src={collection.cover.localPath}
+																	alt={collection.cover.alt}
 																	fill
 																	sizes="(min-width: 1024px) 24rem, 68vw"
-																	className={`${styles.mediaAsset} ${styles.mediaImage}`}
+																	className={styles.mediaAsset}
 																/>
-															)}
-														</div>
+															</div>
+														</a>
 													</article>
 												</div>
 											);
@@ -370,6 +301,9 @@ export function CollectionParallaxShowcase({
 									</p>
 									<p className={styles.mobileNowNextMeta}>
 										{activeCollection.descriptor}
+									</p>
+									<p className={styles.mobileNowNextSummary}>
+										{activeCollection.summary}
 									</p>
 								</div>
 							</div>
@@ -414,15 +348,16 @@ export function CollectionParallaxShowcase({
 												}
 											>
 												<p
-													className={
-														styles.collectionDescriptor
-													}
+													className={styles.collectionDescriptor}
 												>
 													{collection.descriptor}
 												</p>
 												<h2 className={styles.collectionName}>
 													{collection.name}
 												</h2>
+												<p className={styles.collectionSummary}>
+													{collection.summary}
+												</p>
 											</li>
 										);
 									})}
