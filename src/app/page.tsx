@@ -45,7 +45,7 @@ export default function HomePage() {
 							<div className="mt-7 flex flex-wrap gap-3">
 								<a
 									href={siteConfig.appointmentHref}
-									className="be-btn be-btn-primary"
+									className="be-btn be-btn-primary hidden md:inline-flex"
 								>
 									{siteConfig.appointmentLabel}
 								</a>

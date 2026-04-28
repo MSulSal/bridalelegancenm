@@ -28,7 +28,7 @@
 }
 
 .heroImage {
-	object-position: 50% 16%;
+	object-position: 88% 34%;
 	filter: brightness(1.06) contrast(1.03) saturate(1.05);
 	transform: scale(1);
 	transition:
@@ -103,7 +103,7 @@
 	}
 
 	.heroImage {
-		object-position: 50% 18%;
+		object-position: 84% 32%;
 	}
 }
 
@@ -121,7 +121,7 @@
 	}
 
 	.heroImage {
-		object-position: 50% 20%;
+		object-position: 78% 30%;
 	}
 }
 
