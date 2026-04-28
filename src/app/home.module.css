@@ -77,6 +77,10 @@
 	max-width: 36ch;
 }
 
+.heroPrimaryCta {
+	display: none !important;
+}
+
 .heroGhostButton {
 	border: 1px solid rgba(255, 255, 255, 0.72);
 	color: #ffffff;
@@ -104,6 +108,12 @@
 
 	.heroImage {
 		object-position: 84% 32%;
+	}
+}
+
+@media (min-width: 768px) {
+	.heroPrimaryCta {
+		display: inline-flex !important;
 	}
 }
 
