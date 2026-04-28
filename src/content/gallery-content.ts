@@ -35,7 +35,7 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Bold couture direction with sculpted structure and modern statement silhouettes.",
-			coverFocus: "42% 50%",
+			coverFocus: "96% 42%",
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -51,7 +51,7 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Romantic craftsmanship with timeless bridal lines and soft editorial movement.",
-			coverFocus: "33% 50%",
+			coverFocus: "4% 42%",
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -67,7 +67,7 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Refined silhouettes designed for effortless elegance and approachable luxury.",
-			coverFocus: "49% 50%",
+			coverFocus: "100% 42%",
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights

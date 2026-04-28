@@ -380,8 +380,15 @@ export function CollectionParallaxShowcase({
 																	className={
 																		styles.cardMedia
 																	}
+																	style={
+																		{
+																			"--cover-focus":
+																				collection.coverFocus ??
+																				"50% 50%",
+																		} as CSSProperties
+																	}
 																>
-																<Image
+																	<Image
 																	src={
 																		collection
 																			.cover
@@ -397,11 +404,6 @@ export function CollectionParallaxShowcase({
 																	className={
 																		styles.mediaAsset
 																	}
-																	style={{
-																		objectPosition:
-																			collection.coverFocus ??
-																			"50% 50%",
-																	}}
 																/>
 																</div>
 															</a>
