@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useMemo, useRef, useState } from "react";
+import {
+	FormEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import {
 	formatUsdFromCents,
 	getDepositAmountCents,
@@ -14,6 +21,7 @@ type ApiResponse = {
 };
 
 type PaymentMethod = "card" | "apple-pay" | "google-pay" | "paypal";
+type StepId = 1 | 2 | 3;
 
 type SquareTokenizeResult = {
 	status: string;
@@ -23,12 +31,15 @@ type SquareTokenizeResult = {
 
 type SquarePayMethodInstance = {
 	attach: (selector: string) => Promise<void>;
-	tokenize: () => Promise<SquareTokenizeResult>;
+	tokenize: (options?: unknown) => Promise<SquareTokenizeResult>;
 	destroy?: () => Promise<void> | void;
 };
 
 type SquarePaymentsInstance = {
-	card: () => Promise<SquarePayMethodInstance>;
+	card: (options?: {
+		postalCode?: string;
+		style?: Record<string, Record<string, string>>;
+	}) => Promise<SquarePayMethodInstance>;
 	paymentRequest: (options: {
 		countryCode: string;
 		currencyCode: string;
@@ -68,6 +79,16 @@ type CompletedSquarePayment = {
 	receiptUrl?: string;
 	sourceType?: string;
 };
+
+function splitName(fullName: string): { givenName: string; familyName: string } {
+	const chunks = fullName.trim().split(/\s+/).filter(Boolean);
+	if (chunks.length === 0) return { givenName: "", familyName: "" };
+	if (chunks.length === 1) return { givenName: chunks[0], familyName: "" };
+	return {
+		givenName: chunks[0],
+		familyName: chunks.slice(1).join(" "),
+	};
+}
 
 declare global {
 	interface Window {
@@ -185,6 +206,7 @@ export function AppointmentRequestForm() {
 	const squareMethodRef = useRef<SquarePayMethodInstance | null>(null);
 	const attachedSquareKeyRef = useRef<string>("");
 
+	const [currentStep, setCurrentStep] = useState<StepId>(1);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [preferredDate, setPreferredDate] = useState("");
 	const [preferredDateError, setPreferredDateError] = useState("");
@@ -193,12 +215,22 @@ export function AppointmentRequestForm() {
 	const [errorList, setErrorList] = useState<string[]>([]);
 
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+	const [cardholderName, setCardholderName] = useState("");
+	const [billingPostalCode, setBillingPostalCode] = useState("");
+	const [billingAddressLine1, setBillingAddressLine1] = useState("");
+	const [billingAddressLine2, setBillingAddressLine2] = useState("");
+	const [billingCity, setBillingCity] = useState("");
+	const [billingState, setBillingState] = useState("");
 	const [isProcessingSquarePayment, setIsProcessingSquarePayment] =
 		useState(false);
 	const [squarePaymentError, setSquarePaymentError] = useState("");
 	const [squarePaymentSuccess, setSquarePaymentSuccess] = useState("");
 	const [completedSquarePayment, setCompletedSquarePayment] =
 		useState<CompletedSquarePayment | null>(null);
+	const [walletSupport, setWalletSupport] = useState({
+		applePay: true,
+		googlePay: true,
+	});
 
 	const depositAmountCents = useMemo(
 		() => getDepositAmountCents(preferredDate),
@@ -213,17 +245,38 @@ export function AppointmentRequestForm() {
 		paymentMethod === "card" ||
 		paymentMethod === "apple-pay" ||
 		paymentMethod === "google-pay";
+	const isCompletedSquarePaymentValid = useMemo(() => {
+		if (!completedSquarePayment) return false;
+		return (
+			completedSquarePayment.method === paymentMethod &&
+			completedSquarePayment.date === preferredDate &&
+			completedSquarePayment.amountCents === depositAmountCents
+		);
+	}, [
+		completedSquarePayment,
+		paymentMethod,
+		preferredDate,
+		depositAmountCents,
+	]);
 
-	async function resetSquareMethod(): Promise<void> {
+	const handlePaymentMethodChange = useCallback((method: PaymentMethod) => {
+		setPaymentMethod(method);
+		setSquarePaymentError("");
+		setSquarePaymentSuccess("");
+		setCompletedSquarePayment(null);
+	}, []);
+
+	const resetSquareMethod = useCallback(async (): Promise<void> => {
 		const instance = squareMethodRef.current;
 		squareMethodRef.current = null;
 		attachedSquareKeyRef.current = "";
 		if (instance?.destroy) {
 			await instance.destroy();
 		}
-	}
+	}, []);
 
-	async function getSquarePaymentsInstance(): Promise<SquarePaymentsInstance> {
+	const getSquarePaymentsInstance = useCallback(
+		async (): Promise<SquarePaymentsInstance> => {
 		if (squarePaymentsRef.current) {
 			return squarePaymentsRef.current;
 		}
@@ -244,13 +297,15 @@ export function AppointmentRequestForm() {
 
 		squarePaymentsRef.current = window.Square.payments(appId, locationId);
 		return squarePaymentsRef.current;
-	}
+	},
+	[],
+	);
 
-	async function ensureSquareMethod(
+	const ensureSquareMethod = useCallback(async (
 		method: Exclude<PaymentMethod, "paypal">,
 		amountCents: number,
-	): Promise<SquarePayMethodInstance> {
-		const methodKey = `${method}:${amountCents}`;
+	): Promise<SquarePayMethodInstance> => {
+		const methodKey = `${method}:${amountCents}:${billingPostalCode}`;
 		if (squareMethodRef.current && attachedSquareKeyRef.current === methodKey) {
 			return squareMethodRef.current;
 		}
@@ -266,7 +321,17 @@ export function AppointmentRequestForm() {
 
 		let squareMethod: SquarePayMethodInstance;
 		if (method === "card") {
-			squareMethod = await payments.card();
+			squareMethod = await payments.card({
+				postalCode: billingPostalCode || undefined,
+				style: {
+					input: {
+						fontFamily: "Manrope, Segoe UI, sans-serif",
+						fontSize: "16px",
+						lineHeight: "24px",
+						color: "#1f2937",
+					},
+				},
+			});
 		} else {
 			const paymentRequest = payments.paymentRequest({
 				countryCode: "US",
@@ -289,6 +354,93 @@ export function AppointmentRequestForm() {
 		squareMethodRef.current = squareMethod;
 		attachedSquareKeyRef.current = methodKey;
 		return squareMethod;
+	}, [billingPostalCode, getSquarePaymentsInstance, resetSquareMethod]);
+
+	function validateStep1(): boolean {
+		const form = formRef.current;
+		if (!form) return false;
+
+		const controls = [
+			"fullName",
+			"email",
+			"phone",
+			"shoppingFocus",
+			"preferredWindow",
+			"timeline",
+		] as const;
+
+		for (const controlName of controls) {
+			const field = form.elements.namedItem(controlName);
+			const asInput =
+				field instanceof HTMLInputElement ||
+				field instanceof HTMLSelectElement ||
+				field instanceof HTMLTextAreaElement
+					? field
+					: null;
+			if (!asInput) continue;
+			if (!asInput.checkValidity()) {
+				asInput.reportValidity();
+				asInput.focus();
+				return false;
+			}
+		}
+
+		if (!preferredDate) {
+			setPreferredDateError("Please choose your preferred appointment date.");
+			setErrorMessage("Please choose your preferred appointment date.");
+			return false;
+		}
+
+		setPreferredDateError("");
+		return true;
+	}
+
+	function validateStep2(): boolean {
+		const form = formRef.current;
+		if (!form) return false;
+
+		const streetSize = form.elements.namedItem("streetSizeApprox");
+		if (streetSize instanceof HTMLInputElement && !streetSize.checkValidity()) {
+			streetSize.reportValidity();
+			streetSize.focus();
+			return false;
+		}
+
+		const formData = new FormData(form);
+		const bridePhotoCount = countSelectedFiles(
+			formData,
+			"brideInspirationPhotos",
+		);
+		const motherOfBridePhotoCount = countSelectedFiles(
+			formData,
+			"motherOfBrideInspirationPhotos",
+		);
+		const motherOfGroomPhotoCount = countSelectedFiles(
+			formData,
+			"motherOfGroomInspirationPhotos",
+		);
+
+		if (bridePhotoCount < 1) {
+			setErrorMessage("Please upload at least one bridal inspiration photo.");
+			return false;
+		}
+
+		if (motherOfBridePhotoCount + motherOfGroomPhotoCount < 1) {
+			setErrorMessage(
+				"Please upload inspiration photos for the mother of the bride and/or mother of the groom.",
+			);
+			return false;
+		}
+
+		return true;
+	}
+
+	function goToStep(nextStep: StepId) {
+		setErrorMessage("");
+		setErrorList([]);
+		if (nextStep === 2 && !validateStep1()) return;
+		if (nextStep === 3 && (!validateStep1() || !validateStep2())) return;
+		setCurrentStep(nextStep);
 	}
 
 	async function onProcessSquarePayment() {
@@ -319,6 +471,26 @@ export function AppointmentRequestForm() {
 			);
 			return;
 		}
+		if (paymentMethod === "card" && cardholderName.trim().length < 2) {
+			setSquarePaymentError("Please enter the cardholder name.");
+			return;
+		}
+		if (paymentMethod === "card" && billingAddressLine1.trim().length < 3) {
+			setSquarePaymentError("Please enter the billing street address.");
+			return;
+		}
+		if (paymentMethod === "card" && billingCity.trim().length < 2) {
+			setSquarePaymentError("Please enter the billing city.");
+			return;
+		}
+		if (paymentMethod === "card" && billingState.trim().length < 2) {
+			setSquarePaymentError("Please enter the billing state.");
+			return;
+		}
+		if (paymentMethod === "card" && billingPostalCode.trim().length < 5) {
+			setSquarePaymentError("Please enter the billing ZIP code.");
+			return;
+		}
 
 		setIsProcessingSquarePayment(true);
 
@@ -328,7 +500,26 @@ export function AppointmentRequestForm() {
 				depositAmountCents,
 			);
 
-			const tokenResult = await squareMethod.tokenize();
+			const { givenName, familyName } = splitName(cardholderName || fullName);
+			const tokenResult =
+				paymentMethod === "card"
+					? await squareMethod.tokenize({
+							billing: {
+								givenName,
+								familyName: familyName || undefined,
+								email,
+								phone,
+								countryCode: "US",
+								addressLines: [
+									billingAddressLine1.trim(),
+									billingAddressLine2.trim(),
+								].filter(Boolean),
+								city: billingCity.trim() || undefined,
+								state: billingState.trim() || undefined,
+								postalCode: billingPostalCode || undefined,
+							},
+						})
+					: await squareMethod.tokenize();
 			if (tokenResult.status !== "OK" || !tokenResult.token) {
 				throw new Error(getSquareErrorMessage(tokenResult.errors));
 			}
@@ -342,7 +533,7 @@ export function AppointmentRequestForm() {
 					fullName,
 					email,
 					phone,
-				paymentMethod,
+					paymentMethod,
 				}),
 			});
 
@@ -375,6 +566,14 @@ export function AppointmentRequestForm() {
 					? error.message
 					: "Payment failed. Please try again.";
 			setSquarePaymentError(message);
+
+			if (paymentMethod === "apple-pay" || paymentMethod === "google-pay") {
+				setWalletSupport(prev => ({
+					...prev,
+					[paymentMethod === "apple-pay" ? "applePay" : "googlePay"]: false,
+				}));
+				handlePaymentMethodChange("card");
+			}
 		} finally {
 			setIsProcessingSquarePayment(false);
 		}
@@ -391,10 +590,15 @@ export function AppointmentRequestForm() {
 		setPreferredDateError("");
 		setSquarePaymentError("");
 
-		if (!preferredDate) {
+		if (!validateStep1()) {
+			setCurrentStep(1);
 			setIsSubmitting(false);
-			setPreferredDateError("Please choose your preferred appointment date.");
-			setErrorMessage("Please select your preferred appointment date.");
+			return;
+		}
+
+		if (!validateStep2()) {
+			setCurrentStep(2);
+			setIsSubmitting(false);
 			return;
 		}
 
@@ -404,42 +608,8 @@ export function AppointmentRequestForm() {
 		formData.set("paymentMethod", paymentMethod);
 		formData.set("squareAmountCents", String(depositAmountCents));
 
-		const bridePhotoCount = countSelectedFiles(
-			formData,
-			"brideInspirationPhotos",
-		);
-		const motherOfBridePhotoCount = countSelectedFiles(
-			formData,
-			"motherOfBrideInspirationPhotos",
-		);
-		const motherOfGroomPhotoCount = countSelectedFiles(
-			formData,
-			"motherOfGroomInspirationPhotos",
-		);
-
-		if (bridePhotoCount < 1) {
-			setIsSubmitting(false);
-			setErrorMessage("Please upload at least one bridal inspiration photo.");
-			return;
-		}
-
-		if (motherOfBridePhotoCount + motherOfGroomPhotoCount < 1) {
-			setIsSubmitting(false);
-			setErrorMessage(
-				"Please upload inspiration photos for the mother of the bride and/or mother of the groom.",
-			);
-			return;
-		}
-
 		if (isSquareMethod) {
-			const paid = completedSquarePayment;
-			const isValidPaidState =
-				paid &&
-				paid.method === paymentMethod &&
-				paid.date === preferredDate &&
-				paid.amountCents === depositAmountCents;
-
-			if (!isValidPaidState) {
+			if (!isCompletedSquarePaymentValid || !completedSquarePayment) {
 				setIsSubmitting(false);
 				setErrorMessage(
 					"Please complete the Square payment for the selected date before submitting.",
@@ -447,6 +617,7 @@ export function AppointmentRequestForm() {
 				return;
 			}
 
+			const paid = completedSquarePayment;
 			formData.set("squarePaymentId", paid.paymentId);
 			formData.set("squareReceiptUrl", paid.receiptUrl ?? "");
 			formData.set("squareSourceType", paid.sourceType ?? "");
@@ -485,11 +656,18 @@ export function AppointmentRequestForm() {
 			}
 
 			form.reset();
+			setCurrentStep(1);
 			setPreferredDate("");
-			setPaymentMethod("card");
-			setCompletedSquarePayment(null);
-			setSquarePaymentSuccess("");
-			setSuccessMessage(
+				setPaymentMethod("card");
+				setCardholderName("");
+				setBillingPostalCode("");
+				setBillingAddressLine1("");
+				setBillingAddressLine2("");
+				setBillingCity("");
+				setBillingState("");
+				setCompletedSquarePayment(null);
+				setSquarePaymentSuccess("");
+				setSuccessMessage(
 				json.message ??
 					"Appointment request received. We will follow up shortly.",
 			);
@@ -501,6 +679,49 @@ export function AppointmentRequestForm() {
 			setIsSubmitting(false);
 		}
 	}
+
+	useEffect(() => {
+		if (currentStep !== 3 || !isSquareMethod) return;
+		let cancelled = false;
+
+		(async () => {
+			try {
+				await ensureSquareMethod(
+					paymentMethod as Exclude<PaymentMethod, "paypal">,
+					depositAmountCents,
+				);
+				if (cancelled) return;
+			} catch (error) {
+				if (cancelled) return;
+				const message =
+					error instanceof Error
+						? error.message
+						: "Unable to initialize payment method.";
+				setSquarePaymentError(message);
+
+				if (paymentMethod === "apple-pay" || paymentMethod === "google-pay") {
+					setWalletSupport(prev => ({
+						...prev,
+						[paymentMethod === "apple-pay" ? "applePay" : "googlePay"]:
+							false,
+					}));
+					handlePaymentMethodChange("card");
+				}
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [
+		currentStep,
+		isSquareMethod,
+		paymentMethod,
+		depositAmountCents,
+		billingPostalCode,
+		ensureSquareMethod,
+		handlePaymentMethodChange,
+	]);
 
 	return (
 		<form
@@ -523,7 +744,14 @@ export function AppointmentRequestForm() {
 				/>
 			</div>
 
-			<section>
+			<div className="mb-6 border border-[color:var(--line-subtle)] bg-[color:var(--surface-soft)] p-4">
+				<p className="be-kicker">Appointment Request Flow</p>
+				<p className="mt-2 text-sm text-[color:var(--ink-700)]">
+					Step {currentStep} of 3. Complete each section to continue.
+				</p>
+			</div>
+
+			<section className={currentStep === 1 ? "" : "hidden"}>
 				<p className="be-kicker">Step 1</p>
 				<h2 className="mt-2 text-2xl leading-tight">Appointment Details</h2>
 
@@ -603,6 +831,7 @@ export function AppointmentRequestForm() {
 								setPreferredDate(nextValue);
 								setPreferredDateError("");
 								setSquarePaymentSuccess("");
+								setCompletedSquarePayment(null);
 							}}
 						/>
 						{preferredDateError ? (
@@ -683,9 +912,21 @@ export function AppointmentRequestForm() {
 						/>
 					</div>
 				</div>
+
+				<div className="mt-6 flex justify-end">
+					<button
+						type="button"
+						onClick={() => goToStep(2)}
+						className="be-btn be-btn-primary"
+					>
+						Continue To Style Profile
+					</button>
+				</div>
 			</section>
 
-			<section className="mt-8 border-t border-[color:var(--line-subtle)] pt-7">
+			<section
+				className={`${currentStep === 2 ? "" : "hidden"} mt-8 border-t border-[color:var(--line-subtle)] pt-7`}
+			>
 				<p className="be-kicker">Step 2</p>
 				<h2 className="mt-2 text-2xl leading-tight">
 					Style Profile + Required Inspiration Uploads
@@ -856,9 +1097,28 @@ export function AppointmentRequestForm() {
 						className={fieldClass}
 					/>
 				</div>
+
+				<div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+					<button
+						type="button"
+						onClick={() => setCurrentStep(1)}
+						className="be-btn be-btn-ghost"
+					>
+						Back
+					</button>
+					<button
+						type="button"
+						onClick={() => goToStep(3)}
+						className="be-btn be-btn-primary"
+					>
+						Continue To Payment
+					</button>
+				</div>
 			</section>
 
-			<section className="mt-8 border-t border-[color:var(--line-subtle)] pt-7">
+			<section
+				className={`${currentStep === 3 ? "" : "hidden"} mt-8 border-t border-[color:var(--line-subtle)] pt-7`}
+			>
 				<p className="be-kicker">Step 3</p>
 				<h2 className="mt-2 text-2xl leading-tight">Payment</h2>
 				<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
@@ -902,36 +1162,41 @@ export function AppointmentRequestForm() {
 							name="paymentMethodChoice"
 							value="card"
 							checked={paymentMethod === "card"}
-							onChange={() => {
-								setPaymentMethod("card");
-								setSquarePaymentError("");
-							}}
+							onChange={() => handlePaymentMethodChange("card")}
 						/>
-						Card
+						Credit / Debit Card
 					</label>
-					<label className="flex items-center gap-3 border border-[color:var(--line-subtle)] px-3 py-2 text-sm">
+					<label
+						className={`flex items-center gap-3 border px-3 py-2 text-sm ${
+							walletSupport.applePay
+								? "border-[color:var(--line-subtle)]"
+								: "cursor-not-allowed border-red-200 opacity-60"
+						}`}
+					>
 						<input
 							type="radio"
 							name="paymentMethodChoice"
 							value="apple-pay"
 							checked={paymentMethod === "apple-pay"}
-							onChange={() => {
-								setPaymentMethod("apple-pay");
-								setSquarePaymentError("");
-							}}
+							disabled={!walletSupport.applePay}
+							onChange={() => handlePaymentMethodChange("apple-pay")}
 						/>
 						Apple Pay
 					</label>
-					<label className="flex items-center gap-3 border border-[color:var(--line-subtle)] px-3 py-2 text-sm">
+					<label
+						className={`flex items-center gap-3 border px-3 py-2 text-sm ${
+							walletSupport.googlePay
+								? "border-[color:var(--line-subtle)]"
+								: "cursor-not-allowed border-red-200 opacity-60"
+						}`}
+					>
 						<input
 							type="radio"
 							name="paymentMethodChoice"
 							value="google-pay"
 							checked={paymentMethod === "google-pay"}
-							onChange={() => {
-								setPaymentMethod("google-pay");
-								setSquarePaymentError("");
-							}}
+							disabled={!walletSupport.googlePay}
+							onChange={() => handlePaymentMethodChange("google-pay")}
 						/>
 						Google Pay
 					</label>
@@ -941,27 +1206,138 @@ export function AppointmentRequestForm() {
 							name="paymentMethodChoice"
 							value="paypal"
 							checked={paymentMethod === "paypal"}
-							onChange={() => {
-								setPaymentMethod("paypal");
-								setSquarePaymentError("");
-								setSquarePaymentSuccess("");
-							}}
+							onChange={() => handlePaymentMethodChange("paypal")}
 						/>
 						PayPal
 					</label>
 				</div>
 
-				{isSquareMethod ? (
-					<div className="mt-5 space-y-4">
-						<div
-							id="square-payment-container"
-							className="min-h-12 border border-[color:var(--line-subtle)] bg-white p-3"
-						/>
-						<p className="text-xs uppercase tracking-[0.12em] text-[color:var(--ink-500)]">
-							{paymentMethod === "card"
-								? "Secure Square card entry."
-								: "Digital wallet appears only when supported by this browser/device."}
-						</p>
+					{isSquareMethod ? (
+						<div className="mt-5 space-y-4">
+							{paymentMethod === "card" ? (
+								<div className="grid gap-5 md:grid-cols-2">
+									<div>
+										<label htmlFor="cardholderName" className={labelClass}>
+											Cardholder Name *
+									</label>
+									<input
+										id="cardholderName"
+										name="cardholderName"
+										type="text"
+										required={paymentMethod === "card"}
+										value={cardholderName}
+										onChange={event =>
+											setCardholderName(event.target.value)
+										}
+										className={fieldClass}
+									/>
+								</div>
+									<div>
+										<label htmlFor="billingPostalCode" className={labelClass}>
+											Billing Postal Code *
+										</label>
+										<input
+											id="billingPostalCode"
+											name="billingPostalCode"
+											type="text"
+											required={paymentMethod === "card"}
+											value={billingPostalCode}
+											onChange={event =>
+												setBillingPostalCode(event.target.value)
+											}
+											className={fieldClass}
+											placeholder="ZIP"
+										/>
+									</div>
+									<div className="md:col-span-2">
+										<label htmlFor="billingAddressLine1" className={labelClass}>
+											Billing Street Address *
+										</label>
+										<input
+											id="billingAddressLine1"
+											name="billingAddressLine1"
+											type="text"
+											required={paymentMethod === "card"}
+											value={billingAddressLine1}
+											onChange={event =>
+												setBillingAddressLine1(event.target.value)
+											}
+											className={fieldClass}
+											autoComplete="address-line1"
+										/>
+									</div>
+									<div className="md:col-span-2">
+										<label htmlFor="billingAddressLine2" className={labelClass}>
+											Apartment / Suite (Optional)
+										</label>
+										<input
+											id="billingAddressLine2"
+											name="billingAddressLine2"
+											type="text"
+											value={billingAddressLine2}
+											onChange={event =>
+												setBillingAddressLine2(event.target.value)
+											}
+											className={fieldClass}
+											autoComplete="address-line2"
+										/>
+									</div>
+									<div>
+										<label htmlFor="billingCity" className={labelClass}>
+											Billing City *
+										</label>
+										<input
+											id="billingCity"
+											name="billingCity"
+											type="text"
+											required={paymentMethod === "card"}
+											value={billingCity}
+											onChange={event =>
+												setBillingCity(event.target.value)
+											}
+											className={fieldClass}
+											autoComplete="address-level2"
+										/>
+									</div>
+									<div>
+										<label htmlFor="billingState" className={labelClass}>
+											Billing State *
+										</label>
+										<input
+											id="billingState"
+											name="billingState"
+											type="text"
+											required={paymentMethod === "card"}
+											value={billingState}
+											onChange={event =>
+												setBillingState(event.target.value.toUpperCase())
+											}
+											className={fieldClass}
+											maxLength={2}
+											placeholder="NM"
+											autoComplete="address-level1"
+										/>
+									</div>
+								</div>
+							) : null}
+							<div className="border border-[color:var(--line-subtle)] bg-white p-4">
+							<p className="mb-3 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
+								{paymentMethod === "card"
+									? "Card Information"
+									: paymentMethod === "apple-pay"
+										? "Apple Pay"
+										: "Google Pay"}
+							</p>
+								<div
+									id="square-payment-container"
+									className="min-h-[7rem] rounded-sm border border-[color:var(--line-subtle)] px-3 py-2"
+								/>
+							</div>
+							<p className="text-xs uppercase tracking-[0.12em] text-[color:var(--ink-500)]">
+								{paymentMethod === "card"
+									? "Enter card number, expiration, and security code in the secure Square fields above, then complete billing details just like a standard checkout."
+									: "Digital wallet availability depends on browser/device setup. Google Pay can work on desktop browsers when an eligible wallet is configured."}
+							</p>
 						<button
 							type="button"
 							onClick={onProcessSquarePayment}
@@ -1015,17 +1391,41 @@ export function AppointmentRequestForm() {
 						{squarePaymentError}
 					</p>
 				) : null}
-			</section>
 
-			<label className="mt-6 flex items-start gap-3 text-xs leading-6 text-[color:var(--ink-700)]">
-				<input
-					name="policyAccepted"
-					type="checkbox"
-					required
-					className="mt-1 h-4 w-4"
-				/>
-				I understand this is an appointment request and the boutique will confirm my final date and time.
-			</label>
+				<label className="mt-6 flex items-start gap-3 text-xs leading-6 text-[color:var(--ink-700)]">
+					<input
+						name="policyAccepted"
+						type="checkbox"
+						required
+						className="mt-1 h-4 w-4"
+					/>
+					I understand this is an appointment request and the boutique will confirm my final date and time.
+				</label>
+
+				<div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+					<button
+						type="button"
+						onClick={() => setCurrentStep(2)}
+						className="be-btn be-btn-ghost"
+					>
+						Back
+					</button>
+					<div className="flex items-center gap-3">
+						<button
+							type="submit"
+							disabled={isSubmitting || isProcessingSquarePayment}
+							className="be-btn be-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+						>
+							{isSubmitting
+								? "Submitting..."
+								: "Submit Appointment Request"}
+						</button>
+						<p className="text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
+							Secure Payment + Manual Confirmation
+						</p>
+					</div>
+				</div>
+			</section>
 
 			{successMessage ? (
 				<p className="mt-5 border border-[color:var(--line-subtle)] bg-[color:var(--surface-soft)] px-4 py-3 text-sm text-[color:var(--ink-900)]">
@@ -1046,20 +1446,6 @@ export function AppointmentRequestForm() {
 				</div>
 			) : null}
 
-			<div className="mt-6 flex flex-wrap items-center gap-3">
-				<button
-					type="submit"
-					disabled={isSubmitting || isProcessingSquarePayment}
-					className="be-btn be-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
-				>
-					{isSubmitting
-						? "Submitting..."
-						: "Submit Appointment Request"}
-				</button>
-				<p className="text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-					Secure Payment + Manual Confirmation
-				</p>
-			</div>
 		</form>
 	);
 }

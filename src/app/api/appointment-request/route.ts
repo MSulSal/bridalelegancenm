@@ -41,6 +41,12 @@ type AppointmentRequestData = {
 	contactPreference: ContactPreference;
 	styleNotes?: string;
 	paymentMethod: "card" | "apple-pay" | "google-pay" | "paypal";
+	cardholderName?: string;
+	billingPostalCode?: string;
+	billingAddressLine1?: string;
+	billingAddressLine2?: string;
+	billingCity?: string;
+	billingState?: string;
 	expectedDepositAmountCents: number;
 	squarePaymentId?: string;
 	squareReceiptUrl?: string;
@@ -222,6 +228,12 @@ function validateFormData(formData: FormData): ValidationResult {
 	const guestCountRaw = readString(formData.get("guestCount"));
 	const policyAccepted = readString(formData.get("policyAccepted")) === "on";
 	const paymentMethod = readString(formData.get("paymentMethod"));
+	const cardholderName = readString(formData.get("cardholderName"));
+	const billingPostalCode = readString(formData.get("billingPostalCode"));
+	const billingAddressLine1 = readString(formData.get("billingAddressLine1"));
+	const billingAddressLine2 = readString(formData.get("billingAddressLine2"));
+	const billingCity = readString(formData.get("billingCity"));
+	const billingState = readString(formData.get("billingState")).toUpperCase();
 	const squarePaymentId = readString(formData.get("squarePaymentId"));
 	const squareReceiptUrl = readString(formData.get("squareReceiptUrl"));
 	const squareSourceType = readString(formData.get("squareSourceType"));
@@ -354,6 +366,23 @@ function validateFormData(formData: FormData): ValidationResult {
 		if (!squarePaymentId) {
 			errors.push("Square payment is required before submitting.");
 		}
+		if (paymentMethod === "card") {
+			if (cardholderName.length < 2) {
+				errors.push("Please provide the cardholder name.");
+			}
+			if (billingAddressLine1.length < 3) {
+				errors.push("Please provide a valid billing street address.");
+			}
+			if (billingCity.length < 2) {
+				errors.push("Please provide a valid billing city.");
+			}
+			if (!/^[A-Z]{2}$/.test(billingState)) {
+				errors.push("Please provide a valid 2-letter billing state.");
+			}
+			if (!/^\d{5}(-\d{4})?$/.test(billingPostalCode)) {
+				errors.push("Please provide a valid billing ZIP code.");
+			}
+		}
 		if (
 			squareAmountCents === undefined ||
 			squareAmountCents !== expectedDepositAmountCents
@@ -388,14 +417,20 @@ function validateFormData(formData: FormData): ValidationResult {
 			instagramHandle: instagramHandle || undefined,
 			contactPreference: contactPreference as ContactPreference,
 			styleNotes: styleNotes || undefined,
-			paymentMethod: paymentMethod as
-				| "card"
-				| "apple-pay"
-				| "google-pay"
-				| "paypal",
-			expectedDepositAmountCents,
-			squarePaymentId: squarePaymentId || undefined,
-			squareReceiptUrl: squareReceiptUrl || undefined,
+				paymentMethod: paymentMethod as
+					| "card"
+					| "apple-pay"
+					| "google-pay"
+					| "paypal",
+				cardholderName: cardholderName || undefined,
+				billingPostalCode: billingPostalCode || undefined,
+				billingAddressLine1: billingAddressLine1 || undefined,
+				billingAddressLine2: billingAddressLine2 || undefined,
+				billingCity: billingCity || undefined,
+				billingState: billingState || undefined,
+				expectedDepositAmountCents,
+				squarePaymentId: squarePaymentId || undefined,
+				squareReceiptUrl: squareReceiptUrl || undefined,
 			squareSourceType: squareSourceType || undefined,
 			paypalPayerEmail: paypalPayerEmail || undefined,
 			paymentReference: paymentReference || undefined,
@@ -524,10 +559,19 @@ function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string
 			contactLabels[data.contactPreference] ?? data.contactPreference,
 		],
 		["Style Notes", data.styleNotes ?? "Not provided"],
-		["Payment Method", paymentMethodLabel],
-		[
-			"Required Deposit",
-			formatUsdFromCents(data.expectedDepositAmountCents),
+			["Payment Method", paymentMethodLabel],
+			["Cardholder Name", data.cardholderName ?? "Not provided"],
+			["Billing Street Address", data.billingAddressLine1 ?? "Not provided"],
+			[
+				"Billing Address Line 2",
+				data.billingAddressLine2 ?? "Not provided",
+			],
+			["Billing City", data.billingCity ?? "Not provided"],
+			["Billing State", data.billingState ?? "Not provided"],
+			["Billing ZIP", data.billingPostalCode ?? "Not provided"],
+			[
+				"Required Deposit",
+				formatUsdFromCents(data.expectedDepositAmountCents),
 		],
 		["Square Payment ID", data.squarePaymentId ?? "Not provided"],
 		["Square Receipt URL", data.squareReceiptUrl ?? "Not provided"],
