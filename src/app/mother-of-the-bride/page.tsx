@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { BrandText } from "@/components/brand/brand-text";
 import { SiteShell } from "@/components/layout/site-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { motherOfBridePageContent } from "@/content/site-content";
@@ -55,7 +56,12 @@ export default function MotherOfTheBridePage() {
 								{motherOfBridePageContent.externalCollection.label}
 							</h2>
 							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-								Browse source styles directly while keeping your appointment-based boutique guidance with Bridal Elegance Atelier.
+								Browse source styles directly while keeping your appointment-based boutique guidance with{" "}
+								<BrandText
+									nm="Bridal Elegance NM"
+									atelier="Bridal Elegance Atelier"
+								/>
+								.
 							</p>
 							<a
 								href={motherOfBridePageContent.externalCollection.href}

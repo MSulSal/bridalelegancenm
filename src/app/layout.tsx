@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { brandIds, brandStorageKey, defaultBrand } from "@/lib/brand";
 import { defaultTheme, themeIds, themeStorageKey } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -36,6 +37,19 @@ const themeInitScript = `(() => {
 	}
 })();`;
 
+const brandInitScript = `(() => {
+	const key = ${JSON.stringify(brandStorageKey)};
+	const fallback = ${JSON.stringify(defaultBrand)};
+	const allowed = ${JSON.stringify(brandIds)};
+	try {
+		const stored = window.localStorage.getItem(key);
+		const next = allowed.includes(stored ?? "") ? stored : fallback;
+		document.documentElement.setAttribute("data-brand", next);
+	} catch {
+		document.documentElement.setAttribute("data-brand", fallback);
+	}
+})();`;
+
 export const metadata: Metadata = {
 	metadataBase,
 	title: {
@@ -49,12 +63,21 @@ export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html lang="en-US" data-theme={defaultTheme} suppressHydrationWarning>
+		<html
+			lang="en-US"
+			data-theme={defaultTheme}
+			data-brand={defaultBrand}
+			suppressHydrationWarning
+		>
 			<head>
 				{/* Prevent theme flash before React hydrates */}
 				<script
 					id="be-theme-init"
 					dangerouslySetInnerHTML={{ __html: themeInitScript }}
+				/>
+				<script
+					id="be-brand-init"
+					dangerouslySetInnerHTML={{ __html: brandInitScript }}
 				/>
 			</head>
 			<body

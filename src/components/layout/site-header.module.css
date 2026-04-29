@@ -186,6 +186,19 @@
 	mask-size: contain;
 }
 
+.logoNmMask {
+	display: block;
+	background-color: var(--theme-toggle-circle);
+	-webkit-mask-image: url("/logo-nm-transparent.png");
+	mask-image: url("/logo-nm-transparent.png");
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
 .logoAtelierMobile {
 	width: clamp(120px, 36vw, 150px);
 	aspect-ratio: 1492 / 1023;
@@ -315,6 +328,24 @@
 	gap: 0.1rem;
 	padding-top: 1.05rem;
 	padding-bottom: 0.15rem;
+}
+
+.mobileBrandItem {
+	margin-top: 0.14rem;
+	padding-bottom: 0.52rem;
+	border-bottom: 1px solid var(--line-subtle);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.48rem;
+}
+
+.mobileBrandLabel {
+	font-size: 0.64rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--ink-500);
+	line-height: 1;
 }
 
 .navLink {

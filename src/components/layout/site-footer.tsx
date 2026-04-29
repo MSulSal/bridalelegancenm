@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/site";
+import { BrandText } from "@/components/brand/brand-text";
 
 const footerLinks = [
 	{ href: "/collections", label: "Collections" },
@@ -17,9 +18,17 @@ export function SiteFooter() {
 			<div className="be-container pt-12 pb-[calc(6.75rem+env(safe-area-inset-bottom))] md:py-12">
 				<div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
 					<div className="space-y-4">
-						<p className="be-kicker">{siteConfig.name}</p>
+						<p className="be-kicker">
+							<BrandText
+								nm="Bridal Elegance NM"
+								atelier="Bridal Elegance Atelier"
+							/>
+						</p>
 						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
-							{siteConfig.tagline}
+							<BrandText
+								nm="Appointment-first bridal boutique with personalized styling support in Old Town Albuquerque."
+								atelier={siteConfig.tagline}
+							/>
 						</p>
 					</div>
 
@@ -75,7 +84,12 @@ export function SiteFooter() {
 				<div className="mt-10 flex flex-col gap-2 border-t border-[color:var(--line-subtle)] pt-5 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)] sm:flex-row sm:items-center sm:justify-between">
 					<p>New Mexico Bridal Boutique</p>
 					<p>
-						(c) {year} {siteConfig.name}. All rights reserved.
+						(c) {year}{" "}
+						<BrandText
+							nm="Bridal Elegance NM"
+							atelier="Bridal Elegance Atelier"
+						/>
+						. All rights reserved.
 					</p>
 				</div>
 			</div>

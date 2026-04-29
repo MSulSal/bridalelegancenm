@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BrandText } from "@/components/brand/brand-text";
 import { homeContent } from "@/content/site-content";
 import { SiteShell } from "@/components/layout/site-shell";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
@@ -32,7 +33,17 @@ export default function HomePage() {
 								{siteConfig.cityState}
 							</p>
 							<h1 className="mt-3 max-w-[14ch] font-[var(--font-display-serif)] text-[clamp(2.2rem,6vw,5rem)] leading-[0.95] text-white">
-								{homeContent.hero.title}
+								<BrandText
+									nm={
+										<>
+											Bridal Elegance{" "}
+											<span className="relative -top-[0.08em] text-[0.58em] tracking-[0.14em]">
+												NM
+											</span>
+										</>
+									}
+									atelier="Bridal Elegance Atelier"
+								/>
 							</h1>
 							<p className="mt-3 text-xs uppercase tracking-[0.16em] text-white/85">
 								{homeContent.hero.supportLine}
