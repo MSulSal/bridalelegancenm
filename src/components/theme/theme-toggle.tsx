@@ -79,8 +79,8 @@ export function ThemeToggle({
 
 	const triggerClass =
 		size === "compact"
-			? `${styles.trigger} ${styles.triggerCompact}`
-			: styles.trigger;
+			? `${styles.trigger} ${styles.triggerCompact} ${isOpen ? styles.triggerOpen : styles.triggerClosed}`
+			: `${styles.trigger} ${isOpen ? styles.triggerOpen : styles.triggerClosed}`;
 
 	const popoverClass =
 		align === "left"

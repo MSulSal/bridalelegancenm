@@ -1,17 +1,18 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, FocusEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	useSyncExternalStore,
+} from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
-import {
-	defaultTheme,
-	readTheme,
-	subscribeTheme,
-	type ThemeId,
-} from "@/lib/theme";
+import { defaultTheme, readTheme, subscribeTheme, type ThemeId } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
 import styles from "./site-header.module.css";
 
@@ -23,18 +24,7 @@ const navItems = [
 	{ href: "/#about-preview", label: "About" },
 ] as const;
 
-const logoByTheme: Record<ThemeId, string> = {
-	blue: "/logo-text-v5.png",
-	blush: "/logo-text-v4.png",
-	turquoise: "/logo-text-v3.png",
-	sapphire: "/logo-text-v3.png",
-	sand: "/logo-text-v3.png",
-	"red-rock": "/logo-text-v3.png",
-	brown: "/logo-text-v3.png",
-	lilac: "/logo-text-v3.png",
-	lavender: "/logo-text-v3.png",
-	monochrome: "/logo-text-v3.png",
-};
+const logoTextOnly = "/logo-text-only.png";
 
 function getServerThemeSnapshot(): ThemeId {
 	return defaultTheme;
@@ -43,6 +33,10 @@ function getServerThemeSnapshot(): ThemeId {
 export function SiteHeader() {
 	const headerRef = useRef<HTMLElement>(null);
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+	const [hasMobileMenuInteracted, setHasMobileMenuInteracted] = useState(false);
+	const [desktopExpanded, setDesktopExpanded] = useState(false);
+	const [hasDesktopInteracted, setHasDesktopInteracted] = useState(false);
 	const hideMobileHeader = useMobileHeaderVisibility(mobileMenuRef);
 
 	const activeTheme = useSyncExternalStore(
@@ -53,6 +47,38 @@ export function SiteHeader() {
 
 	const monochromeBadgeStyle: CSSProperties | undefined =
 		activeTheme === "monochrome" ? { borderColor: "#111111" } : undefined;
+
+	const closeMobileMenu = useCallback(() => {
+		const menu = mobileMenuRef.current;
+		if (menu?.open) {
+			menu.open = false;
+		}
+		setMobileMenuOpen(false);
+	}, []);
+
+	const handleDesktopExpand = useCallback(() => {
+		setHasDesktopInteracted(true);
+		setDesktopExpanded(true);
+	}, []);
+
+	const handleDesktopCollapse = useCallback(() => {
+		setHasDesktopInteracted(true);
+		setDesktopExpanded(false);
+	}, []);
+
+	const handleDesktopBlurCapture = useCallback(
+		(event: FocusEvent<HTMLElement>) => {
+			const nextFocused = event.relatedTarget;
+			if (
+				nextFocused instanceof Node &&
+				event.currentTarget.contains(nextFocused)
+			) {
+				return;
+			}
+			handleDesktopCollapse();
+		},
+		[handleDesktopCollapse],
+	);
 
 	useEffect(() => {
 		const headerEl = headerRef.current;
@@ -80,6 +106,10 @@ export function SiteHeader() {
 		<header
 			ref={headerRef}
 			className={`${styles.topbar} ${hideMobileHeader ? styles.topbarMobileHidden : ""}`}
+			onMouseEnter={handleDesktopExpand}
+			onMouseLeave={handleDesktopCollapse}
+			onFocusCapture={handleDesktopExpand}
+			onBlurCapture={handleDesktopBlurCapture}
 		>
 			<div className={styles.topbarInner}>
 				<div className={styles.mobileRow}>
@@ -95,12 +125,12 @@ export function SiteHeader() {
 							style={monochromeBadgeStyle}
 						>
 							<Image
-								src={logoByTheme[activeTheme]}
+								src={logoTextOnly}
 								alt={siteConfig.name}
-								width={280}
-								height={72}
+								width={260}
+								height={96}
 								priority
-								className={`${styles.logoImage} ${styles.logoImageMobile}`}
+								className={`${styles.logoImage} ${styles.logoTextOnlyMobile}`}
 							/>
 						</Link>
 					</div>
@@ -108,23 +138,36 @@ export function SiteHeader() {
 					<details
 						ref={mobileMenuRef}
 						className={`${styles.menu} ${styles.mobileRight}`}
+						onToggle={() =>
+							{
+								setHasMobileMenuInteracted(true);
+								setMobileMenuOpen(
+									Boolean(mobileMenuRef.current?.open),
+								);
+							}
+						}
 					>
 						<summary
 							className={styles.menuTrigger}
-							style={{ color: "var(--theme-toggle-circle)" }}
-							aria-label="Open menu"
+							aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
 						>
-							<span className="sr-only">Open menu</span>
-							<svg
-								aria-hidden="true"
-								viewBox="0 0 24 24"
-								className="h-7 w-7"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2.1"
+							<span className="sr-only">
+								{mobileMenuOpen ? "Close menu" : "Open menu"}
+							</span>
+							<span
+								className={`${styles.menuTriggerWheel} ${
+									hasMobileMenuInteracted
+										? mobileMenuOpen
+											? styles.menuTriggerWheelOpen
+											: styles.menuTriggerWheelClosed
+										: ""
+								}`}
 							>
-								<path d="M4 7h16M4 12h16M4 17h16" />
-							</svg>
+								<span
+									aria-hidden="true"
+									className={styles.logoCircleMask}
+								/>
+							</span>
 						</summary>
 
 						<div className={styles.menuPanel}>
@@ -143,6 +186,7 @@ export function SiteHeader() {
 												className={
 													styles.mobileInstagramLink
 												}
+												onClick={closeMobileMenu}
 											>
 												<svg
 													aria-hidden="true"
@@ -178,6 +222,7 @@ export function SiteHeader() {
 												<Link
 													href={item.href}
 													className={styles.navLink}
+													onClick={closeMobileMenu}
 												>
 													{item.label}
 												</Link>
@@ -213,14 +258,31 @@ export function SiteHeader() {
 							className={`${styles.logoMedallion} ${styles.logoBadgeDesktop}`}
 							style={monochromeBadgeStyle}
 						>
-							<Image
-								src={logoByTheme[activeTheme]}
-								alt={siteConfig.name}
-								width={340}
-								height={92}
-								priority
-								className={`${styles.logoImage} ${styles.logoImageDesktop}`}
-							/>
+							<span className={styles.desktopBadgeStack}>
+								<span
+									className={`${styles.desktopWheel} ${
+										hasDesktopInteracted
+											? desktopExpanded
+												? styles.desktopWheelExpanded
+												: styles.desktopWheelCollapsed
+											: ""
+									}`}
+									aria-hidden="true"
+								>
+									<span
+										aria-hidden="true"
+										className={styles.logoCircleMask}
+									/>
+								</span>
+								<Image
+									src={logoTextOnly}
+									alt=""
+									aria-hidden="true"
+									width={300}
+									height={110}
+									className={styles.logoTextOnlyDesktop}
+								/>
+							</span>
 						</Link>
 					</div>
 
