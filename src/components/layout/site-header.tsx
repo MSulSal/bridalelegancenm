@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, FocusEvent } from "react";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import {
 	useCallback,
@@ -32,8 +32,6 @@ export function SiteHeader() {
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const [hasMobileMenuInteracted, setHasMobileMenuInteracted] = useState(false);
-	const [desktopExpanded, setDesktopExpanded] = useState(false);
-	const [hasDesktopInteracted, setHasDesktopInteracted] = useState(false);
 	const hideMobileHeader = useMobileHeaderVisibility(mobileMenuRef);
 
 	const activeTheme = useSyncExternalStore(
@@ -52,30 +50,6 @@ export function SiteHeader() {
 		}
 		setMobileMenuOpen(false);
 	}, []);
-
-	const handleDesktopExpand = useCallback(() => {
-		setHasDesktopInteracted(true);
-		setDesktopExpanded(true);
-	}, []);
-
-	const handleDesktopCollapse = useCallback(() => {
-		setHasDesktopInteracted(true);
-		setDesktopExpanded(false);
-	}, []);
-
-	const handleDesktopBlurCapture = useCallback(
-		(event: FocusEvent<HTMLElement>) => {
-			const nextFocused = event.relatedTarget;
-			if (
-				nextFocused instanceof Node &&
-				event.currentTarget.contains(nextFocused)
-			) {
-				return;
-			}
-			handleDesktopCollapse();
-		},
-		[handleDesktopCollapse],
-	);
 
 	useEffect(() => {
 		const headerEl = headerRef.current;
@@ -103,10 +77,6 @@ export function SiteHeader() {
 		<header
 			ref={headerRef}
 			className={`${styles.topbar} ${hideMobileHeader ? styles.topbarMobileHidden : ""}`}
-			onMouseEnter={handleDesktopExpand}
-			onMouseLeave={handleDesktopCollapse}
-			onFocusCapture={handleDesktopExpand}
-			onBlurCapture={handleDesktopBlurCapture}
 		>
 			<div className={styles.topbarInner}>
 				<div className={styles.mobileRow}>
@@ -123,7 +93,7 @@ export function SiteHeader() {
 						>
 							<span
 								aria-hidden="true"
-								className={`${styles.logoTextOnlyMask} ${styles.logoTextOnlyMobile}`}
+								className={`${styles.logoAtelierMask} ${styles.logoAtelierMobile}`}
 							/>
 						</Link>
 					</div>
@@ -253,23 +223,8 @@ export function SiteHeader() {
 						>
 							<span className={styles.desktopBadgeStack}>
 								<span
-									className={`${styles.desktopWheel} ${
-										hasDesktopInteracted
-											? desktopExpanded
-												? styles.desktopWheelExpanded
-												: styles.desktopWheelCollapsed
-											: ""
-									}`}
 									aria-hidden="true"
-								>
-									<span
-										aria-hidden="true"
-										className={styles.logoCircleMask}
-									/>
-								</span>
-								<span
-									aria-hidden="true"
-									className={`${styles.logoTextOnlyMask} ${styles.logoTextOnlyDesktop}`}
+									className={`${styles.logoAtelierMask} ${styles.logoAtelierDesktop}`}
 								/>
 							</span>
 						</Link>
