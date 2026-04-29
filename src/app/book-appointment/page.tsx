@@ -11,8 +11,10 @@ export const metadata: Metadata = {
 };
 
 const nextStepPoints = [
-	"We review your requested date, timeline, and style direction.",
-	"We contact you by your preferred method to confirm final time.",
+	"Choose payment method: card, Apple Pay, Google Pay, or PayPal.",
+	"Weekend deposits are $50 and weekday deposits are $35.",
+	"We review your requested date, timeline, size notes, and inspiration photos.",
+	"We contact you by your preferred method to confirm final appointment time.",
 	"If needed, we suggest the next closest available appointment window.",
 ] as const;
 

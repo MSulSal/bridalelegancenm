@@ -9,15 +9,8 @@ import {
 	useState,
 	useSyncExternalStore,
 } from "react";
-import { BrandToggle } from "@/components/brand/brand-toggle";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useMobileHeaderVisibility } from "@/hooks/use-mobile-header-visibility";
-import {
-	defaultBrand,
-	readBrand,
-	subscribeBrand,
-	type BrandId,
-} from "@/lib/brand";
 import { defaultTheme, readTheme, subscribeTheme, type ThemeId } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
 import styles from "./site-header.module.css";
@@ -34,10 +27,6 @@ function getServerThemeSnapshot(): ThemeId {
 	return defaultTheme;
 }
 
-function getServerBrandSnapshot(): BrandId {
-	return defaultBrand;
-}
-
 export function SiteHeader() {
 	const headerRef = useRef<HTMLElement>(null);
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
@@ -50,16 +39,9 @@ export function SiteHeader() {
 		readTheme,
 		getServerThemeSnapshot,
 	);
-	const activeBrand = useSyncExternalStore(
-		subscribeBrand,
-		readBrand,
-		getServerBrandSnapshot,
-	);
-
 	const monochromeBadgeStyle: CSSProperties | undefined =
 		activeTheme === "monochrome" ? { borderColor: "#111111" } : undefined;
-	const siteNameForBrand =
-		activeBrand === "nm" ? "Bridal Elegance NM" : "Bridal Elegance Atelier";
+	const siteNameForBrand = "Bridal Elegance NM";
 
 	const closeMobileMenu = useCallback(() => {
 		const menu = mobileMenuRef.current;
@@ -109,17 +91,10 @@ export function SiteHeader() {
 							className={`${styles.logoMedallion} ${styles.logoBadgeMobile}`}
 							style={monochromeBadgeStyle}
 						>
-							{activeBrand === "nm" ? (
-								<span
-									aria-hidden="true"
-									className={`${styles.logoNmMask} ${styles.logoAtelierMobile}`}
-								/>
-							) : (
-								<span
-									aria-hidden="true"
-									className={`${styles.logoAtelierMask} ${styles.logoAtelierMobile}`}
-								/>
-							)}
+							<span
+								aria-hidden="true"
+								className={`${styles.logoNmMask} ${styles.logoAtelierMobile}`}
+							/>
 						</Link>
 					</div>
 
@@ -162,13 +137,6 @@ export function SiteHeader() {
 							<div className="be-container">
 								<nav aria-label="Mobile">
 									<ul className={styles.menuList}>
-										<li className={styles.mobileBrandItem}>
-											<span className={styles.mobileBrandLabel}>
-												Brand
-											</span>
-											<BrandToggle size="compact" />
-										</li>
-
 										<li
 											className={
 												styles.mobileInstagramItem
@@ -254,24 +222,16 @@ export function SiteHeader() {
 							style={monochromeBadgeStyle}
 						>
 							<span className={styles.desktopBadgeStack}>
-								{activeBrand === "nm" ? (
-									<span
-										aria-hidden="true"
-										className={`${styles.logoNmMask} ${styles.logoAtelierDesktop}`}
-									/>
-								) : (
-									<span
-										aria-hidden="true"
-										className={`${styles.logoAtelierMask} ${styles.logoAtelierDesktop}`}
-									/>
-								)}
+								<span
+									aria-hidden="true"
+									className={`${styles.logoNmMask} ${styles.logoAtelierDesktop}`}
+								/>
 							</span>
 						</Link>
 					</div>
 
 					<div className={styles.rightRail}>
 						<ThemeToggle align="right" />
-						<BrandToggle />
 						<a
 							href={siteConfig.instagramHref}
 							target="_blank"
