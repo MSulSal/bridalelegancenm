@@ -5,7 +5,7 @@ export const homeContent = {
 		title: "Bridal Elegance Atelier",
 		supportLine: legacySiteContent.business.authorizedLine,
 		description:
-			"Appointment-first bridal boutique service with curated designer selections, one-on-one guidance, and clear next steps.",
+			"New Mexico's longest standing bridal boutique, now welcoming appointments in Albuquerque's Sawmill District near Historic Old Town.",
 		secondaryCtaLabel: "View Bridal Gowns",
 	},
 	aboutPreview: {
@@ -119,7 +119,7 @@ export const homeContent = {
 				"We preserved the legacy appointment-first model and made requests faster on every device.",
 		},
 		promises: [
-			"Now welcoming appointments in Old Town Albuquerque.",
+			"Now welcoming appointments in Albuquerque's Sawmill District near Historic Old Town.",
 			`Call us: ${legacySiteContent.business.phoneDisplay}`,
 			"Instagram: @bridalelegancenm",
 		],
@@ -176,13 +176,13 @@ export const appointmentPageContent = {
 	metadata: {
 		title: "Book Appointment",
 		description:
-			"Request a bridal appointment with Bridal Elegance Atelier. Our team confirms availability directly by phone or email.",
+			"Request a bridal appointment with Bridal Elegance in Albuquerque's Sawmill District near Historic Old Town. Our team confirms availability directly by phone or email.",
 	},
 	heading: {
 		eyebrow: "Book Appointment",
 		title: "Request Your Bridal Appointment",
 		description:
-			"Appointment-only service in New Mexico. Submit your request and our team confirms directly.",
+			"Appointment-only service in Albuquerque's Sawmill District near Historic Old Town. Submit your request and our team confirms directly.",
 	},
 	experienceCard: {
 		kicker: "Showroom Experience",

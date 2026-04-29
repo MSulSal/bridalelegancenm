@@ -56,18 +56,32 @@ export default function BookAppointmentPage() {
 						<article className="be-card p-6 sm:p-7">
 							<p className="be-kicker">Location</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								Visit Us In Old Town
+								Visit Us In Albuquerque's Sawmill District
 							</h3>
 							<p className="mt-5 text-sm leading-7 text-[color:var(--ink-700)]">
 								{siteConfig.addressLine1}
 								<br />
 								{siteConfig.addressLine2}
 							</p>
+							<p className="mt-3 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
+								Near Historic Old Town Albuquerque
+							</p>
+							<div className="mt-5 overflow-hidden border border-[color:var(--line-subtle)] bg-white">
+								<iframe
+									title="Bridal Elegance location map"
+									src={siteConfig.mapsEmbedSrc}
+									width="100%"
+									height="260"
+									loading="lazy"
+									referrerPolicy="no-referrer-when-downgrade"
+									className="block w-full"
+								/>
+							</div>
 							<a
 								href={siteConfig.mapsHref}
 								target="_blank"
 								rel="noreferrer"
-								className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
+								className="mt-4 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
 							>
 								Open In Google Maps
 							</a>

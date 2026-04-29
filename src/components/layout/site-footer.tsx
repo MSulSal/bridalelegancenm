@@ -26,7 +26,7 @@ export function SiteFooter() {
 						</p>
 						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
 							<BrandText
-								nm="Appointment-first bridal boutique with personalized styling support in Old Town Albuquerque."
+								nm={`${siteConfig.tagline} Located in Albuquerque's Sawmill District near Historic Old Town.`}
 								atelier={siteConfig.tagline}
 							/>
 						</p>
