@@ -225,6 +225,7 @@ export function AppointmentRequestForm() {
 		useState(false);
 	const [squarePaymentError, setSquarePaymentError] = useState("");
 	const [squarePaymentSuccess, setSquarePaymentSuccess] = useState("");
+	const [squareBlockedWarning, setSquareBlockedWarning] = useState(false);
 	const [completedSquarePayment, setCompletedSquarePayment] =
 		useState<CompletedSquarePayment | null>(null);
 	const [walletSupport, setWalletSupport] = useState({
@@ -263,7 +264,34 @@ export function AppointmentRequestForm() {
 		setPaymentMethod(method);
 		setSquarePaymentError("");
 		setSquarePaymentSuccess("");
+		setSquareBlockedWarning(false);
 		setCompletedSquarePayment(null);
+	}, []);
+
+	const isLikelySquareBlocked = useCallback((message: string): boolean => {
+		const normalized = message.toLowerCase();
+		const mentionsSdkLoad =
+			normalized.includes("failed to load square sdk") ||
+			normalized.includes("square sdk is unavailable") ||
+			normalized.includes("unable to initialize payment method");
+		const genericCardFailure = normalized.includes(
+			"unexpected error occurred while using card",
+		);
+
+		if (mentionsSdkLoad || genericCardFailure) {
+			return true;
+		}
+
+		if (typeof document !== "undefined") {
+			const hasSquareIframe = Boolean(
+				document.querySelector("#square-payment-container iframe"),
+			);
+			if (!hasSquareIframe && normalized.includes("square")) {
+				return true;
+			}
+		}
+
+		return false;
 	}, []);
 
 	const resetSquareMethod = useCallback(async (): Promise<void> => {
@@ -305,7 +333,7 @@ export function AppointmentRequestForm() {
 		method: Exclude<PaymentMethod, "paypal">,
 		amountCents: number,
 	): Promise<SquarePayMethodInstance> => {
-		const methodKey = `${method}:${amountCents}:${billingPostalCode}`;
+		const methodKey = `${method}:${amountCents}`;
 		if (squareMethodRef.current && attachedSquareKeyRef.current === methodKey) {
 			return squareMethodRef.current;
 		}
@@ -321,17 +349,7 @@ export function AppointmentRequestForm() {
 
 		let squareMethod: SquarePayMethodInstance;
 		if (method === "card") {
-			squareMethod = await payments.card({
-				postalCode: billingPostalCode || undefined,
-				style: {
-					input: {
-						fontFamily: "Manrope, Segoe UI, sans-serif",
-						fontSize: "16px",
-						lineHeight: "24px",
-						color: "#1f2937",
-					},
-				},
-			});
+			squareMethod = await payments.card();
 		} else {
 			const paymentRequest = payments.paymentRequest({
 				countryCode: "US",
@@ -354,7 +372,7 @@ export function AppointmentRequestForm() {
 		squareMethodRef.current = squareMethod;
 		attachedSquareKeyRef.current = methodKey;
 		return squareMethod;
-	}, [billingPostalCode, getSquarePaymentsInstance, resetSquareMethod]);
+	}, [getSquarePaymentsInstance, resetSquareMethod]);
 
 	function validateStep1(): boolean {
 		const form = formRef.current;
@@ -448,6 +466,7 @@ export function AppointmentRequestForm() {
 
 		setSquarePaymentError("");
 		setSquarePaymentSuccess("");
+		setSquareBlockedWarning(false);
 		setErrorMessage("");
 		setErrorList([]);
 
@@ -566,6 +585,9 @@ export function AppointmentRequestForm() {
 					? error.message
 					: "Payment failed. Please try again.";
 			setSquarePaymentError(message);
+			if (isLikelySquareBlocked(message)) {
+				setSquareBlockedWarning(true);
+			}
 
 			if (paymentMethod === "apple-pay" || paymentMethod === "google-pay") {
 				setWalletSupport(prev => ({
@@ -698,6 +720,9 @@ export function AppointmentRequestForm() {
 						? error.message
 						: "Unable to initialize payment method.";
 				setSquarePaymentError(message);
+				if (isLikelySquareBlocked(message)) {
+					setSquareBlockedWarning(true);
+				}
 
 				if (paymentMethod === "apple-pay" || paymentMethod === "google-pay") {
 					setWalletSupport(prev => ({
@@ -718,9 +743,9 @@ export function AppointmentRequestForm() {
 		isSquareMethod,
 		paymentMethod,
 		depositAmountCents,
-		billingPostalCode,
 		ensureSquareMethod,
 		handlePaymentMethodChange,
+		isLikelySquareBlocked,
 	]);
 
 	return (
@@ -1155,7 +1180,7 @@ export function AppointmentRequestForm() {
 					readOnly
 				/>
 
-				<div className="mt-5 grid gap-3 sm:grid-cols-2">
+					<div className="mt-5 grid gap-3 sm:grid-cols-2">
 					<label className="flex items-center gap-3 border border-[color:var(--line-subtle)] px-3 py-2 text-sm">
 						<input
 							type="radio"
@@ -1210,7 +1235,30 @@ export function AppointmentRequestForm() {
 						/>
 						PayPal
 					</label>
-				</div>
+					</div>
+
+					{isSquareMethod && squareBlockedWarning ? (
+						<div className="mt-4 border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+							<p className="font-medium">
+								Secure card fields were blocked by a browser extension or
+								privacy setting.
+							</p>
+							<p className="mt-1">
+								Disable ad/tracker blocking for this site (or allow
+								`web.squarecdn.com` and `pci-connect.squareupsandbox.com`),
+								then refresh. You can also continue with PayPal now.
+							</p>
+							<div className="mt-3">
+								<button
+									type="button"
+									onClick={() => handlePaymentMethodChange("paypal")}
+									className="be-btn be-btn-ghost"
+								>
+									Use PayPal Instead
+								</button>
+							</div>
+						</div>
+					) : null}
 
 					{isSquareMethod ? (
 						<div className="mt-5 space-y-4">
