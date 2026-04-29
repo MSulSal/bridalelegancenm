@@ -26,7 +26,7 @@ export const galleryPageContent = {
 	metadata: {
 		title: "Collections",
 		description:
-			"Explore Bridal Elegance NM collections featuring Sottero and Midgley, Maggie Sottero, and Rebecca Ingram.",
+			"Explore Bridal Elegance Atelier collections featuring Sottero and Midgley, Maggie Sottero, and Rebecca Ingram.",
 	},
 	collections: [
 		{

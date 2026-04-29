@@ -3,6 +3,7 @@ import { appointmentPageContent } from "@/content/site-content";
 import { AppointmentRequestForm } from "@/components/appointments/appointment-request-form";
 import { SiteShell } from "@/components/layout/site-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
 	title: appointmentPageContent.metadata.title,
@@ -48,6 +49,26 @@ export default function BookAppointmentPage() {
 									),
 								)}
 							</ul>
+						</article>
+
+						<article className="be-card p-6 sm:p-7">
+							<p className="be-kicker">Location</p>
+							<h3 className="mt-3 text-2xl leading-tight">
+								Visit Us In Old Town
+							</h3>
+							<p className="mt-5 text-sm leading-7 text-[color:var(--ink-700)]">
+								{siteConfig.addressLine1}
+								<br />
+								{siteConfig.addressLine2}
+							</p>
+							<a
+								href={siteConfig.mapsHref}
+								target="_blank"
+								rel="noreferrer"
+								className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
+							>
+								Open In Google Maps
+							</a>
 						</article>
 
 						<article className="be-card p-6 sm:p-7">

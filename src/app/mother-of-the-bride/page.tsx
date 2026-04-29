@@ -55,7 +55,7 @@ export default function MotherOfTheBridePage() {
 								{motherOfBridePageContent.externalCollection.label}
 							</h2>
 							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-								Browse source styles directly while keeping your appointment-based boutique guidance with Bridal Elegance NM.
+								Browse source styles directly while keeping your appointment-based boutique guidance with Bridal Elegance Atelier.
 							</p>
 							<a
 								href={motherOfBridePageContent.externalCollection.href}

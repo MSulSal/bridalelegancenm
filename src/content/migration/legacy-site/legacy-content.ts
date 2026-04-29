@@ -10,21 +10,22 @@ export const legacySiteContent = {
 	],
 	business: {
 		legacyName: "Bridal Elegance (Legacy Site)",
-		operatingName: "Bridal Elegance NM",
+		operatingName: "Bridal Elegance Atelier",
 		authorizedLine: "An Authorized Maggie Sottero Bridal Salon",
 		authenticityLine:
 			"Authorized salon sourcing for genuine Maggie Sottero designs, with personalized boutique guidance.",
-		welcomeHeading: "Welcome to Bridal Elegance NM",
+		welcomeHeading: "Welcome to Bridal Elegance Atelier",
 		welcomeParagraphs: [
-			"Bridal Elegance NM is a family-owned and operated bridal boutique in New Mexico.",
+			"Bridal Elegance Atelier is a family-owned and operated bridal boutique in New Mexico.",
 			"Our team has served New Mexico brides for over 35 years with curated gowns for brides, mothers, and special occasions, paired with personal and knowledgeable support.",
 		],
 		appointmentModel: "APPOINTMENT ONLY",
 		showroomUpdate:
-			"Showroom relocation in progress. New address announcement coming soon.",
+			"Now welcoming appointments at 1301 Rio Grande NW, Old Town Albuquerque, NM.",
 		phoneDisplay: "(505) 830-2110",
 		phoneHref: "tel:+15058302110",
-		mapHref: "",
+		mapHref:
+			"https://maps.google.com/?q=1301+Rio+Grande+NW,+Old+Town+Albuquerque,+NM",
 	},
 	socialLinks: [
 		{

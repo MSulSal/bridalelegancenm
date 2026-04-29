@@ -17,7 +17,7 @@ export function SiteFooter() {
 			<div className="be-container pt-12 pb-[calc(6.75rem+env(safe-area-inset-bottom))] md:py-12">
 				<div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
 					<div className="space-y-4">
-						<p className="be-kicker">Bridal Elegance NM</p>
+						<p className="be-kicker">{siteConfig.name}</p>
 						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
 							{siteConfig.tagline}
 						</p>
@@ -39,6 +39,18 @@ export function SiteFooter() {
 					<div className="space-y-3 text-sm text-[color:var(--ink-700)]">
 						<p className="be-kicker">Contact</p>
 						<p>{siteConfig.showroomUpdate}</p>
+						<p>
+							<a
+								href={siteConfig.mapsHref}
+								target="_blank"
+								rel="noreferrer"
+								className="hover:text-[color:var(--ink-900)]"
+							>
+								{siteConfig.addressLine1}
+								<br />
+								{siteConfig.addressLine2}
+							</a>
+						</p>
 						<p>
 							<a
 								href={siteConfig.phoneHref}

@@ -168,9 +168,22 @@
 	padding-block: 0.74rem 0.5rem;
 }
 
+.logoTextOnlyMask {
+	display: block;
+	background-color: var(--theme-toggle-circle);
+	-webkit-mask-image: url("/logo-text-only.png");
+	mask-image: url("/logo-text-only.png");
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+}
+
 .logoTextOnlyMobile {
 	width: clamp(118px, 34vw, 136px);
-	height: auto;
+	aspect-ratio: 3 / 2;
 	display: block;
 	margin-inline: auto;
 	transform: translateY(0.08rem);
@@ -232,8 +245,7 @@
 	background: transparent;
 	padding: 0;
 	cursor: pointer;
-	transition:
-		opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .menuTrigger:hover {
@@ -420,7 +432,7 @@
 	}
 
 	.logoBadgeDesktop {
-		--desktop-badge-collapsed-height: 4.5rem;
+		--desktop-badge-collapsed-height: 8rem;
 		--desktop-badge-expanded-height: 24rem;
 		margin-block: 0;
 		margin-top: -0.92rem;
@@ -465,7 +477,7 @@
 	.logoTextOnlyDesktop {
 		display: block;
 		width: clamp(8.1rem, 8.8vw, 9.2rem);
-		height: auto;
+		aspect-ratio: 3 / 2;
 		margin-inline: auto;
 	}
 

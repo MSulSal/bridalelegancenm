@@ -1,7 +1,6 @@
 "use client";
 
 import type { CSSProperties, FocusEvent } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
 	useCallback,
@@ -23,8 +22,6 @@ const navItems = [
 	{ href: "/accessories", label: "Accessories" },
 	{ href: "/#about-preview", label: "About" },
 ] as const;
-
-const logoTextOnly = "/logo-text-only.png";
 
 function getServerThemeSnapshot(): ThemeId {
 	return defaultTheme;
@@ -124,13 +121,9 @@ export function SiteHeader() {
 							className={`${styles.logoMedallion} ${styles.logoBadgeMobile}`}
 							style={monochromeBadgeStyle}
 						>
-							<Image
-								src={logoTextOnly}
-								alt={siteConfig.name}
-								width={260}
-								height={96}
-								priority
-								className={`${styles.logoImage} ${styles.logoTextOnlyMobile}`}
+							<span
+								aria-hidden="true"
+								className={`${styles.logoTextOnlyMask} ${styles.logoTextOnlyMobile}`}
 							/>
 						</Link>
 					</div>
@@ -274,13 +267,9 @@ export function SiteHeader() {
 										className={styles.logoCircleMask}
 									/>
 								</span>
-								<Image
-									src={logoTextOnly}
-									alt=""
+								<span
 									aria-hidden="true"
-									width={300}
-									height={110}
-									className={styles.logoTextOnlyDesktop}
+									className={`${styles.logoTextOnlyMask} ${styles.logoTextOnlyDesktop}`}
 								/>
 							</span>
 						</Link>

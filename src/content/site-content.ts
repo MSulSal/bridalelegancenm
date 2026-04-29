@@ -2,7 +2,7 @@ import { legacySiteContent } from "@/content/migration/legacy-site/legacy-conten
 
 export const homeContent = {
 	hero: {
-		title: "Bridal Elegance",
+		title: "Bridal Elegance Atelier",
 		supportLine: legacySiteContent.business.authorizedLine,
 		description:
 			"Appointment-first bridal boutique service with curated designer selections, one-on-one guidance, and clear next steps.",
@@ -18,7 +18,7 @@ export const homeContent = {
 			eyebrow: "Collections",
 			title: "Bridal Gowns, Mother Of The Bride, And Accessories",
 			description:
-				"Migrated from the original Bridal Elegance site and elevated for a modern editorial boutique experience.",
+				"Curated designer collections presented with a modern editorial boutique experience.",
 		},
 		items: [
 			{
@@ -119,7 +119,7 @@ export const homeContent = {
 				"We preserved the legacy appointment-first model and made requests faster on every device.",
 		},
 		promises: [
-			legacySiteContent.business.showroomUpdate,
+			"Now welcoming appointments in Old Town Albuquerque.",
 			`Call us: ${legacySiteContent.business.phoneDisplay}`,
 			"Instagram: @bridalelegancenm",
 		],
@@ -130,7 +130,7 @@ export const motherOfBridePageContent = {
 	metadata: {
 		title: "Mother of the Bride",
 		description:
-			"Explore Mother of the Bride styling direction from Bridal Elegance NM.",
+			"Explore Mother of the Bride styling direction from Bridal Elegance Atelier.",
 	},
 	heading: {
 		eyebrow: "Occasion Styling",
@@ -153,7 +153,7 @@ export const accessoriesPageContent = {
 	metadata: {
 		title: "Accessories",
 		description:
-			"Browse accessory styling direction from Bridal Elegance NM, including veils and finishing pieces.",
+			"Browse accessory styling direction from Bridal Elegance Atelier, including veils and finishing pieces.",
 	},
 	heading: {
 		eyebrow: "Finishing Pieces",
@@ -176,7 +176,7 @@ export const appointmentPageContent = {
 	metadata: {
 		title: "Book Appointment",
 		description:
-			"Request a bridal appointment with Bridal Elegance NM. Our team confirms availability directly by phone or email.",
+			"Request a bridal appointment with Bridal Elegance Atelier. Our team confirms availability directly by phone or email.",
 	},
 	heading: {
 		eyebrow: "Book Appointment",
