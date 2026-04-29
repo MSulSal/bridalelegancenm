@@ -218,7 +218,7 @@ export function SiteHeader() {
 						<Link
 							href="/"
 							aria-label={siteConfig.name}
-							className={`${styles.logoMedallion} ${styles.logoBadgeDesktop}`}
+							className={styles.logoBadgeDesktop}
 							style={monochromeBadgeStyle}
 						>
 							<span className={styles.desktopBadgeStack}>

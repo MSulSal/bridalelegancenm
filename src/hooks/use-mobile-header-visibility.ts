@@ -27,7 +27,7 @@ export function useMobileHeaderVisibility(
 
 		const onScroll = () => {
 			const currentY = window.scrollY;
-			const isMobileViewport = window.innerWidth < 1024;
+			const isMobileViewport = window.innerWidth < 1280;
 
 			if (!isMobileViewport) {
 				setIsHidden(false);
@@ -61,14 +61,14 @@ export function useMobileHeaderVisibility(
 		};
 
 		const onResize = () => {
-			if (window.innerWidth >= 1024) {
+			if (window.innerWidth >= 1280) {
 				setIsHidden(false);
 				awaitingUserScrollIntent = false;
 			}
 		};
 
 		const onVirtualScroll = (event: Event) => {
-			const isMobileViewport = window.innerWidth < 1024;
+			const isMobileViewport = window.innerWidth < 1280;
 			if (!isMobileViewport) return;
 
 			if (menuRef.current?.open) {
@@ -115,3 +115,4 @@ export function useMobileHeaderVisibility(
 
 	return isHidden;
 }
+
