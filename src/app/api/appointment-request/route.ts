@@ -165,6 +165,16 @@ function readString(value: FormDataEntryValue | null): string {
 	return typeof value === "string" ? value.trim() : "";
 }
 
+type NotificationMode = "both" | "text" | "email";
+
+function getNotificationMode(): NotificationMode {
+	const raw = (process.env.APPOINTMENT_NOTIFICATION_MODE ?? "both")
+		.trim()
+		.toLowerCase();
+	if (raw === "text" || raw === "email" || raw === "both") return raw;
+	return "both";
+}
+
 function readOptionalDate(value: FormDataEntryValue | null): string | undefined {
 	const dateValue = readString(value);
 	if (!dateValue) return undefined;
@@ -443,7 +453,7 @@ function validateFormData(formData: FormData): ValidationResult {
 	};
 }
 
-function ensureNotificationEnv(): string[] {
+function ensureNotificationEnv(mode: NotificationMode): string[] {
 	const missing: string[] = [];
 
 	if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
@@ -452,26 +462,35 @@ function ensureNotificationEnv(): string[] {
 	if (!process.env.CLOUDINARY_UPLOAD_PRESET?.trim()) {
 		missing.push("CLOUDINARY_UPLOAD_PRESET");
 	}
-	if (!process.env.RESEND_API_KEY?.trim()) {
-		missing.push("RESEND_API_KEY");
+
+	const shouldRequireEmail = mode === "both" || mode === "email";
+	const shouldRequireSms = mode === "both" || mode === "text";
+
+	if (shouldRequireEmail) {
+		if (!process.env.RESEND_API_KEY?.trim()) {
+			missing.push("RESEND_API_KEY");
+		}
+		if (!process.env.APPOINTMENT_NOTIFICATION_EMAIL_FROM?.trim()) {
+			missing.push("APPOINTMENT_NOTIFICATION_EMAIL_FROM");
+		}
+		if (!process.env.APPOINTMENT_NOTIFICATION_EMAIL_TO?.trim()) {
+			missing.push("APPOINTMENT_NOTIFICATION_EMAIL_TO");
+		}
 	}
-	if (!process.env.APPOINTMENT_NOTIFICATION_EMAIL_FROM?.trim()) {
-		missing.push("APPOINTMENT_NOTIFICATION_EMAIL_FROM");
-	}
-	if (!process.env.APPOINTMENT_NOTIFICATION_EMAIL_TO?.trim()) {
-		missing.push("APPOINTMENT_NOTIFICATION_EMAIL_TO");
-	}
-	if (!process.env.TWILIO_ACCOUNT_SID?.trim()) {
-		missing.push("TWILIO_ACCOUNT_SID");
-	}
-	if (!process.env.TWILIO_AUTH_TOKEN?.trim()) {
-		missing.push("TWILIO_AUTH_TOKEN");
-	}
-	if (!process.env.TWILIO_FROM_PHONE?.trim()) {
-		missing.push("TWILIO_FROM_PHONE");
-	}
-	if (!process.env.APPOINTMENT_NOTIFICATION_SMS_TO?.trim()) {
-		missing.push("APPOINTMENT_NOTIFICATION_SMS_TO");
+
+	if (shouldRequireSms) {
+		if (!process.env.TWILIO_ACCOUNT_SID?.trim()) {
+			missing.push("TWILIO_ACCOUNT_SID");
+		}
+		if (!process.env.TWILIO_AUTH_TOKEN?.trim()) {
+			missing.push("TWILIO_AUTH_TOKEN");
+		}
+		if (!process.env.TWILIO_FROM_PHONE?.trim()) {
+			missing.push("TWILIO_FROM_PHONE");
+		}
+		if (!process.env.APPOINTMENT_NOTIFICATION_SMS_TO?.trim()) {
+			missing.push("APPOINTMENT_NOTIFICATION_SMS_TO");
+		}
 	}
 
 	return missing;
@@ -795,7 +814,8 @@ export async function POST(request: Request) {
 		});
 	}
 
-	const missingEnv = ensureNotificationEnv();
+	const notificationMode = getNotificationMode();
+	const missingEnv = ensureNotificationEnv(notificationMode);
 	if (missingEnv.length > 0) {
 		return NextResponse.json(
 			{
@@ -853,12 +873,34 @@ export async function POST(request: Request) {
 	}
 
 	const submittedAtIso = new Date().toISOString();
+	const deliveredChannels: string[] = [];
+	const notificationErrors: string[] = [];
 
-	try {
-		await sendNotificationEmail(validated.data, uploadedPhotos, submittedAtIso);
-		await sendNotificationSms(validated.data, uploadedPhotos, submittedAtIso);
-	} catch (error) {
-		console.error("[appointment-request] Notification delivery error", error);
+	if (notificationMode === "both" || notificationMode === "email") {
+		try {
+			await sendNotificationEmail(
+				validated.data,
+				uploadedPhotos,
+				submittedAtIso,
+			);
+			deliveredChannels.push("email");
+		} catch (error) {
+			console.error("[appointment-request] Email delivery error", error);
+			notificationErrors.push("email");
+		}
+	}
+
+	if (notificationMode === "both" || notificationMode === "text") {
+		try {
+			await sendNotificationSms(validated.data, uploadedPhotos, submittedAtIso);
+			deliveredChannels.push("text");
+		} catch (error) {
+			console.error("[appointment-request] SMS delivery error", error);
+			notificationErrors.push("text");
+		}
+	}
+
+	if (deliveredChannels.length === 0) {
 		return NextResponse.json(
 			{
 				ok: false,
@@ -887,8 +929,9 @@ export async function POST(request: Request) {
 
 	return NextResponse.json({
 		ok: true,
-		message:
-			"Appointment request received. Payment verified and details delivered to the boutique team by email and text.",
+		message: `Appointment request received. Payment verified and details delivered by ${deliveredChannels.join(
+			" and ",
+		)}.`,
 	});
 }
 
