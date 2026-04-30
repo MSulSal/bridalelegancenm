@@ -175,6 +175,11 @@ function getNotificationMode(): NotificationMode {
 	return "both";
 }
 
+function shouldUploadImages(mode: NotificationMode): boolean {
+	// All modes keep Cloudinary uploads so links can be included in notifications.
+	return mode === "both" || mode === "email" || mode === "text";
+}
+
 function readOptionalDate(value: FormDataEntryValue | null): string | undefined {
 	const dateValue = readString(value);
 	if (!dateValue) return undefined;
@@ -456,11 +461,13 @@ function validateFormData(formData: FormData): ValidationResult {
 function ensureNotificationEnv(mode: NotificationMode): string[] {
 	const missing: string[] = [];
 
-	if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
-		missing.push("CLOUDINARY_CLOUD_NAME");
-	}
-	if (!process.env.CLOUDINARY_UPLOAD_PRESET?.trim()) {
-		missing.push("CLOUDINARY_UPLOAD_PRESET");
+	if (shouldUploadImages(mode)) {
+		if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
+			missing.push("CLOUDINARY_CLOUD_NAME");
+		}
+		if (!process.env.CLOUDINARY_UPLOAD_PRESET?.trim()) {
+			missing.push("CLOUDINARY_UPLOAD_PRESET");
+		}
 	}
 
 	const shouldRequireEmail = mode === "both" || mode === "email";
@@ -714,6 +721,7 @@ async function sendNotificationEmail(
 function buildSmsBody(
 	data: AppointmentRequestData,
 	submittedAtIso: string,
+	photoUrls: string[],
 	photoCounts: { bride: number; motherOfBride: number; motherOfGroom: number },
 ): string {
 	const paymentMethodLabel =
@@ -730,7 +738,7 @@ function buildSmsBody(
 			? `PayPal: ${data.paypalPayerEmail ?? "pending"}`
 			: `Square: ${data.squarePaymentId ?? "n/a"}`;
 
-	return [
+	const lines = [
 		"New Bridal Appointment Request",
 		`Name: ${data.fullName}`,
 		`Phone: ${data.phone}`,
@@ -742,13 +750,21 @@ function buildSmsBody(
 		paymentSummary,
 		`Submitted: ${submittedAtIso}`,
 		`Images - Bride: ${photoCounts.bride}, MOB: ${photoCounts.motherOfBride}, MOG: ${photoCounts.motherOfGroom}`,
-	].join("\n");
+	];
+
+	if (photoUrls.length > 0) {
+		lines.push("Image URLs:");
+		lines.push(...photoUrls);
+	}
+
+	return lines.join("\n");
 }
 
 async function sendNotificationSms(
 	data: AppointmentRequestData,
 	photos: UploadedPhotoGroup,
 	submittedAtIso: string,
+	notificationMode: NotificationMode,
 ): Promise<void> {
 	const accountSid = process.env.TWILIO_ACCOUNT_SID!.trim();
 	const authToken = process.env.TWILIO_AUTH_TOKEN!.trim();
@@ -759,18 +775,26 @@ async function sendNotificationSms(
 		0,
 		10,
 	);
-	const body = buildSmsBody(data, submittedAtIso, {
-		bride: photos.bride.length,
-		motherOfBride: photos.motherOfBride.length,
-		motherOfGroom: photos.motherOfGroom.length,
-	});
+	const body = buildSmsBody(
+		data,
+		submittedAtIso,
+		photoUrls,
+		{
+			bride: photos.bride.length,
+			motherOfBride: photos.motherOfBride.length,
+			motherOfGroom: photos.motherOfGroom.length,
+		},
+	);
 
 	const params = new URLSearchParams();
 	params.set("From", from);
 	params.set("To", to);
 	params.set("Body", body);
-	for (const url of photoUrls) {
-		params.append("MediaUrl", url);
+	const includeMmsMedia = notificationMode === "both";
+	if (includeMmsMedia) {
+		for (const url of photoUrls) {
+			params.append("MediaUrl", url);
+		}
 	}
 
 	const basicAuth = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
@@ -842,34 +866,40 @@ export async function POST(request: Request) {
 		);
 	}
 
-	let uploadedPhotos: UploadedPhotoGroup;
+	let uploadedPhotos: UploadedPhotoGroup = {
+		bride: [],
+		motherOfBride: [],
+		motherOfGroom: [],
+	};
 
-	try {
-		uploadedPhotos = {
-			bride: await Promise.all(
-				validated.photos.bride.map(file => uploadImageToCloudinary(file)),
-			),
-			motherOfBride: await Promise.all(
-				validated.photos.motherOfBride.map(file =>
-					uploadImageToCloudinary(file),
+	if (shouldUploadImages(notificationMode)) {
+		try {
+			uploadedPhotos = {
+				bride: await Promise.all(
+					validated.photos.bride.map(file => uploadImageToCloudinary(file)),
 				),
-			),
-			motherOfGroom: await Promise.all(
-				validated.photos.motherOfGroom.map(file =>
-					uploadImageToCloudinary(file),
+				motherOfBride: await Promise.all(
+					validated.photos.motherOfBride.map(file =>
+						uploadImageToCloudinary(file),
+					),
 				),
-			),
-		};
-	} catch (error) {
-		console.error("[appointment-request] Cloudinary upload error", error);
-		return NextResponse.json(
-			{
-				ok: false,
-				message:
-					"We couldn't upload inspiration photos right now. Please try again.",
-			},
-			{ status: 502 },
-		);
+				motherOfGroom: await Promise.all(
+					validated.photos.motherOfGroom.map(file =>
+						uploadImageToCloudinary(file),
+					),
+				),
+			};
+		} catch (error) {
+			console.error("[appointment-request] Cloudinary upload error", error);
+			return NextResponse.json(
+				{
+					ok: false,
+					message:
+						"We couldn't upload inspiration photos right now. Please try again.",
+				},
+				{ status: 502 },
+			);
+		}
 	}
 
 	const submittedAtIso = new Date().toISOString();
@@ -890,11 +920,16 @@ export async function POST(request: Request) {
 		}
 	}
 
-	if (notificationMode === "both" || notificationMode === "text") {
-		try {
-			await sendNotificationSms(validated.data, uploadedPhotos, submittedAtIso);
-			deliveredChannels.push("text");
-		} catch (error) {
+		if (notificationMode === "both" || notificationMode === "text") {
+			try {
+				await sendNotificationSms(
+					validated.data,
+					uploadedPhotos,
+					submittedAtIso,
+					notificationMode,
+				);
+				deliveredChannels.push("text");
+			} catch (error) {
 			console.error("[appointment-request] SMS delivery error", error);
 			notificationErrors.push("text");
 		}
