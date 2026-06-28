@@ -3,12 +3,7 @@ import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
 
 type ContactPreference = "email" | "phone" | "text";
-type ShoppingFocus =
-	| "bridal-gown"
-	| "mother-of-bride"
-	| "accessories"
-	| "special-occasion"
-	| "not-sure";
+type ShoppingFocus = "bridal-gown";
 type TimelineRange =
 	| "asap"
 	| "1-3-months"
@@ -31,7 +26,6 @@ type AppointmentRequestData = {
 	streetSizeApprox: string;
 	weddingDate?: string;
 	preferredDate: string;
-	preferredWindow: string;
 	timeline: TimelineRange;
 	guestCount?: number;
 	budgetRange?: BudgetRange;
@@ -47,40 +41,18 @@ type ValidationResult =
 			data: AppointmentRequestData;
 			photos: {
 				bride: File[];
-				motherOfBride: File[];
-				motherOfGroom: File[];
 			};
 	  }
 	| { ok: false; errors: string[] };
 
 type UploadedPhotoGroup = {
 	bride: string[];
-	motherOfBride: string[];
-	motherOfGroom: string[];
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 const maxImageBytes = 5 * 1024 * 1024;
 const maxImagesPerGroup = 12;
-
-const allowedWindows = new Set([
-	"weekday-morning",
-	"weekday-afternoon",
-	"weekday-evening",
-	"saturday-morning",
-	"saturday-afternoon",
-	"flexible",
-]);
-
-const windowLabels: Record<string, string> = {
-	"weekday-morning": "Weekday Morning",
-	"weekday-afternoon": "Weekday Afternoon",
-	"weekday-evening": "Weekday Evening",
-	"saturday-morning": "Saturday Morning",
-	"saturday-afternoon": "Saturday Afternoon",
-	flexible: "Flexible",
-};
 
 const contactLabels: Record<string, string> = {
 	email: "Email",
@@ -90,10 +62,6 @@ const contactLabels: Record<string, string> = {
 
 const shoppingFocusLabels: Record<string, string> = {
 	"bridal-gown": "Bridal Gown",
-	"mother-of-bride": "Mother of the Bride",
-	accessories: "Accessories",
-	"special-occasion": "Special Occasion",
-	"not-sure": "Not Sure Yet",
 };
 
 const timelineLabels: Record<string, string> = {
@@ -114,13 +82,7 @@ const budgetLabels: Record<string, string> = {
 };
 
 const allowedContactPreferences = new Set(["email", "phone", "text"]);
-const allowedShoppingFocus = new Set([
-	"bridal-gown",
-	"mother-of-bride",
-	"accessories",
-	"special-occasion",
-	"not-sure",
-]);
+const allowedShoppingFocus = new Set(["bridal-gown"]);
 const allowedTimeline = new Set([
 	"asap",
 	"1-3-months",
@@ -199,7 +161,6 @@ function validateFormData(formData: FormData): ValidationResult {
 	const weddingDateRaw = readString(formData.get("weddingDate"));
 	const weddingDate = readOptionalDate(formData.get("weddingDate"));
 	const preferredDate = readString(formData.get("preferredDate"));
-	const preferredWindow = readString(formData.get("preferredWindow"));
 	const timeline = readString(formData.get("timeline"));
 	const budgetRange = readString(formData.get("budgetRange"));
 	const preferredDesigners = readString(formData.get("preferredDesigners"));
@@ -210,14 +171,6 @@ function validateFormData(formData: FormData): ValidationResult {
 	const policyAccepted = readString(formData.get("policyAccepted")) === "on";
 
 	const bridePhotos = readImageFiles(formData, "brideInspirationPhotos");
-	const motherOfBridePhotos = readImageFiles(
-		formData,
-		"motherOfBrideInspirationPhotos",
-	);
-	const motherOfGroomPhotos = readImageFiles(
-		formData,
-		"motherOfGroomInspirationPhotos",
-	);
 
 	if (fullName.length < 2) {
 		errors.push("Please enter your full name.");
@@ -229,19 +182,16 @@ function validateFormData(formData: FormData): ValidationResult {
 		errors.push("Please enter a valid phone number.");
 	}
 	if (!allowedShoppingFocus.has(shoppingFocus)) {
-		errors.push("Please choose what you're shopping for.");
+		errors.push("This request form is currently limited to bridal gown appointments.");
 	}
 	if (streetSizeApprox.length < 1 || streetSizeApprox.length > 24) {
 		errors.push("Please enter an approximate street size.");
 	}
 	if (weddingDateRaw && !weddingDate) {
-		errors.push("Please enter a valid event or wedding date.");
+		errors.push("Please enter a valid wedding date.");
 	}
 	if (!isoDatePattern.test(preferredDate)) {
 		errors.push("Please choose a preferred appointment date.");
-	}
-	if (!allowedWindows.has(preferredWindow)) {
-		errors.push("Please choose a valid appointment time window.");
 	}
 	if (!allowedTimeline.has(timeline)) {
 		errors.push("Please choose your timeline.");
@@ -272,8 +222,8 @@ function validateFormData(formData: FormData): ValidationResult {
 	let guestCount: number | undefined;
 	if (guestCountRaw) {
 		const parsed = Number(guestCountRaw);
-		if (!Number.isInteger(parsed) || parsed < 0 || parsed > 6) {
-			errors.push("Guests bringing must be a whole number between 0 and 6.");
+		if (!Number.isInteger(parsed) || parsed < 0 || parsed > 5) {
+			errors.push("Guests bringing must be a whole number between 0 and 5.");
 		} else {
 			guestCount = parsed;
 		}
@@ -282,23 +232,8 @@ function validateFormData(formData: FormData): ValidationResult {
 	if (bridePhotos.length < 1) {
 		errors.push("Please upload at least one bridal inspiration photo.");
 	}
-	if (motherOfBridePhotos.length + motherOfGroomPhotos.length < 1) {
-		errors.push(
-			"Please upload inspiration for the mother of the bride and/or mother of the groom.",
-		);
-	}
 
 	validateImageGroup(bridePhotos, "Bride inspiration photos", errors);
-	validateImageGroup(
-		motherOfBridePhotos,
-		"Mother of the bride inspiration photos",
-		errors,
-	);
-	validateImageGroup(
-		motherOfGroomPhotos,
-		"Mother of the groom inspiration photos",
-		errors,
-	);
 
 	if (errors.length > 0) {
 		return { ok: false, errors };
@@ -314,7 +249,6 @@ function validateFormData(formData: FormData): ValidationResult {
 			streetSizeApprox,
 			weddingDate,
 			preferredDate,
-			preferredWindow,
 			timeline: timeline as TimelineRange,
 			guestCount,
 			budgetRange: budgetRange ? (budgetRange as BudgetRange) : undefined,
@@ -325,8 +259,6 @@ function validateFormData(formData: FormData): ValidationResult {
 		},
 		photos: {
 			bride: bridePhotos,
-			motherOfBride: motherOfBridePhotos,
-			motherOfGroom: motherOfGroomPhotos,
 		},
 	};
 }
@@ -429,9 +361,8 @@ function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string
 		["Shopping For", shoppingFocusLabels[data.shoppingFocus] ?? data.shoppingFocus],
 		["Approx. Street Size", data.streetSizeApprox],
 		["Preferred Appointment Date", data.preferredDate],
-		["Preferred Time Window", windowLabels[data.preferredWindow] ?? data.preferredWindow],
 		["Timeline", timelineLabels[data.timeline] ?? data.timeline],
-		["Event / Wedding Date", data.weddingDate ?? "Not provided"],
+		["Wedding Date", data.weddingDate ?? "Not provided"],
 		[
 			"Guests Bringing",
 			data.guestCount !== undefined ? String(data.guestCount) : "Not provided",
@@ -468,31 +399,24 @@ function buildEmailHtml(
 		)
 		.join("");
 
-	const renderPhotoSection = (title: string, urls: string[]) => {
-		if (urls.length === 0) {
-			return `<h3 style="margin:20px 0 8px;">${escapeHtml(title)}</h3><p style="margin:0;">No images uploaded.</p>`;
-		}
-
-		const links = urls
-			.map(
-				url =>
-					`<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer" style="display:inline-block;margin:0 8px 8px 0;"><img src="${escapeHtml(
-						url,
-					)}" alt="${escapeHtml(title)}" style="width:160px;height:auto;border:1px solid #e5e5e5;" /></a>`,
-			)
-			.join("");
-
-		return `<h3 style="margin:20px 0 8px;">${escapeHtml(title)}</h3><div>${links}</div>`;
-	};
+	const brideSection =
+		photos.bride.length === 0
+			? `<h3 style="margin:20px 0 8px;">Bride Inspiration</h3><p style="margin:0;">No images uploaded.</p>`
+			: `<h3 style="margin:20px 0 8px;">Bride Inspiration</h3><div>${photos.bride
+					.map(
+						url =>
+							`<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer" style="display:inline-block;margin:0 8px 8px 0;"><img src="${escapeHtml(
+								url,
+							)}" alt="Bride inspiration" style="width:160px;height:auto;border:1px solid #e5e5e5;" /></a>`,
+					)
+					.join("")}</div>`;
 
 	return `
 		<div style="font-family: Arial, sans-serif; color: #111; line-height: 1.5;">
 			<h2 style="margin:0 0 8px;">New Appointment Request</h2>
 			<p style="margin:0 0 16px; color:#444;">Submitted: ${escapeHtml(submittedAtIso)}</p>
 			<table style="border-collapse:collapse; width:100%; max-width:820px;">${rows}</table>
-			${renderPhotoSection("Bride Inspiration", photos.bride)}
-			${renderPhotoSection("Mother of the Bride Inspiration", photos.motherOfBride)}
-			${renderPhotoSection("Mother of the Groom Inspiration", photos.motherOfGroom)}
+			${brideSection}
 		</div>
 	`;
 }
@@ -506,20 +430,14 @@ function buildEmailText(
 		.map(([label, value]) => `${label}: ${value}`)
 		.join("\n");
 
-	const joinLinks = (label: string, urls: string[]) =>
-		`${label}:\n${urls.length > 0 ? urls.join("\n") : "No images uploaded."}`;
-
 	return [
 		"New Appointment Request",
 		`Submitted: ${submittedAtIso}`,
 		"",
 		rows,
 		"",
-		joinLinks("Bride Inspiration", photos.bride),
-		"",
-		joinLinks("Mother of the Bride Inspiration", photos.motherOfBride),
-		"",
-		joinLinks("Mother of the Groom Inspiration", photos.motherOfGroom),
+		"Bridge Inspiration:",
+		photos.bride.length > 0 ? photos.bride.join("\n") : "No images uploaded.",
 	].join("\n");
 }
 
@@ -564,19 +482,18 @@ function buildSmsBody(
 	data: AppointmentRequestData,
 	submittedAtIso: string,
 	photoUrls: string[],
-	photoCounts: { bride: number; motherOfBride: number; motherOfGroom: number },
 ): string {
 	const lines = [
 		"New Bridal Appointment Request",
 		`Name: ${data.fullName}`,
 		`Phone: ${data.phone}`,
 		`Email: ${data.email}`,
-		`Shopping: ${shoppingFocusLabels[data.shoppingFocus] ?? data.shoppingFocus}`,
-		`Date: ${data.preferredDate} (${windowLabels[data.preferredWindow] ?? data.preferredWindow})`,
+		`Date: ${data.preferredDate}`,
+		`Timeline: ${timelineLabels[data.timeline] ?? data.timeline}`,
 		`Street Size: ${data.streetSizeApprox}`,
+		`Guests: ${data.guestCount ?? "Not provided"}`,
 		`Contact Pref: ${contactLabels[data.contactPreference] ?? data.contactPreference}`,
 		`Submitted: ${submittedAtIso}`,
-		`Images - Bride: ${photoCounts.bride}, MOB: ${photoCounts.motherOfBride}, MOG: ${photoCounts.motherOfGroom}`,
 	];
 
 	if (photoUrls.length > 0) {
@@ -597,19 +514,10 @@ async function sendNotificationSms(
 	const from = process.env.TWILIO_FROM_PHONE!.trim();
 	const to = process.env.APPOINTMENT_NOTIFICATION_SMS_TO!.trim();
 
-	const photoUrls = [...photos.bride, ...photos.motherOfBride, ...photos.motherOfGroom].slice(
-		0,
-		10,
-	);
 	const body = buildSmsBody(
 		data,
 		submittedAtIso,
-		photoUrls,
-		{
-			bride: photos.bride.length,
-			motherOfBride: photos.motherOfBride.length,
-			motherOfGroom: photos.motherOfGroom.length,
-		},
+		photos.bride.slice(0, 10),
 	);
 
 	const params = new URLSearchParams();
@@ -666,9 +574,7 @@ export async function POST(request: Request) {
 				ok: false,
 				message:
 					"Appointment delivery is not configured yet. Please contact support.",
-				errors: [
-					`Missing environment variables: ${missingEnv.join(", ")}`,
-				],
+				errors: [`Missing environment variables: ${missingEnv.join(", ")}`],
 			},
 			{ status: 500 },
 		);
@@ -688,8 +594,6 @@ export async function POST(request: Request) {
 
 	let uploadedPhotos: UploadedPhotoGroup = {
 		bride: [],
-		motherOfBride: [],
-		motherOfGroom: [],
 	};
 
 	if (shouldUploadImages(notificationMode)) {
@@ -697,16 +601,6 @@ export async function POST(request: Request) {
 			uploadedPhotos = {
 				bride: await Promise.all(
 					validated.photos.bride.map(file => uploadImageToCloudinary(file)),
-				),
-				motherOfBride: await Promise.all(
-					validated.photos.motherOfBride.map(file =>
-						uploadImageToCloudinary(file),
-					),
-				),
-				motherOfGroom: await Promise.all(
-					validated.photos.motherOfGroom.map(file =>
-						uploadImageToCloudinary(file),
-					),
 				),
 			};
 		} catch (error) {
@@ -773,8 +667,6 @@ export async function POST(request: Request) {
 		},
 		photos: {
 			bride: uploadedPhotos.bride.length,
-			motherOfBride: uploadedPhotos.motherOfBride.length,
-			motherOfGroom: uploadedPhotos.motherOfGroom.length,
 		},
 	});
 

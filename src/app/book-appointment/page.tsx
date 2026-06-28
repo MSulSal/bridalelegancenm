@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 };
 
 const nextStepPoints = [
-	"Choose your preferred appointment day and time window.",
-	"Upload bridal inspiration plus mother-of-the-bride and/or mother-of-the-groom inspiration photos.",
-	"We review your timeline, size notes, and style direction before reaching out.",
-	"We contact you by your preferred method to confirm final appointment time.",
-	"If needed, we suggest the next closest available appointment window.",
+	"Choose your preferred appointment day and share your wedding timeline.",
+	"Upload at least one bridal inspiration image in a single upload field.",
+	"We review your size notes, guest count, and style direction before reaching out.",
+	"We contact you directly to confirm an available appointment time.",
+	"For now, bridal appointments may include up to 5 guests.",
 ] as const;
 
 export default function BookAppointmentPage() {
