@@ -4,7 +4,6 @@ export const legacySiteContent = {
 	canonicalPages: [
 		{ label: "Home", path: "/" },
 		{ label: "Bridal Gowns", path: "/bridal-gowns" },
-		{ label: "Mother of the Bride", path: "/mother-of-the-bride" },
 		{ label: "Accessories", path: "/accessories" },
 		{ label: "Contact for Appointment", path: "/contact-for-appointment" },
 	],
@@ -66,78 +65,74 @@ export const legacySiteContent = {
 		},
 		homeGallery: [
 			{
-				localPath: "/migration/legacy-site-images/home-gallery-1.jpg",
+				localPath: "/client-gallery-2026/img-6691.jpg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/IMG_2650.JPG",
-				alt: "Bridal Elegance gallery image one",
+					"/client-gallery-2026/img-6691.jpg",
+				alt: "Bride in a structured satin ballgown",
 			},
 			{
-				localPath: "/migration/legacy-site-images/home-gallery-2.jpg",
+				localPath: "/client-gallery-2026/img-6692.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/IMG_2646.JPG",
-				alt: "Bridal Elegance gallery image two",
+					"/client-gallery-2026/img-6692.jpeg",
+				alt: "Bride seated in a lace long-sleeve gown by a window",
 			},
 			{
-				localPath: "/migration/legacy-site-images/home-gallery-3.jpg",
+				localPath: "/client-gallery-2026/img-6693.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/IMG_7260-0001.jpg",
-				alt: "Bridal Elegance gallery image three",
+					"/client-gallery-2026/img-6693.jpeg",
+				alt: "Bride standing in a fitted gown with cathedral veil",
 			},
 			{
-				localPath: "/migration/legacy-site-images/home-gallery-4.jpg",
+				localPath: "/client-gallery-2026/img-6694.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/IMG_2645.JPG",
-				alt: "Bridal Elegance gallery image four",
+					"/client-gallery-2026/img-6694.jpeg",
+				alt: "Bride seated on a table in an embellished fitted gown",
 			},
 			{
-				localPath: "/migration/legacy-site-images/home-gallery-5.jpg",
+				localPath: "/client-gallery-2026/img-6699.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/IMG_Brides-0001.jpg",
-				alt: "Bridal Elegance gallery image five",
+					"/client-gallery-2026/img-6699.jpeg",
+				alt: "Bride in an appliqued ballgown smiling in studio",
 			},
 			{
-				localPath: "/migration/legacy-site-images/home-gallery-6.jpg",
+				localPath: "/client-gallery-2026/img-6704.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/IMG_2652.JPG",
-				alt: "Bridal Elegance gallery image six",
+					"/client-gallery-2026/img-6704.jpeg",
+				alt: "Bride in a floral appliqued ballgown in studio",
 			},
 		],
 		collectionHighlights: {
 			bridalDesigners: [
 				{
-					localPath:
-						"/migration/legacy-site-images/bridal-sottero-midgley.jpeg",
+					localPath: "/client-gallery-2026/img-6692.jpeg",
 					sourceUrl:
-						"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/Sottero-and-Midgley-Presley-21SC406-Main-AIV-.jpeg",
-					alt: "Sottero and Midgley featured gown",
+						"/client-gallery-2026/img-6692.jpeg",
+					alt: "Sottero and Midgley style bridal gown",
 				},
 				{
-					localPath:
-						"/migration/legacy-site-images/bridal-maggie.jpeg",
+					localPath: "/client-gallery-2026/img-6699.jpeg",
 					sourceUrl:
-						"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/Maggie-Sottero-Lorenza-21MT411-Alt3-BLS-uncro.jpeg",
-					alt: "Maggie Sottero featured gown",
+						"/client-gallery-2026/img-6699.jpeg",
+					alt: "Maggie Sottero style bridal gown",
 				},
 				{
-					localPath:
-						"/migration/legacy-site-images/bridal-rebecca.jpeg",
+					localPath: "/client-gallery-2026/img-6704.jpeg",
 					sourceUrl:
-						"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/Rebecca-Ingram-Rosemary-21RW379-Alt6-IV-uncro.jpeg",
-					alt: "Rebecca Ingram featured gown",
+						"/client-gallery-2026/img-6704.jpeg",
+					alt: "Rebecca Ingram style bridal gown",
 				},
 			],
 			motherOfBride: {
-				localPath: "/migration/legacy-site-images/mob-jasmine.jpg",
+				localPath: "/client-gallery-2026/img-6703.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/mother-of-the-bride-dresses.jpg",
-				alt: "Mother of the bride featured dress",
+					"/client-gallery-2026/img-6703.jpeg",
+				alt: "Bridal corset gown detail",
 			},
 			accessories: {
-				localPath:
-					"/migration/legacy-site-images/accessories-bel-aire.jpg",
+				localPath: "/client-gallery-2026/img-6701.jpeg",
 				sourceUrl:
-					"https://img1.wsimg.com/isteam/ip/c99f89a1-2c9a-4b6d-88ec-7a9f74d21294/Bel-Aire-Bridal-V7490C-2.jpg",
-				alt: "Bel Aire bridal accessories",
+					"/client-gallery-2026/img-6701.jpeg",
+				alt: "Pearled bridal bodice detail",
 			},
 		},
 	},

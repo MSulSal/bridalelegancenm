@@ -2,7 +2,7 @@ import { legacySiteContent } from "@/content/migration/legacy-site/legacy-conten
 
 export const homeContent = {
 	hero: {
-		title: "Bridal Elegance Atelier",
+		title: "Bridal Elegance NM",
 		supportLine: legacySiteContent.business.authorizedLine,
 		description:
 			"New Mexico's longest standing bridal boutique, now welcoming appointments in Albuquerque's Sawmill District near Historic Old Town.",
@@ -16,7 +16,7 @@ export const homeContent = {
 	collectionSection: {
 		heading: {
 			eyebrow: "Collections",
-			title: "Bridal Gowns, Mother Of The Bride, And Accessories",
+			title: "Bridal Gowns And Accessories",
 			description:
 				"Curated designer collections presented with a modern editorial boutique experience.",
 		},
@@ -49,21 +49,13 @@ export const homeContent = {
 	},
 	spotlightSection: {
 		heading: {
-			eyebrow: "Featured Categories",
-			title: "Legacy Offerings Preserved And Presented With Better Clarity",
+			eyebrow: "Boutique Highlights",
+			title: "Finishing Touches And An Appointment-First Experience",
 			description:
-				"These offerings stay true to business continuity while modernizing the customer experience.",
+				"Everything is designed to make browsing feel polished, focused, and easy to act on.",
 		},
 		ctaLabel: "Book Styling Appointment",
 		items: [
-			{
-				title: "Mother of the Bride",
-				copy: "Featured connection to Jasmine Bridal mother-of-the-bride styles.",
-				ctaLabel: "View Collection",
-				href: "/mother-of-the-bride",
-				image: legacySiteContent.imageLibrary.collectionHighlights
-					.motherOfBride,
-			},
 			{
 				title: "Accessories",
 				copy: "Bel Aire Bridal veils and headpieces to complete your look.",
@@ -77,7 +69,7 @@ export const homeContent = {
 				copy: "Personalized in-store guidance with direct boutique confirmation.",
 				ctaLabel: "Book Appointment",
 				href: "/book-appointment",
-				image: legacySiteContent.imageLibrary.hero,
+				image: legacySiteContent.imageLibrary.homeGallery[5],
 			},
 		],
 	},
@@ -126,34 +118,11 @@ export const homeContent = {
 	},
 } as const;
 
-export const motherOfBridePageContent = {
-	metadata: {
-		title: "Mother of the Bride",
-		description:
-			"Explore Mother of the Bride styling direction from Bridal Elegance Atelier.",
-	},
-	heading: {
-		eyebrow: "Occasion Styling",
-		title: "Mother of the Bride",
-		description:
-			"Elegant occasion styling with a boutique appointment experience and personalized guidance.",
-	},
-	summary:
-		"We help you refine silhouette, fit, and finish so your look feels confident, polished, and event-ready.",
-	featurePoints: [
-		"One-on-one appointment-first support.",
-		"Classic and modern occasion styling direction.",
-		"Accessory coordination for a complete look.",
-	],
-	previewImage: legacySiteContent.imageLibrary.collectionHighlights.motherOfBride,
-	externalCollection: legacySiteContent.externalLinks.motherOfBride,
-} as const;
-
 export const accessoriesPageContent = {
 	metadata: {
 		title: "Accessories",
 		description:
-			"Browse accessory styling direction from Bridal Elegance Atelier, including veils and finishing pieces.",
+			"Browse accessory styling direction from Bridal Elegance NM, including veils and finishing pieces.",
 	},
 	heading: {
 		eyebrow: "Finishing Pieces",

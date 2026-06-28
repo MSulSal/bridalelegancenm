@@ -3,7 +3,6 @@ import { BrandText } from "@/components/brand/brand-text";
 
 const footerLinks = [
 	{ href: "/collections", label: "Collections" },
-	{ href: "/mother-of-the-bride", label: "Mother of the Bride" },
 	{ href: "/accessories", label: "Accessories" },
 	{ href: "/#spotlights-preview", label: "Designer Spotlights" },
 	{ href: "/#about-preview", label: "About" },

@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 const nextStepPoints = [
-	"Choose payment method: card, Apple Pay, Google Pay, or PayPal.",
-	"Weekend deposits are $50 and weekday deposits are $35.",
-	"We review your requested date, timeline, size notes, and inspiration photos.",
+	"Choose your preferred appointment day and time window.",
+	"Upload bridal inspiration plus mother-of-the-bride and/or mother-of-the-groom inspiration photos.",
+	"We review your timeline, size notes, and style direction before reaching out.",
 	"We contact you by your preferred method to confirm final appointment time.",
 	"If needed, we suggest the next closest available appointment window.",
 ] as const;
@@ -56,7 +56,7 @@ export default function BookAppointmentPage() {
 						<article className="be-card p-6 sm:p-7">
 							<p className="be-kicker">Location</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								Visit Us In Albuquerque's Sawmill District
+								Visit Us In Albuquerque&apos;s Sawmill District
 							</h3>
 							<p className="mt-5 text-sm leading-7 text-[color:var(--ink-700)]">
 								{siteConfig.addressLine1}

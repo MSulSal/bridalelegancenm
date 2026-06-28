@@ -1,7 +1,6 @@
-﻿import { randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
-import { formatUsdFromCents, getDepositAmountCents } from "@/lib/appointments";
 
 type ContactPreference = "email" | "phone" | "text";
 type ShoppingFocus =
@@ -40,19 +39,6 @@ type AppointmentRequestData = {
 	instagramHandle?: string;
 	contactPreference: ContactPreference;
 	styleNotes?: string;
-	paymentMethod: "card" | "apple-pay" | "google-pay" | "paypal";
-	cardholderName?: string;
-	billingPostalCode?: string;
-	billingAddressLine1?: string;
-	billingAddressLine2?: string;
-	billingCity?: string;
-	billingState?: string;
-	expectedDepositAmountCents: number;
-	squarePaymentId?: string;
-	squareReceiptUrl?: string;
-	squareSourceType?: string;
-	paypalPayerEmail?: string;
-	paymentReference?: string;
 };
 
 type ValidationResult =
@@ -128,7 +114,6 @@ const budgetLabels: Record<string, string> = {
 };
 
 const allowedContactPreferences = new Set(["email", "phone", "text"]);
-
 const allowedShoppingFocus = new Set([
 	"bridal-gown",
 	"mother-of-bride",
@@ -136,7 +121,6 @@ const allowedShoppingFocus = new Set([
 	"special-occasion",
 	"not-sure",
 ]);
-
 const allowedTimeline = new Set([
 	"asap",
 	"1-3-months",
@@ -145,7 +129,6 @@ const allowedTimeline = new Set([
 	"over-12-months",
 	"just-browsing",
 ]);
-
 const allowedBudgetRanges = new Set([
 	"under-1500",
 	"1500-2500",
@@ -154,18 +137,11 @@ const allowedBudgetRanges = new Set([
 	"not-sure",
 ]);
 
-const allowedPaymentMethods = new Set([
-	"card",
-	"apple-pay",
-	"google-pay",
-	"paypal",
-]);
+type NotificationMode = "both" | "text" | "email";
 
 function readString(value: FormDataEntryValue | null): string {
 	return typeof value === "string" ? value.trim() : "";
 }
-
-type NotificationMode = "both" | "text" | "email";
 
 function getNotificationMode(): NotificationMode {
 	const raw = (process.env.APPOINTMENT_NOTIFICATION_MODE ?? "both")
@@ -176,7 +152,6 @@ function getNotificationMode(): NotificationMode {
 }
 
 function shouldUploadImages(mode: NotificationMode): boolean {
-	// All modes keep Cloudinary uploads so links can be included in notifications.
 	return mode === "both" || mode === "email" || mode === "text";
 }
 
@@ -190,15 +165,6 @@ function readImageFiles(formData: FormData, key: string): File[] {
 	return formData
 		.getAll(key)
 		.filter(entry => entry instanceof File && entry.size > 0) as File[];
-}
-
-function isValidUrl(value: string): boolean {
-	try {
-		const parsed = new URL(value);
-		return parsed.protocol === "http:" || parsed.protocol === "https:";
-	} catch {
-		return false;
-	}
 }
 
 function validateImageGroup(
@@ -242,21 +208,6 @@ function validateFormData(formData: FormData): ValidationResult {
 	const styleNotes = readString(formData.get("styleNotes"));
 	const guestCountRaw = readString(formData.get("guestCount"));
 	const policyAccepted = readString(formData.get("policyAccepted")) === "on";
-	const paymentMethod = readString(formData.get("paymentMethod"));
-	const cardholderName = readString(formData.get("cardholderName"));
-	const billingPostalCode = readString(formData.get("billingPostalCode"));
-	const billingAddressLine1 = readString(formData.get("billingAddressLine1"));
-	const billingAddressLine2 = readString(formData.get("billingAddressLine2"));
-	const billingCity = readString(formData.get("billingCity"));
-	const billingState = readString(formData.get("billingState")).toUpperCase();
-	const squarePaymentId = readString(formData.get("squarePaymentId"));
-	const squareReceiptUrl = readString(formData.get("squareReceiptUrl"));
-	const squareSourceType = readString(formData.get("squareSourceType"));
-	const squareAmountCentsRaw = readString(formData.get("squareAmountCents"));
-	const paypalPayerEmail = readString(
-		formData.get("paypalPayerEmail"),
-	).toLowerCase();
-	const paymentReference = readString(formData.get("paymentReference"));
 
 	const bridePhotos = readImageFiles(formData, "brideInspirationPhotos");
 	const motherOfBridePhotos = readImageFiles(
@@ -317,26 +268,6 @@ function validateFormData(formData: FormData): ValidationResult {
 			"Please confirm that this is a request pending confirmation.",
 		);
 	}
-	if (!allowedPaymentMethods.has(paymentMethod)) {
-		errors.push("Please choose a payment method.");
-	}
-	if (squareReceiptUrl && !isValidUrl(squareReceiptUrl)) {
-		errors.push("Square receipt URL is invalid.");
-	}
-	if (paymentReference.length > 120) {
-		errors.push("Payment reference must be 120 characters or less.");
-	}
-
-	const expectedDepositAmountCents = getDepositAmountCents(preferredDate);
-	let squareAmountCents: number | undefined;
-	if (squareAmountCentsRaw) {
-		const parsed = Number(squareAmountCentsRaw);
-		if (!Number.isInteger(parsed) || parsed < 100) {
-			errors.push("Square payment amount is invalid.");
-		} else {
-			squareAmountCents = parsed;
-		}
-	}
 
 	let guestCount: number | undefined;
 	if (guestCountRaw) {
@@ -369,47 +300,6 @@ function validateFormData(formData: FormData): ValidationResult {
 		errors,
 	);
 
-	if (paymentMethod === "paypal") {
-		if (!emailPattern.test(paypalPayerEmail)) {
-			errors.push("Please enter a valid PayPal email.");
-		}
-	} else if (
-		paymentMethod === "card" ||
-		paymentMethod === "apple-pay" ||
-		paymentMethod === "google-pay"
-	) {
-		if (!squarePaymentId) {
-			errors.push("Square payment is required before submitting.");
-		}
-		if (paymentMethod === "card") {
-			if (cardholderName.length < 2) {
-				errors.push("Please provide the cardholder name.");
-			}
-			if (billingAddressLine1.length < 3) {
-				errors.push("Please provide a valid billing street address.");
-			}
-			if (billingCity.length < 2) {
-				errors.push("Please provide a valid billing city.");
-			}
-			if (!/^[A-Z]{2}$/.test(billingState)) {
-				errors.push("Please provide a valid 2-letter billing state.");
-			}
-			if (!/^\d{5}(-\d{4})?$/.test(billingPostalCode)) {
-				errors.push("Please provide a valid billing ZIP code.");
-			}
-		}
-		if (
-			squareAmountCents === undefined ||
-			squareAmountCents !== expectedDepositAmountCents
-		) {
-			errors.push(
-				`Square payment amount must match the required deposit (${formatUsdFromCents(
-					expectedDepositAmountCents,
-				)}).`,
-			);
-		}
-	}
-
 	if (errors.length > 0) {
 		return { ok: false, errors };
 	}
@@ -432,23 +322,6 @@ function validateFormData(formData: FormData): ValidationResult {
 			instagramHandle: instagramHandle || undefined,
 			contactPreference: contactPreference as ContactPreference,
 			styleNotes: styleNotes || undefined,
-				paymentMethod: paymentMethod as
-					| "card"
-					| "apple-pay"
-					| "google-pay"
-					| "paypal",
-				cardholderName: cardholderName || undefined,
-				billingPostalCode: billingPostalCode || undefined,
-				billingAddressLine1: billingAddressLine1 || undefined,
-				billingAddressLine2: billingAddressLine2 || undefined,
-				billingCity: billingCity || undefined,
-				billingState: billingState || undefined,
-				expectedDepositAmountCents,
-				squarePaymentId: squarePaymentId || undefined,
-				squareReceiptUrl: squareReceiptUrl || undefined,
-			squareSourceType: squareSourceType || undefined,
-			paypalPayerEmail: paypalPayerEmail || undefined,
-			paymentReference: paymentReference || undefined,
 		},
 		photos: {
 			bride: bridePhotos,
@@ -549,15 +422,6 @@ function escapeHtml(value: string): string {
 }
 
 function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string]> {
-	const paymentMethodLabel =
-		data.paymentMethod === "card"
-			? "Card"
-			: data.paymentMethod === "apple-pay"
-				? "Apple Pay"
-				: data.paymentMethod === "google-pay"
-					? "Google Pay"
-					: "PayPal";
-
 	return [
 		["Name", data.fullName],
 		["Email", data.email],
@@ -585,28 +449,6 @@ function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string
 			contactLabels[data.contactPreference] ?? data.contactPreference,
 		],
 		["Style Notes", data.styleNotes ?? "Not provided"],
-			["Payment Method", paymentMethodLabel],
-			["Cardholder Name", data.cardholderName ?? "Not provided"],
-			["Billing Street Address", data.billingAddressLine1 ?? "Not provided"],
-			[
-				"Billing Address Line 2",
-				data.billingAddressLine2 ?? "Not provided",
-			],
-			["Billing City", data.billingCity ?? "Not provided"],
-			["Billing State", data.billingState ?? "Not provided"],
-			["Billing ZIP", data.billingPostalCode ?? "Not provided"],
-			[
-				"Required Deposit",
-				formatUsdFromCents(data.expectedDepositAmountCents),
-		],
-		["Square Payment ID", data.squarePaymentId ?? "Not provided"],
-		["Square Receipt URL", data.squareReceiptUrl ?? "Not provided"],
-		["Square Source Type", data.squareSourceType ?? "Not provided"],
-		["PayPal Payer Email", data.paypalPayerEmail ?? "Not provided"],
-		[
-			"Payment Reference",
-			data.paymentReference ?? "Not provided",
-		],
 	];
 }
 
@@ -628,7 +470,7 @@ function buildEmailHtml(
 
 	const renderPhotoSection = (title: string, urls: string[]) => {
 		if (urls.length === 0) {
-			return `<h3 style=\"margin:20px 0 8px;\">${escapeHtml(title)}</h3><p style=\"margin:0;\">No images uploaded.</p>`;
+			return `<h3 style="margin:20px 0 8px;">${escapeHtml(title)}</h3><p style="margin:0;">No images uploaded.</p>`;
 		}
 
 		const links = urls
@@ -640,7 +482,7 @@ function buildEmailHtml(
 			)
 			.join("");
 
-		return `<h3 style=\"margin:20px 0 8px;\">${escapeHtml(title)}</h3><div>${links}</div>`;
+		return `<h3 style="margin:20px 0 8px;">${escapeHtml(title)}</h3><div>${links}</div>`;
 	};
 
 	return `
@@ -724,20 +566,6 @@ function buildSmsBody(
 	photoUrls: string[],
 	photoCounts: { bride: number; motherOfBride: number; motherOfGroom: number },
 ): string {
-	const paymentMethodLabel =
-		data.paymentMethod === "card"
-			? "Card"
-			: data.paymentMethod === "apple-pay"
-				? "Apple Pay"
-				: data.paymentMethod === "google-pay"
-					? "Google Pay"
-					: "PayPal";
-
-	const paymentSummary =
-		data.paymentMethod === "paypal"
-			? `PayPal: ${data.paypalPayerEmail ?? "pending"}`
-			: `Square: ${data.squarePaymentId ?? "n/a"}`;
-
 	const lines = [
 		"New Bridal Appointment Request",
 		`Name: ${data.fullName}`,
@@ -746,8 +574,7 @@ function buildSmsBody(
 		`Shopping: ${shoppingFocusLabels[data.shoppingFocus] ?? data.shoppingFocus}`,
 		`Date: ${data.preferredDate} (${windowLabels[data.preferredWindow] ?? data.preferredWindow})`,
 		`Street Size: ${data.streetSizeApprox}`,
-		`Payment: ${paymentMethodLabel} ${formatUsdFromCents(data.expectedDepositAmountCents)}`,
-		paymentSummary,
+		`Contact Pref: ${contactLabels[data.contactPreference] ?? data.contactPreference}`,
 		`Submitted: ${submittedAtIso}`,
 		`Images - Bride: ${photoCounts.bride}, MOB: ${photoCounts.motherOfBride}, MOG: ${photoCounts.motherOfGroom}`,
 	];
@@ -764,7 +591,6 @@ async function sendNotificationSms(
 	data: AppointmentRequestData,
 	photos: UploadedPhotoGroup,
 	submittedAtIso: string,
-	notificationMode: NotificationMode,
 ): Promise<void> {
 	const accountSid = process.env.TWILIO_ACCOUNT_SID!.trim();
 	const authToken = process.env.TWILIO_AUTH_TOKEN!.trim();
@@ -790,12 +616,6 @@ async function sendNotificationSms(
 	params.set("From", from);
 	params.set("To", to);
 	params.set("Body", body);
-	const includeMmsMedia = notificationMode === "both";
-	if (includeMmsMedia) {
-		for (const url of photoUrls) {
-			params.append("MediaUrl", url);
-		}
-	}
 
 	const basicAuth = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
 	const response = await fetch(
@@ -904,7 +724,6 @@ export async function POST(request: Request) {
 
 	const submittedAtIso = new Date().toISOString();
 	const deliveredChannels: string[] = [];
-	const notificationErrors: string[] = [];
 
 	if (notificationMode === "both" || notificationMode === "email") {
 		try {
@@ -916,22 +735,19 @@ export async function POST(request: Request) {
 			deliveredChannels.push("email");
 		} catch (error) {
 			console.error("[appointment-request] Email delivery error", error);
-			notificationErrors.push("email");
 		}
 	}
 
-		if (notificationMode === "both" || notificationMode === "text") {
-			try {
-				await sendNotificationSms(
-					validated.data,
-					uploadedPhotos,
-					submittedAtIso,
-					notificationMode,
-				);
-				deliveredChannels.push("text");
-			} catch (error) {
+	if (notificationMode === "both" || notificationMode === "text") {
+		try {
+			await sendNotificationSms(
+				validated.data,
+				uploadedPhotos,
+				submittedAtIso,
+			);
+			deliveredChannels.push("text");
+		} catch (error) {
 			console.error("[appointment-request] SMS delivery error", error);
-			notificationErrors.push("text");
 		}
 	}
 
@@ -940,7 +756,7 @@ export async function POST(request: Request) {
 			{
 				ok: false,
 				message:
-					"Your payment and details were received, but notifications failed to send. Please call the boutique now.",
+					"Your appointment details were received, but notifications failed to send. Please call the boutique now.",
 			},
 			{ status: 502 },
 		);
@@ -964,9 +780,8 @@ export async function POST(request: Request) {
 
 	return NextResponse.json({
 		ok: true,
-		message: `Appointment request received. Payment verified and details delivered by ${deliveredChannels.join(
+		message: `Appointment request received. Details delivered by ${deliveredChannels.join(
 			" and ",
 		)}.`,
 	});
 }
-
