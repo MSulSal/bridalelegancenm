@@ -23,7 +23,6 @@ const budgetRanges = [
 	{ value: "1500-2500", label: "$1,500 to $2,500" },
 	{ value: "2500-4000", label: "$2,500 to $3,000" },
 	{ value: "4000-plus", label: "$3,000+" },
-	{ value: "not-sure", label: "Not sure yet" },
 ] as const;
 
 const fieldClass =
@@ -308,10 +307,9 @@ export function AppointmentRequestForm() {
 					<select
 						id="budgetRange"
 						name="budgetRange"
-						defaultValue=""
+						defaultValue="under-1500"
 						className={fieldClass}
 					>
-						<option value="">Prefer not to say</option>
 						{budgetRanges.map(option => (
 							<option key={option.value} value={option.value}>
 								{option.label}

@@ -15,8 +15,7 @@ type BudgetRange =
 	| "under-1500"
 	| "1500-2500"
 	| "2500-4000"
-	| "4000-plus"
-	| "not-sure";
+	| "4000-plus";
 
 type AppointmentRequestData = {
 	fullName: string;
@@ -78,7 +77,6 @@ const budgetLabels: Record<string, string> = {
 	"1500-2500": "$1,500 to $2,500",
 	"2500-4000": "$2,500 to $3,000",
 	"4000-plus": "$3,000+",
-	"not-sure": "Not sure yet",
 };
 
 const allowedContactPreferences = new Set(["email", "phone", "text"]);
@@ -96,7 +94,6 @@ const allowedBudgetRanges = new Set([
 	"1500-2500",
 	"2500-4000",
 	"4000-plus",
-	"not-sure",
 ]);
 
 type NotificationMode = "both" | "text" | "email";
