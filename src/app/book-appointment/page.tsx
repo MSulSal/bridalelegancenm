@@ -19,8 +19,9 @@ export default function BookAppointmentPage() {
 		calcomNamespace.length > 0 && calcomLink.length > 0;
 	const nextStepPoints = hasCalcomEmbed
 		? [
+				"Submit your bridal details in the intake form so the boutique keeps the extra notes, sizing, budget, and inspiration fields that matter.",
 				"Choose from the live appointment dates and times the boutique makes available in Cal.com.",
-				"The boutique can adjust availability, buffers, and blackout dates directly without a custom backend.",
+				"The boutique can adjust availability, buffers, and blackout dates directly in Cal.com without a custom backend.",
 				"For now, bridal appointments may include up to 4 guests.",
 			]
 		: [
@@ -41,29 +42,31 @@ export default function BookAppointmentPage() {
 				/>
 
 				<div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-					{hasCalcomEmbed ? (
-						<article className="be-card overflow-hidden bg-white">
-							<div className="border-b border-[color:var(--line-subtle)] px-6 py-6 sm:px-7">
-								<p className="be-kicker">Live Appointment Calendar</p>
-								<h2 className="mt-2 text-2xl leading-tight">
-									Book directly from the boutique&apos;s available dates.
-								</h2>
-								<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
-									The scheduler sits directly inside the page so the experience stays polished and on-brand while the boutique controls availability in Cal.com.
-								</p>
-							</div>
-							<div className="bg-white p-2 sm:p-3">
-								<div className="min-h-[980px] rounded-[2px] border border-[color:var(--line-subtle)] bg-white">
-									<CalcomEmbed
-										namespace={calcomNamespace}
-										calLink={calcomLink}
-									/>
-								</div>
-							</div>
-						</article>
-					) : (
+					<div className="space-y-6">
 						<AppointmentRequestForm />
-					)}
+
+						{hasCalcomEmbed ? (
+							<article className="be-card overflow-hidden bg-white">
+								<div className="border-b border-[color:var(--line-subtle)] px-6 py-6 sm:px-7">
+									<p className="be-kicker">Step 2: Live Appointment Calendar</p>
+									<h2 className="mt-2 text-2xl leading-tight">
+										Choose an available appointment time.
+									</h2>
+									<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
+										Your detailed intake stays with Bridal Elegance here, and the scheduler only handles the live date and time selection.
+									</p>
+								</div>
+								<div className="bg-white p-2 sm:p-3">
+									<div className="min-h-[980px] rounded-[2px] border border-[color:var(--line-subtle)] bg-white">
+										<CalcomEmbed
+											namespace={calcomNamespace}
+											calLink={calcomLink}
+										/>
+									</div>
+								</div>
+							</article>
+						) : null}
+					</div>
 
 					<aside className="space-y-4">
 						<article className="be-card p-6 sm:p-7">
