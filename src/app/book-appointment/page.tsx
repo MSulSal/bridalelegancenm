@@ -15,7 +15,7 @@ const nextStepPoints = [
 	"Upload at least one bridal inspiration image in a single upload field.",
 	"We review your size notes, guest count, and style direction before reaching out.",
 	"We contact you directly to confirm an available appointment time.",
-	"For now, bridal appointments may include up to 5 guests.",
+	"For now, bridal appointments may include up to 4 guests.",
 ] as const;
 
 export default function BookAppointmentPage() {
@@ -56,7 +56,7 @@ export default function BookAppointmentPage() {
 						<article className="be-card p-6 sm:p-7">
 							<p className="be-kicker">Location</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								Visit Us In Albuquerque&apos;s Sawmill District
+								Visit Us In Albuquerque
 							</h3>
 							<p className="mt-5 text-sm leading-7 text-[color:var(--ink-700)]">
 								{siteConfig.addressLine1}
@@ -64,7 +64,7 @@ export default function BookAppointmentPage() {
 								{siteConfig.addressLine2}
 							</p>
 							<p className="mt-3 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-								Near Historic Old Town Albuquerque
+								North of Sawmill District and Old Town
 							</p>
 							<div className="mt-5 overflow-hidden border border-[color:var(--line-subtle)] bg-white">
 								<iframe

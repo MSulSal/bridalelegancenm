@@ -37,21 +37,16 @@ export default function HomePage() {
 									nm={
 										<>
 											Bridal Elegance{" "}
-											<span className="relative -top-[0.08em] text-[0.58em] tracking-[0.14em]">
+											<span className="relative -top-[0.08em] text-[0.58em] font-semibold tracking-[0.14em]">
 												NM
 											</span>
 										</>
 									}
-									atelier="Bridal Elegance Atelier"
+									atelier="Bridal Elegance NM"
 								/>
 							</h1>
 							<p className="mt-3 text-xs uppercase tracking-[0.16em] text-white/85">
 								{homeContent.hero.supportLine}
-							</p>
-							<p
-								className={`mt-5 text-sm leading-7 text-white/92 sm:text-base ${styles.heroDescription}`}
-							>
-								{homeContent.hero.description}
 							</p>
 							<div className="mt-7 flex flex-wrap gap-3">
 								<a

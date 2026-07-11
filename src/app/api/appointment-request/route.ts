@@ -222,8 +222,8 @@ function validateFormData(formData: FormData): ValidationResult {
 	let guestCount: number | undefined;
 	if (guestCountRaw) {
 		const parsed = Number(guestCountRaw);
-		if (!Number.isInteger(parsed) || parsed < 0 || parsed > 5) {
-			errors.push("Guests bringing must be a whole number between 0 and 5.");
+		if (!Number.isInteger(parsed) || parsed < 0 || parsed > 4) {
+			errors.push("Guests bringing must be a whole number between 0 and 4.");
 		} else {
 			guestCount = parsed;
 		}

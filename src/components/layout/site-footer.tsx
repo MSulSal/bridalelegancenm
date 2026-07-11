@@ -5,7 +5,6 @@ const footerLinks = [
 	{ href: "/collections", label: "Collections" },
 	{ href: "/accessories", label: "Accessories" },
 	{ href: "/#spotlights-preview", label: "Designer Spotlights" },
-	{ href: "/#about-preview", label: "About" },
 	{ href: siteConfig.appointmentHref, label: siteConfig.appointmentLabel },
 ] as const;
 
@@ -20,12 +19,12 @@ export function SiteFooter() {
 						<p className="be-kicker">
 							<BrandText
 								nm="Bridal Elegance NM"
-								atelier="Bridal Elegance Atelier"
+								atelier="Bridal Elegance NM"
 							/>
 						</p>
 						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
 							<BrandText
-								nm={`${siteConfig.tagline} Located in Albuquerque's Sawmill District near Historic Old Town.`}
+								nm={`${siteConfig.tagline} Located in Albuquerque, north of Sawmill District and Old Town.`}
 								atelier={siteConfig.tagline}
 							/>
 						</p>
@@ -86,7 +85,7 @@ export function SiteFooter() {
 						(c) {year}{" "}
 						<BrandText
 							nm="Bridal Elegance NM"
-							atelier="Bridal Elegance Atelier"
+							atelier="Bridal Elegance NM"
 						/>
 						. All rights reserved.
 					</p>

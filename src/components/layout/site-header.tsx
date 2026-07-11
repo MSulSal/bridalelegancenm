@@ -19,7 +19,6 @@ const navItems = [
 	{ href: "/", label: "Home" },
 	{ href: "/collections", label: "Collections" },
 	{ href: "/accessories", label: "Accessories" },
-	{ href: "/#about-preview", label: "About" },
 ] as const;
 
 function getServerThemeSnapshot(): ThemeId {

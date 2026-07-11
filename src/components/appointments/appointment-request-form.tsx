@@ -217,19 +217,19 @@ export function AppointmentRequestForm() {
 
 				<div>
 					<label htmlFor="guestCount" className={labelClass}>
-						Guests Bringing (0-5)
+						Guests Bringing (0-4)
 					</label>
 					<input
 						id="guestCount"
 						name="guestCount"
 						type="number"
 						min={0}
-						max={5}
+						max={4}
 						step={1}
 						className={fieldClass}
 					/>
 					<p className="mt-2 text-[11px] uppercase tracking-[0.1em] text-[color:var(--ink-500)]">
-						Up to 5 guests for now.
+						Up to 4 guests for now.
 					</p>
 				</div>
 
