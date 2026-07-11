@@ -76,8 +76,8 @@ const timelineLabels: Record<string, string> = {
 const budgetLabels: Record<string, string> = {
 	"under-1500": "Under $1,500",
 	"1500-2500": "$1,500 to $2,500",
-	"2500-4000": "$2,500 to $4,000",
-	"4000-plus": "$4,000+",
+	"2500-4000": "$2,500 to $3,000",
+	"4000-plus": "$3,000+",
 	"not-sure": "Not sure yet",
 };
 
