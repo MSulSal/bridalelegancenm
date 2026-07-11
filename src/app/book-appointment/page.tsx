@@ -11,10 +11,31 @@ export const metadata: Metadata = {
 	description: appointmentPageContent.metadata.description,
 };
 
+function normalizeCalcomLink(rawValue: string): string {
+	if (!rawValue) return "";
+
+	try {
+		const parsed = new URL(rawValue);
+		return parsed.pathname.replace(/^\/+/, "");
+	} catch {
+		return rawValue.replace(/^\/+/, "");
+	}
+}
+
+function deriveCalcomNamespace(calLink: string): string {
+	const segments = calLink.split("/").filter(Boolean);
+	return segments.at(-1) ?? "";
+}
+
 export default function BookAppointmentPage() {
+	const calcomLink = normalizeCalcomLink(
+		process.env.NEXT_PUBLIC_CALCOM_LINK?.trim() ??
+			process.env.NEXT_PUBLIC_CALCOM_EMBED_URL?.trim() ??
+			"",
+	);
 	const calcomNamespace =
-		process.env.NEXT_PUBLIC_CALCOM_NAMESPACE?.trim() ?? "";
-	const calcomLink = process.env.NEXT_PUBLIC_CALCOM_LINK?.trim() ?? "";
+		process.env.NEXT_PUBLIC_CALCOM_NAMESPACE?.trim() ??
+		deriveCalcomNamespace(calcomLink);
 	const hasCalcomEmbed =
 		calcomNamespace.length > 0 && calcomLink.length > 0;
 	const nextStepPoints = hasCalcomEmbed
