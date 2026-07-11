@@ -10,15 +10,24 @@ export const metadata: Metadata = {
 	description: appointmentPageContent.metadata.description,
 };
 
-const nextStepPoints = [
-	"Choose your preferred appointment day and share your wedding timeline.",
-	"Upload at least one bridal inspiration image in a single upload field.",
-	"We review your size notes, guest count, and style direction before reaching out.",
-	"We contact you directly to confirm an available appointment time.",
-	"For now, bridal appointments may include up to 4 guests.",
-] as const;
-
 export default function BookAppointmentPage() {
+	const calcomEmbedUrl =
+		process.env.NEXT_PUBLIC_CALCOM_EMBED_URL?.trim() ?? "";
+	const hasCalcomEmbed = calcomEmbedUrl.length > 0;
+	const nextStepPoints = hasCalcomEmbed
+		? [
+				"Choose from the live appointment dates and times the boutique makes available in Cal.com.",
+				"The boutique can adjust availability, buffers, and blackout dates directly without a custom backend.",
+				"For now, bridal appointments may include up to 4 guests.",
+			]
+		: [
+				"Choose your preferred appointment day and share your wedding timeline.",
+				"Upload at least one bridal inspiration image in a single upload field.",
+				"We review your size notes, guest count, and style direction before reaching out.",
+				"We contact you directly to confirm an available appointment time.",
+				"For now, bridal appointments may include up to 4 guests.",
+			];
+
 	return (
 		<SiteShell>
 			<section className="be-section pt-12 md:pt-20">
@@ -29,7 +38,29 @@ export default function BookAppointmentPage() {
 				/>
 
 				<div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-					<AppointmentRequestForm />
+					{hasCalcomEmbed ? (
+						<article className="be-card overflow-hidden bg-white">
+							<div className="border-b border-[color:var(--line-subtle)] px-6 py-6 sm:px-7">
+								<p className="be-kicker">Live Appointment Calendar</p>
+								<h2 className="mt-2 text-2xl leading-tight">
+									Book directly from the boutique&apos;s available dates.
+								</h2>
+								<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
+									The scheduler sits directly inside the page so the experience stays polished and on-brand while the boutique controls availability in Cal.com.
+								</p>
+							</div>
+							<div className="bg-white p-2 sm:p-3">
+								<iframe
+									title="Bridal Elegance appointment scheduler"
+									src={calcomEmbedUrl}
+									className="block min-h-[980px] w-full rounded-[2px] border border-[color:var(--line-subtle)] bg-white"
+									loading="lazy"
+								/>
+							</div>
+						</article>
+					) : (
+						<AppointmentRequestForm />
+					)}
 
 					<aside className="space-y-4">
 						<article className="be-card p-6 sm:p-7">
@@ -88,9 +119,13 @@ export default function BookAppointmentPage() {
 						</article>
 
 						<article className="be-card p-6 sm:p-7">
-							<p className="be-kicker">After You Submit</p>
+							<p className="be-kicker">
+								{hasCalcomEmbed ? "How Scheduling Works" : "After You Submit"}
+							</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								We confirm directly with you.
+								{hasCalcomEmbed
+									? "The boutique controls availability directly."
+									: "We confirm directly with you."}
 							</h3>
 							<ul className="mt-5 grid gap-3">
 								{nextStepPoints.map(item => (
