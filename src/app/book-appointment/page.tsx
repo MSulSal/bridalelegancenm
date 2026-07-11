@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { appointmentPageContent } from "@/content/site-content";
 import { AppointmentRequestForm } from "@/components/appointments/appointment-request-form";
+import { CalcomEmbed } from "@/components/appointments/calcom-embed";
 import { SiteShell } from "@/components/layout/site-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { siteConfig } from "@/lib/site";
@@ -11,9 +12,11 @@ export const metadata: Metadata = {
 };
 
 export default function BookAppointmentPage() {
-	const calcomEmbedUrl =
-		process.env.NEXT_PUBLIC_CALCOM_EMBED_URL?.trim() ?? "";
-	const hasCalcomEmbed = calcomEmbedUrl.length > 0;
+	const calcomNamespace =
+		process.env.NEXT_PUBLIC_CALCOM_NAMESPACE?.trim() ?? "";
+	const calcomLink = process.env.NEXT_PUBLIC_CALCOM_LINK?.trim() ?? "";
+	const hasCalcomEmbed =
+		calcomNamespace.length > 0 && calcomLink.length > 0;
 	const nextStepPoints = hasCalcomEmbed
 		? [
 				"Choose from the live appointment dates and times the boutique makes available in Cal.com.",
@@ -50,12 +53,12 @@ export default function BookAppointmentPage() {
 								</p>
 							</div>
 							<div className="bg-white p-2 sm:p-3">
-								<iframe
-									title="Bridal Elegance appointment scheduler"
-									src={calcomEmbedUrl}
-									className="block min-h-[980px] w-full rounded-[2px] border border-[color:var(--line-subtle)] bg-white"
-									loading="lazy"
-								/>
+								<div className="min-h-[980px] rounded-[2px] border border-[color:var(--line-subtle)] bg-white">
+									<CalcomEmbed
+										namespace={calcomNamespace}
+										calLink={calcomLink}
+									/>
+								</div>
 							</div>
 						</article>
 					) : (
