@@ -19,7 +19,7 @@ const timelineOptions = [
 ] as const;
 
 const budgetRanges = [
-	{ value: "under-1500", label: "Under $1,500" },
+	{ value: "under-1500", label: "$500 to $1,000" },
 	{ value: "1500-2500", label: "$1,500 to $2,500" },
 	{ value: "2500-4000", label: "$2,500 to $3,000" },
 	{ value: "4000-plus", label: "$3,000+" },
