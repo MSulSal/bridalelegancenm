@@ -130,11 +130,19 @@ function doesIntervalBlockDate(
 	dateEnd: Date,
 	busyIntervals: Array<{ start: Date; end: Date }>,
 ): boolean {
+	const minimumBlockingOverlapMs = 12 * 60 * 60 * 1000;
+
 	for (const interval of busyIntervals) {
-		if (
-			interval.start.getTime() <= dateStart.getTime() &&
-			interval.end.getTime() >= dateEnd.getTime()
-		) {
+		const overlapStart = Math.max(
+			interval.start.getTime(),
+			dateStart.getTime(),
+		);
+		const overlapEnd = Math.min(interval.end.getTime(), dateEnd.getTime());
+		const overlapMs = overlapEnd - overlapStart;
+
+		// Treat long overlaps as a date block so all-day events still work even
+		// if the Google Calendar timezone doesn't exactly match our local one.
+		if (overlapMs >= minimumBlockingOverlapMs) {
 			return true;
 		}
 	}
