@@ -27,13 +27,29 @@ type GoogleFreeBusyResponse = {
 	>;
 };
 
-type BusyInterval = {
+type GoogleCalendarListResponse = {
+	items?: Array<{
+		start?: {
+			date?: string;
+			dateTime?: string;
+		};
+		end?: {
+			date?: string;
+			dateTime?: string;
+		};
+		status?: string;
+		transparency?: string;
+	}>;
+};
+
+export type CalendarEventInterval = {
 	start: Date;
 	end: Date;
 };
 
 const googleTokenUrl = "https://oauth2.googleapis.com/token";
 const googleFreeBusyUrl = "https://www.googleapis.com/calendar/v3/freeBusy";
+const googleCalendarEventsUrl = "https://www.googleapis.com/calendar/v3/calendars";
 const googleCalendarScope = "https://www.googleapis.com/auth/calendar.readonly";
 
 function encodeBase64Url(value: string): string {
@@ -135,7 +151,7 @@ export function isGoogleCalendarAvailabilityConfigured(): boolean {
 export async function fetchGoogleCalendarBusyIntervals(
 	timeMinIso: string,
 	timeMaxIso: string,
-): Promise<BusyInterval[]> {
+): Promise<CalendarEventInterval[]> {
 	const config = getGoogleCalendarConfig();
 	if (!config) return [];
 
@@ -169,4 +185,69 @@ export async function fetchGoogleCalendarBusyIntervals(
 		})) ?? [];
 
 	return busy.sort((left, right) => left.start.getTime() - right.start.getTime());
+}
+
+function parseGoogleEventDate(value: { date?: string; dateTime?: string } | undefined): Date | null {
+	if (!value) return null;
+	if (value.dateTime) {
+		return new Date(value.dateTime);
+	}
+	if (value.date) {
+		return new Date(`${value.date}T00:00:00.000Z`);
+	}
+	return null;
+}
+
+export async function fetchGoogleCalendarEvents(
+	timeMinIso: string,
+	timeMaxIso: string,
+): Promise<CalendarEventInterval[]> {
+	const config = getGoogleCalendarConfig();
+	if (!config) return [];
+
+	const accessToken = await getGoogleAccessToken(config);
+	const params = new URLSearchParams();
+	params.set("timeMin", timeMinIso);
+	params.set("timeMax", timeMaxIso);
+	params.set("singleEvents", "true");
+	params.set("orderBy", "startTime");
+
+	const response = await fetch(
+		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}/events?${params.toString()}`,
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+			cache: "no-store",
+		},
+	);
+
+	const json = (await response.json()) as GoogleCalendarListResponse;
+	if (!response.ok) {
+		throw new Error(
+			`Google events request failed with status ${response.status}.`,
+		);
+	}
+
+	const intervals =
+		json.items
+			?.filter(event => event.status !== "cancelled")
+			.map(event => {
+				const start = parseGoogleEventDate(event.start);
+				const end = parseGoogleEventDate(event.end);
+				if (!start || !end) return null;
+
+				return {
+					start,
+					end,
+				};
+			})
+			.filter(
+				(interval): interval is CalendarEventInterval => interval !== null,
+			) ?? [];
+
+	return intervals.sort(
+		(left, right) => left.start.getTime() - right.start.getTime(),
+	);
 }

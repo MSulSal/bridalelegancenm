@@ -1,7 +1,7 @@
 import "server-only";
 
 import {
-	fetchGoogleCalendarBusyIntervals,
+	fetchGoogleCalendarEvents,
 	getGoogleCalendarTimeZone,
 	isGoogleCalendarAvailabilityConfigured,
 } from "./google-calendar";
@@ -128,11 +128,9 @@ function addDaysToIsoDate(isoDate: string, daysToAdd: number): string {
 function doesIntervalBlockDate(
 	dateStart: Date,
 	dateEnd: Date,
-	busyIntervals: Array<{ start: Date; end: Date }>,
+	eventIntervals: Array<{ start: Date; end: Date }>,
 ): boolean {
-	const minimumBlockingOverlapMs = 12 * 60 * 60 * 1000;
-
-	for (const interval of busyIntervals) {
+	for (const interval of eventIntervals) {
 		const overlapStart = Math.max(
 			interval.start.getTime(),
 			dateStart.getTime(),
@@ -140,9 +138,9 @@ function doesIntervalBlockDate(
 		const overlapEnd = Math.min(interval.end.getTime(), dateEnd.getTime());
 		const overlapMs = overlapEnd - overlapStart;
 
-		// Treat long overlaps as a date block so all-day events still work even
-		// if the Google Calendar timezone doesn't exactly match our local one.
-		if (overlapMs >= minimumBlockingOverlapMs) {
+		// Any real event overlap blocks the date. This is intentionally simpler
+		// and more predictable for a boutique-managed calendar workflow.
+		if (overlapMs > 0) {
 			return true;
 		}
 	}
@@ -180,7 +178,7 @@ export async function getMonthAvailability(
 	const monthStartUtc = zonedDateTimeToUtc(monthStartIso, 0, timeZone);
 	const nextMonthStartUtc = zonedDateTimeToUtc(nextMonthStartIso, 0, timeZone);
 
-	const busyIntervals = await fetchGoogleCalendarBusyIntervals(
+	const eventIntervals = await fetchGoogleCalendarEvents(
 		monthStartUtc.toISOString(),
 		nextMonthStartUtc.toISOString(),
 	);
@@ -208,7 +206,7 @@ export async function getMonthAvailability(
 		const isBlocked = doesIntervalBlockDate(
 			dateStartUtc,
 			dateEndUtc,
-			busyIntervals,
+			eventIntervals,
 		);
 
 		if (!isBlocked) {
