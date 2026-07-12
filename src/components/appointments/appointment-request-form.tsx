@@ -130,7 +130,10 @@ export function AppointmentRequestForm() {
 				body: formData,
 			});
 
-			const json = (await response.json()) as ApiResponse;
+			const responseText = await response.text();
+			const json = responseText
+				? (JSON.parse(responseText) as ApiResponse)
+				: ({} as ApiResponse);
 			if (!response.ok || !json.ok) {
 				setErrorMessage(
 					json.message ??
@@ -148,9 +151,11 @@ export function AppointmentRequestForm() {
 				json.message ??
 					"Appointment received. We'll follow up with you shortly.",
 			);
-		} catch {
+		} catch (error) {
 			setErrorMessage(
-				"We couldn't send your appointment request right now. Please try again.",
+				error instanceof Error && error.message
+					? error.message
+					: "We couldn't send your appointment request right now. Please try again.",
 			);
 		} finally {
 			setIsSubmitting(false);
