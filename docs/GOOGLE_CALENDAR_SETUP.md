@@ -33,27 +33,13 @@ Add these in Vercel Project Settings -> Environment Variables:
 - `GOOGLE_CALENDAR_SERVICE_ACCOUNT_EMAIL`
 - `GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY`
 - `GOOGLE_CALENDAR_TIMEZONE`
-- `APPOINTMENT_HOURS_SUNDAY`
-- `APPOINTMENT_HOURS_MONDAY`
-- `APPOINTMENT_HOURS_TUESDAY`
-- `APPOINTMENT_HOURS_WEDNESDAY`
-- `APPOINTMENT_HOURS_THURSDAY`
-- `APPOINTMENT_HOURS_FRIDAY`
-- `APPOINTMENT_HOURS_SATURDAY`
-- `APPOINTMENT_DURATION_MINUTES`
 - `APPOINTMENT_LEAD_DAYS`
 - `APPOINTMENT_MAX_DAYS_AHEAD`
 
-## Example Availability
+## Example Minimal Setup
 
 ```env
 GOOGLE_CALENDAR_TIMEZONE=America/Denver
-APPOINTMENT_HOURS_TUESDAY=11:00-17:00
-APPOINTMENT_HOURS_WEDNESDAY=11:00-17:00
-APPOINTMENT_HOURS_THURSDAY=11:00-17:00
-APPOINTMENT_HOURS_FRIDAY=11:00-17:00
-APPOINTMENT_HOURS_SATURDAY=10:00-16:00
-APPOINTMENT_DURATION_MINUTES=90
 APPOINTMENT_LEAD_DAYS=1
 APPOINTMENT_MAX_DAYS_AHEAD=120
 ```
@@ -61,3 +47,11 @@ APPOINTMENT_MAX_DAYS_AHEAD=120
 ## Important Note
 
 You mentioned having the client share a calendar with your Google account. That can work in a manual/OAuth setup, but this code is wired for the safer Vercel-friendly service-account approach instead. Share the calendar with the service-account email, not your personal Google account.
+
+## How Blocking Works Now
+
+This setup is intentionally date-based, not time-slot based.
+
+- A date stays selectable by default.
+- A date becomes unavailable when the shared Google Calendar has a busy event that covers that whole local day.
+- Exact appointment time is still confirmed manually by the boutique after form submission.

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function BookAppointmentPage() {
 	const nextStepPoints = [
-		"Choose from dates that still have room in the boutique's shared Google Calendar.",
+		"Choose from dates that are currently available for boutique appointments.",
 		"Upload at least one bridal inspiration image in a single upload field.",
 		"We review your size notes, guest count, and style direction before reaching out.",
 		"We contact you directly to confirm the exact appointment time.",

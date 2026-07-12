@@ -6,30 +6,14 @@ import {
 	isGoogleCalendarAvailabilityConfigured,
 } from "./google-calendar";
 
-type AvailabilityWindow = {
-	startMinutes: number;
-	endMinutes: number;
-};
-
 type AvailabilitySnapshot = {
 	configured: boolean;
 	timeZone: string;
 	availableDates: string[];
 };
 
-const weekdayEnvKeys = [
-	"APPOINTMENT_HOURS_SUNDAY",
-	"APPOINTMENT_HOURS_MONDAY",
-	"APPOINTMENT_HOURS_TUESDAY",
-	"APPOINTMENT_HOURS_WEDNESDAY",
-	"APPOINTMENT_HOURS_THURSDAY",
-	"APPOINTMENT_HOURS_FRIDAY",
-	"APPOINTMENT_HOURS_SATURDAY",
-] as const;
-
 const isoMonthPattern = /^\d{4}-\d{2}$/;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
-const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 function pad(value: number): string {
 	return String(value).padStart(2, "0");
@@ -47,47 +31,6 @@ function parseIsoMonth(value: string): { year: number; month: number } | null {
 
 function toIsoDate(year: number, month: number, day: number): string {
 	return `${year}-${pad(month)}-${pad(day)}`;
-}
-
-function parseTimeToMinutes(value: string): number | null {
-	const match = value.match(timePattern);
-	if (!match) return null;
-	const hours = Number(match[1]);
-	const minutes = Number(match[2]);
-	return hours * 60 + minutes;
-}
-
-function parseWindow(rawValue: string): AvailabilityWindow | null {
-	const [startRaw, endRaw] = rawValue.split("-");
-	if (!startRaw || !endRaw) return null;
-
-	const startMinutes = parseTimeToMinutes(startRaw.trim());
-	const endMinutes = parseTimeToMinutes(endRaw.trim());
-	if (startMinutes === null || endMinutes === null) return null;
-	if (endMinutes <= startMinutes) return null;
-
-	return { startMinutes, endMinutes };
-}
-
-function parseDailyWindows(rawValue: string | undefined): AvailabilityWindow[] {
-	if (!rawValue) return [];
-
-	return rawValue
-		.split(",")
-		.map(segment => parseWindow(segment.trim()))
-		.filter((window): window is AvailabilityWindow => window !== null)
-		.sort((left, right) => left.startMinutes - right.startMinutes);
-}
-
-function getWeeklyAvailabilityHours(): AvailabilityWindow[][] {
-	return weekdayEnvKeys.map(key =>
-		parseDailyWindows(process.env[key]?.trim() ?? ""),
-	);
-}
-
-function getAppointmentDurationMinutes(): number {
-	const parsed = Number(process.env.APPOINTMENT_DURATION_MINUTES ?? "90");
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : 90;
 }
 
 function getAppointmentLeadDays(): number {
@@ -160,6 +103,15 @@ function formatDateInTimeZone(date: Date, timeZone: string): string {
 	return `${year}-${month}-${day}`;
 }
 
+function getStartOfDayUtc(isoDate: string, timeZone: string): Date {
+	return zonedDateTimeToUtc(isoDate, 0, timeZone);
+}
+
+function getEndOfDayUtc(isoDate: string, timeZone: string): Date {
+	const nextIsoDate = addDaysToIsoDate(isoDate, 1);
+	return zonedDateTimeToUtc(nextIsoDate, 0, timeZone);
+}
+
 function addDaysToIsoDate(isoDate: string, daysToAdd: number): string {
 	const [yearRaw, monthRaw, dayRaw] = isoDate.split("-");
 	const nextDate = new Date(
@@ -173,35 +125,21 @@ function addDaysToIsoDate(isoDate: string, daysToAdd: number): string {
 	);
 }
 
-function getWeekdayIndex(isoDate: string): number {
-	const [yearRaw, monthRaw, dayRaw] = isoDate.split("-");
-	return new Date(
-		Date.UTC(Number(yearRaw), Number(monthRaw) - 1, Number(dayRaw)),
-	).getUTCDay();
-}
-
-function hasFreeTimeInWindow(
-	windowStart: Date,
-	windowEnd: Date,
-	minimumFreeMinutes: number,
+function doesIntervalBlockDate(
+	dateStart: Date,
+	dateEnd: Date,
 	busyIntervals: Array<{ start: Date; end: Date }>,
 ): boolean {
-	const minimumFreeMilliseconds = minimumFreeMinutes * 60_000;
-	let cursor = windowStart.getTime();
-
 	for (const interval of busyIntervals) {
-		const overlapStart = Math.max(interval.start.getTime(), windowStart.getTime());
-		const overlapEnd = Math.min(interval.end.getTime(), windowEnd.getTime());
-
-		if (overlapEnd <= overlapStart) continue;
-		if (overlapStart - cursor >= minimumFreeMilliseconds) {
+		if (
+			interval.start.getTime() <= dateStart.getTime() &&
+			interval.end.getTime() >= dateEnd.getTime()
+		) {
 			return true;
 		}
-
-		cursor = Math.max(cursor, overlapEnd);
 	}
 
-	return windowEnd.getTime() - cursor >= minimumFreeMilliseconds;
+	return false;
 }
 
 export async function getMonthAvailability(
@@ -239,8 +177,6 @@ export async function getMonthAvailability(
 		nextMonthStartUtc.toISOString(),
 	);
 
-	const weeklyHours = getWeeklyAvailabilityHours();
-	const minimumFreeMinutes = getAppointmentDurationMinutes();
 	const leadDateIso = addDaysToIsoDate(
 		getCurrentIsoDateInTimeZone(timeZone),
 		getAppointmentLeadDays(),
@@ -259,27 +195,15 @@ export async function getMonthAvailability(
 		const isoDate = toIsoDate(parsedMonth.year, parsedMonth.month, day);
 		if (isoDate < leadDateIso || isoDate > maxDateIso) continue;
 
-		const weekdayIndex = getWeekdayIndex(isoDate);
-		const windows = weeklyHours[weekdayIndex] ?? [];
-		if (windows.length === 0) continue;
+		const dateStartUtc = getStartOfDayUtc(isoDate, timeZone);
+		const dateEndUtc = getEndOfDayUtc(isoDate, timeZone);
+		const isBlocked = doesIntervalBlockDate(
+			dateStartUtc,
+			dateEndUtc,
+			busyIntervals,
+		);
 
-		const isAvailable = windows.some(window => {
-			const windowStart = zonedDateTimeToUtc(
-				isoDate,
-				window.startMinutes,
-				timeZone,
-			);
-			const windowEnd = zonedDateTimeToUtc(isoDate, window.endMinutes, timeZone);
-
-			return hasFreeTimeInWindow(
-				windowStart,
-				windowEnd,
-				minimumFreeMinutes,
-				busyIntervals,
-			);
-		});
-
-		if (isAvailable) {
+		if (!isBlocked) {
 			availableDates.push(isoDate);
 		}
 	}

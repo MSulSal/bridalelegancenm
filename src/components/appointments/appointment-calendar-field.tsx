@@ -308,10 +308,10 @@ export function AppointmentCalendarField({
 
 			<p className="mt-2 text-[11px] uppercase tracking-[0.1em] text-[color:var(--ink-500)]">
 				{isLoadingAvailability
-					? "Checking live boutique availability..."
+					? "Checking available appointment dates..."
 					: hasLiveAvailability
-						? "Only dates with current Google Calendar availability can be selected."
-						: "Live Google Calendar availability will appear here once the shared calendar is connected."}
+						? "Only dates that are currently available can be selected."
+						: "Available appointment dates will appear here shortly."}
 			</p>
 
 			{availabilityError ? (
