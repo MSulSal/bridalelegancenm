@@ -110,16 +110,8 @@ function readString(value: FormDataEntryValue | null): string {
 	return typeof value === "string" ? value.trim() : "";
 }
 
-function getNotificationMode(): NotificationMode {
-	const raw = (process.env.APPOINTMENT_NOTIFICATION_MODE ?? "both")
-		.trim()
-		.toLowerCase();
-	if (raw === "text" || raw === "email" || raw === "both") return raw;
-	return "both";
-}
-
-function shouldUploadImages(mode: NotificationMode): boolean {
-	return mode === "both" || mode === "email" || mode === "text";
+function shouldUploadImages(): boolean {
+	return true;
 }
 
 function readOptionalDate(value: FormDataEntryValue | null): string | undefined {
@@ -273,7 +265,7 @@ function validateFormData(formData: FormData): ValidationResult {
 	};
 }
 
-function ensureNotificationEnv(mode: NotificationMode): string[] {
+function ensureAppointmentEnv(): string[] {
 	const missing: string[] = [];
 
 	if (!process.env.GOOGLE_CALENDAR_ID?.trim()) {
@@ -286,45 +278,12 @@ function ensureNotificationEnv(mode: NotificationMode): string[] {
 		missing.push("GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY");
 	}
 
-	if (shouldUploadImages(mode)) {
-		if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
-			missing.push("CLOUDINARY_CLOUD_NAME");
-		}
-		if (!process.env.CLOUDINARY_UPLOAD_PRESET?.trim()) {
-			missing.push("CLOUDINARY_UPLOAD_PRESET");
-		}
+	if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
+		missing.push("CLOUDINARY_CLOUD_NAME");
 	}
-
-	const shouldRequireEmail = mode === "both" || mode === "email";
-	const shouldRequireSms = mode === "both" || mode === "text";
-
-	if (shouldRequireEmail) {
-		if (!process.env.RESEND_API_KEY?.trim()) {
-			missing.push("RESEND_API_KEY");
-		}
-		if (!process.env.APPOINTMENT_NOTIFICATION_EMAIL_FROM?.trim()) {
-			missing.push("APPOINTMENT_NOTIFICATION_EMAIL_FROM");
-		}
-		if (!process.env.APPOINTMENT_NOTIFICATION_EMAIL_TO?.trim()) {
-			missing.push("APPOINTMENT_NOTIFICATION_EMAIL_TO");
-		}
+	if (!process.env.CLOUDINARY_UPLOAD_PRESET?.trim()) {
+		missing.push("CLOUDINARY_UPLOAD_PRESET");
 	}
-
-	if (shouldRequireSms) {
-		if (!process.env.TWILIO_ACCOUNT_SID?.trim()) {
-			missing.push("TWILIO_ACCOUNT_SID");
-		}
-		if (!process.env.TWILIO_AUTH_TOKEN?.trim()) {
-			missing.push("TWILIO_AUTH_TOKEN");
-		}
-		if (!process.env.TWILIO_FROM_PHONE?.trim()) {
-			missing.push("TWILIO_FROM_PHONE");
-		}
-		if (!process.env.APPOINTMENT_NOTIFICATION_SMS_TO?.trim()) {
-			missing.push("APPOINTMENT_NOTIFICATION_SMS_TO");
-		}
-	}
-
 	return missing;
 }
 
@@ -406,6 +365,7 @@ function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string
 
 function buildCalendarEventDescription(
 	data: AppointmentRequestData,
+	photos: UploadedPhotoGroup,
 ): string {
 	const rows = formatKeyValueRows(data)
 		.map(([label, value]) => `${label}: ${value}`)
@@ -415,167 +375,10 @@ function buildCalendarEventDescription(
 		"Bridal Elegance NM appointment booked from the website.",
 		"",
 		rows,
-	].join("\n");
-}
-
-function buildEmailHtml(
-	data: AppointmentRequestData,
-	photos: UploadedPhotoGroup,
-	submittedAtIso: string,
-): string {
-	const rows = formatKeyValueRows(data)
-		.map(
-			([label, value]) =>
-				`<tr><td style="padding:8px 12px;border:1px solid #ddd;background:#fafafa;font-weight:600;">${escapeHtml(
-					label,
-				)}</td><td style="padding:8px 12px;border:1px solid #ddd;">${escapeHtml(
-					value,
-				)}</td></tr>`,
-		)
-		.join("");
-
-	const brideSection =
-		photos.bride.length === 0
-			? `<h3 style="margin:20px 0 8px;">Bride Inspiration</h3><p style="margin:0;">No images uploaded.</p>`
-			: `<h3 style="margin:20px 0 8px;">Bride Inspiration</h3><div>${photos.bride
-					.map(
-						url =>
-							`<a href="${escapeHtml(url)}" target="_blank" rel="noreferrer" style="display:inline-block;margin:0 8px 8px 0;"><img src="${escapeHtml(
-								url,
-							)}" alt="Bride inspiration" style="width:160px;height:auto;border:1px solid #e5e5e5;" /></a>`,
-					)
-					.join("")}</div>`;
-
-	return `
-		<div style="font-family: Arial, sans-serif; color: #111; line-height: 1.5;">
-			<h2 style="margin:0 0 8px;">New Appointment Request</h2>
-			<p style="margin:0 0 16px; color:#444;">Submitted: ${escapeHtml(submittedAtIso)}</p>
-			<table style="border-collapse:collapse; width:100%; max-width:820px;">${rows}</table>
-			${brideSection}
-		</div>
-	`;
-}
-
-function buildEmailText(
-	data: AppointmentRequestData,
-	photos: UploadedPhotoGroup,
-	submittedAtIso: string,
-): string {
-	const rows = formatKeyValueRows(data)
-		.map(([label, value]) => `${label}: ${value}`)
-		.join("\n");
-
-	return [
-		"New Appointment Request",
-		`Submitted: ${submittedAtIso}`,
 		"",
-		rows,
-		"",
-		"Bridge Inspiration:",
+		"Bridal Inspiration:",
 		photos.bride.length > 0 ? photos.bride.join("\n") : "No images uploaded.",
 	].join("\n");
-}
-
-function buildCustomerConfirmationEmailHtml(
-	data: AppointmentRequestData,
-): string {
-	return `
-		<div style="font-family: Arial, sans-serif; color: #111; line-height: 1.6;">
-			<h2 style="margin:0 0 10px;">Your Bridal Elegance NM Appointment Is Reserved</h2>
-			<p style="margin:0 0 12px;">Hi ${escapeHtml(data.fullName)},</p>
-			<p style="margin:0 0 12px;">
-				Your appointment is reserved for <strong>${escapeHtml(data.preferredDate)}</strong>
-				at <strong>${escapeHtml(data.preferredTimeSlot)}</strong>.
-			</p>
-			<p style="margin:0 0 12px;">
-				Location: ${escapeHtml(siteConfig.addressLine1)}, ${escapeHtml(siteConfig.addressLine2)}
-			</p>
-			<p style="margin:0;">
-				If anything changes, please call ${escapeHtml(siteConfig.phoneDisplay)}.
-			</p>
-		</div>
-	`;
-}
-
-function buildCustomerConfirmationEmailText(
-	data: AppointmentRequestData,
-): string {
-	return [
-		"Your Bridal Elegance NM appointment is reserved.",
-		`Date: ${data.preferredDate}`,
-		`Time: ${data.preferredTimeSlot}`,
-		`Location: ${siteConfig.addressLine1}, ${siteConfig.addressLine2}`,
-		`Questions? Call ${siteConfig.phoneDisplay}.`,
-	].join("\n");
-}
-
-async function sendCustomerConfirmationEmail(
-	data: AppointmentRequestData,
-): Promise<void> {
-	const resendApiKey = process.env.RESEND_API_KEY!.trim();
-	const from = process.env.APPOINTMENT_NOTIFICATION_EMAIL_FROM!.trim();
-
-	const payload = {
-		from,
-		to: [data.email],
-		subject: "Your Bridal Elegance NM Appointment Is Reserved",
-		html: buildCustomerConfirmationEmailHtml(data),
-		text: buildCustomerConfirmationEmailText(data),
-	};
-
-	const response = await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${resendApiKey}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(payload),
-		cache: "no-store",
-	});
-
-	if (!response.ok) {
-		const errorBody = await response.text();
-		throw new Error(
-			`Customer confirmation email failed (${response.status}): ${errorBody || "Unknown error"}`,
-		);
-	}
-}
-
-async function sendNotificationEmail(
-	data: AppointmentRequestData,
-	photos: UploadedPhotoGroup,
-	submittedAtIso: string,
-): Promise<void> {
-	const resendApiKey = process.env.RESEND_API_KEY!.trim();
-	const from = process.env.APPOINTMENT_NOTIFICATION_EMAIL_FROM!.trim();
-	const toList = process.env.APPOINTMENT_NOTIFICATION_EMAIL_TO!.split(",")
-		.map(item => item.trim())
-		.filter(Boolean);
-
-	const payload = {
-		from,
-		to: toList,
-		subject: `New Appointment Request: ${data.fullName}`,
-		html: buildEmailHtml(data, photos, submittedAtIso),
-		text: buildEmailText(data, photos, submittedAtIso),
-	};
-
-	const response = await fetch("https://api.resend.com/emails", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${resendApiKey}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(payload),
-		cache: "no-store",
-	});
-
-	if (!response.ok) {
-		const errorBody = await response.text();
-		throw new Error(
-			`Resend email failed (${response.status}): ${errorBody || "Unknown error"}`,
-		);
-	}
 }
 
 function buildSmsBody(
@@ -605,93 +408,6 @@ function buildSmsBody(
 	return lines.join("\n");
 }
 
-async function sendNotificationSms(
-	data: AppointmentRequestData,
-	photos: UploadedPhotoGroup,
-	submittedAtIso: string,
-): Promise<void> {
-	const accountSid = process.env.TWILIO_ACCOUNT_SID!.trim();
-	const authToken = process.env.TWILIO_AUTH_TOKEN!.trim();
-	const from = process.env.TWILIO_FROM_PHONE!.trim();
-	const to = process.env.APPOINTMENT_NOTIFICATION_SMS_TO!.trim();
-
-	const body = buildSmsBody(
-		data,
-		submittedAtIso,
-		photos.bride.slice(0, 10),
-	);
-
-	const params = new URLSearchParams();
-	params.set("From", from);
-	params.set("To", to);
-	params.set("Body", body);
-
-	const basicAuth = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
-	const response = await fetch(
-		`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
-		{
-			method: "POST",
-			headers: {
-				Authorization: `Basic ${basicAuth}`,
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: params.toString(),
-			cache: "no-store",
-		},
-	);
-
-	if (!response.ok) {
-		const errorBody = await response.text();
-		throw new Error(
-			`Twilio SMS failed (${response.status}): ${errorBody || "Unknown error"}`,
-		);
-	}
-}
-
-function buildCustomerConfirmationSmsBody(
-	data: AppointmentRequestData,
-): string {
-	return [
-		"Bridal Elegance NM: your appointment is reserved.",
-		`${data.preferredDate} at ${data.preferredTimeSlot}`,
-		`${siteConfig.addressLine1}, Albuquerque`,
-		`Questions? ${siteConfig.phoneDisplay}`,
-	].join("\n");
-}
-
-async function sendCustomerConfirmationSms(
-	data: AppointmentRequestData,
-): Promise<void> {
-	const accountSid = process.env.TWILIO_ACCOUNT_SID!.trim();
-	const authToken = process.env.TWILIO_AUTH_TOKEN!.trim();
-	const from = process.env.TWILIO_FROM_PHONE!.trim();
-
-	const params = new URLSearchParams();
-	params.set("From", from);
-	params.set("To", data.phone);
-	params.set("Body", buildCustomerConfirmationSmsBody(data));
-
-	const basicAuth = Buffer.from(`${accountSid}:${authToken}`).toString("base64");
-	const response = await fetch(
-		`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
-		{
-			method: "POST",
-			headers: {
-				Authorization: `Basic ${basicAuth}`,
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: params.toString(),
-			cache: "no-store",
-		},
-	);
-
-	if (!response.ok) {
-		const errorBody = await response.text();
-		throw new Error(
-			`Customer confirmation SMS failed (${response.status}): ${errorBody || "Unknown error"}`,
-		);
-	}
-}
 
 export async function POST(request: Request) {
 	try {
@@ -717,8 +433,7 @@ export async function POST(request: Request) {
 			});
 		}
 
-		const notificationMode = getNotificationMode();
-		const missingEnv = ensureNotificationEnv(notificationMode);
+		const missingEnv = ensureAppointmentEnv();
 		if (missingEnv.length > 0) {
 			return NextResponse.json(
 				{
@@ -775,33 +490,33 @@ export async function POST(request: Request) {
 			bride: [],
 		};
 
-		if (shouldUploadImages(notificationMode)) {
-			try {
-				uploadedPhotos = {
-					bride: await Promise.all(
-						validated.photos.bride.map(file => uploadImageToCloudinary(file)),
-					),
-				};
-			} catch (error) {
-				console.error("[appointment-request] Cloudinary upload error", error);
-				return NextResponse.json(
-					{
-						ok: false,
-						message:
-							"We couldn't upload inspiration photos right now. Please try again.",
-					},
-					{ status: 502 },
-				);
-			}
+		try {
+			uploadedPhotos = {
+				bride: await Promise.all(
+					validated.photos.bride.map(file => uploadImageToCloudinary(file)),
+				),
+			};
+		} catch (error) {
+			console.error("[appointment-request] Cloudinary upload error", error);
+			return NextResponse.json(
+				{
+					ok: false,
+					message:
+						"We couldn't upload inspiration photos right now. Please try again.",
+				},
+				{ status: 502 },
+			);
 		}
 
-		const submittedAtIso = new Date().toISOString();
 		let calendarEventId = "";
 
 		try {
 			const createdEvent = await createGoogleCalendarEvent({
 				summary: `Bridal Appointment - ${validated.data.fullName}`,
-				description: buildCalendarEventDescription(validated.data),
+				description: buildCalendarEventDescription(
+					validated.data,
+					uploadedPhotos,
+				),
 				location: `${siteConfig.addressLine1}, ${siteConfig.addressLine2}`,
 				startDateTimeIso: selectedSlot.startDateTimeIso,
 				endDateTimeIso: selectedSlot.endDateTimeIso,
@@ -819,67 +534,11 @@ export async function POST(request: Request) {
 			);
 		}
 
-		const boutiqueDeliveredChannels: string[] = [];
-		const customerDeliveredChannels: string[] = [];
-		const deliveryWarnings: string[] = [];
-
-		if (notificationMode === "both" || notificationMode === "email") {
-			try {
-				await sendNotificationEmail(
-					validated.data,
-					uploadedPhotos,
-					submittedAtIso,
-				);
-				boutiqueDeliveredChannels.push("email");
-			} catch (error) {
-				console.error("[appointment-request] Email delivery error", error);
-				deliveryWarnings.push("Boutique email notification failed.");
-			}
-		}
-
-		if (notificationMode === "both" || notificationMode === "text") {
-			try {
-				await sendNotificationSms(
-					validated.data,
-					uploadedPhotos,
-					submittedAtIso,
-				);
-				boutiqueDeliveredChannels.push("text");
-			} catch (error) {
-				console.error("[appointment-request] SMS delivery error", error);
-				deliveryWarnings.push("Boutique text notification failed.");
-			}
-		}
-
-		if (validated.data.contactPreference === "email") {
-			try {
-				await sendCustomerConfirmationEmail(validated.data);
-				customerDeliveredChannels.push("email");
-			} catch (error) {
-				console.error(
-					"[appointment-request] Customer confirmation email error",
-					error,
-				);
-				deliveryWarnings.push("Customer confirmation email failed.");
-			}
-		} else {
-			try {
-				await sendCustomerConfirmationSms(validated.data);
-				customerDeliveredChannels.push("text");
-			} catch (error) {
-				console.error(
-					"[appointment-request] Customer confirmation SMS error",
-					error,
-				);
-				deliveryWarnings.push("Customer confirmation text failed.");
-			}
-		}
-
 		const submissionId = randomUUID();
 		console.info("[appointment-request] submission delivered", {
 			submissionId,
 			calendarEventId,
-			submittedAt: submittedAtIso,
+			submittedAt: new Date().toISOString(),
 			requester: {
 				fullName: validated.data.fullName,
 				email: validated.data.email,
@@ -888,32 +547,11 @@ export async function POST(request: Request) {
 			photos: {
 				bride: uploadedPhotos.bride.length,
 			},
-			notifications: {
-				boutiqueDeliveredChannels,
-				customerDeliveredChannels,
-				deliveryWarnings,
-			},
 		});
-
-		const boutiqueSummary =
-			boutiqueDeliveredChannels.length > 0
-				? `Boutique notifications sent by ${boutiqueDeliveredChannels.join(" and ")}.`
-				: "Boutique notifications may need a manual follow-up.";
-		const customerSummary =
-			customerDeliveredChannels.length > 0
-				? `Your confirmation was sent by ${customerDeliveredChannels.join(" and ")}.`
-				: "Your confirmation may need a manual follow-up.";
 
 		return NextResponse.json({
 			ok: true,
-			message: [
-				`Appointment reserved for ${validated.data.preferredDate} at ${validated.data.preferredTimeSlot}.`,
-				boutiqueSummary,
-				customerSummary,
-				deliveryWarnings.join(" "),
-			]
-				.filter(Boolean)
-				.join(" "),
+			message: `Appointment reserved for ${validated.data.preferredDate} at ${validated.data.preferredTimeSlot}.`,
 		});
 	} catch (error) {
 		console.error("[appointment-request] Unhandled route error", error);
