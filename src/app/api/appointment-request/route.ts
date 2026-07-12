@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
+import { isAppointmentDateAvailable } from "@/lib/appointment-availability";
 
 type ContactPreference = "email" | "phone" | "text";
 type ShoppingFocus = "bridal-gown";
@@ -12,10 +13,10 @@ type TimelineRange =
 	| "over-12-months"
 	| "just-browsing";
 type BudgetRange =
-	| "under-1500"
+	| "500-1000"
 	| "1500-2500"
-	| "2500-4000"
-	| "4000-plus";
+	| "2500-3000"
+	| "3000-plus";
 
 type AppointmentRequestData = {
 	fullName: string;
@@ -73,10 +74,10 @@ const timelineLabels: Record<string, string> = {
 };
 
 const budgetLabels: Record<string, string> = {
-	"under-1500": "$500 to $1,000",
+	"500-1000": "$500 to $1,000",
 	"1500-2500": "$1,500 to $2,500",
-	"2500-4000": "$2,500 to $3,000",
-	"4000-plus": "$3,000+",
+	"2500-3000": "$2,500 to $3,000",
+	"3000-plus": "$3,000+",
 };
 
 const allowedContactPreferences = new Set(["email", "phone", "text"]);
@@ -90,10 +91,10 @@ const allowedTimeline = new Set([
 	"just-browsing",
 ]);
 const allowedBudgetRanges = new Set([
-	"under-1500",
+	"500-1000",
 	"1500-2500",
-	"2500-4000",
-	"4000-plus",
+	"2500-3000",
+	"3000-plus",
 ]);
 
 type NotificationMode = "both" | "text" | "email";
@@ -587,6 +588,24 @@ export async function POST(request: Request) {
 			},
 			{ status: 422 },
 		);
+	}
+
+	try {
+		const isAvailable = await isAppointmentDateAvailable(
+			validated.data.preferredDate,
+		);
+		if (!isAvailable) {
+			return NextResponse.json(
+				{
+					ok: false,
+					message:
+						"That appointment date is no longer available. Please choose another open day.",
+				},
+				{ status: 409 },
+			);
+		}
+	} catch (error) {
+		console.error("[appointment-request] Availability validation error", error);
 	}
 
 	let uploadedPhotos: UploadedPhotoGroup = {

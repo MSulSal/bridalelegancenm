@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { appointmentPageContent } from "@/content/site-content";
 import { AppointmentRequestForm } from "@/components/appointments/appointment-request-form";
-import { CalcomEmbed } from "@/components/appointments/calcom-embed";
 import { SiteShell } from "@/components/layout/site-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { siteConfig } from "@/lib/site";
@@ -11,47 +10,14 @@ export const metadata: Metadata = {
 	description: appointmentPageContent.metadata.description,
 };
 
-function normalizeCalcomLink(rawValue: string): string {
-	if (!rawValue) return "";
-
-	try {
-		const parsed = new URL(rawValue);
-		return parsed.pathname.replace(/^\/+/, "");
-	} catch {
-		return rawValue.replace(/^\/+/, "");
-	}
-}
-
-function deriveCalcomNamespace(calLink: string): string {
-	const segments = calLink.split("/").filter(Boolean);
-	return segments.at(-1) ?? "";
-}
-
 export default function BookAppointmentPage() {
-	const calcomLink = normalizeCalcomLink(
-		process.env.NEXT_PUBLIC_CALCOM_LINK?.trim() ??
-			process.env.NEXT_PUBLIC_CALCOM_EMBED_URL?.trim() ??
-			"",
-	);
-	const calcomNamespace =
-		process.env.NEXT_PUBLIC_CALCOM_NAMESPACE?.trim() ??
-		deriveCalcomNamespace(calcomLink);
-	const hasCalcomEmbed =
-		calcomNamespace.length > 0 && calcomLink.length > 0;
-	const nextStepPoints = hasCalcomEmbed
-		? [
-				"Submit your bridal details in the intake form so the boutique keeps the extra notes, sizing, budget, and inspiration fields that matter.",
-				"Choose from the live appointment dates and times the boutique makes available in Cal.com.",
-				"The boutique can adjust availability, buffers, and blackout dates directly in Cal.com without a custom backend.",
-				"For now, bridal appointments may include up to 4 guests.",
-			]
-		: [
-				"Choose your preferred appointment day and share your wedding timeline.",
-				"Upload at least one bridal inspiration image in a single upload field.",
-				"We review your size notes, guest count, and style direction before reaching out.",
-				"We contact you directly to confirm an available appointment time.",
-				"For now, bridal appointments may include up to 4 guests.",
-			];
+	const nextStepPoints = [
+		"Choose from dates that still have room in the boutique's shared Google Calendar.",
+		"Upload at least one bridal inspiration image in a single upload field.",
+		"We review your size notes, guest count, and style direction before reaching out.",
+		"We contact you directly to confirm the exact appointment time.",
+		"For now, bridal appointments may include up to 4 guests.",
+	];
 
 	return (
 		<SiteShell>
@@ -65,28 +31,6 @@ export default function BookAppointmentPage() {
 				<div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
 					<div className="space-y-6">
 						<AppointmentRequestForm />
-
-						{hasCalcomEmbed ? (
-							<article className="be-card overflow-hidden bg-white">
-								<div className="border-b border-[color:var(--line-subtle)] px-6 py-6 sm:px-7">
-									<p className="be-kicker">Step 2: Live Appointment Calendar</p>
-									<h2 className="mt-2 text-2xl leading-tight">
-										Choose an available appointment time.
-									</h2>
-									<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
-										Your detailed intake stays with Bridal Elegance here, and the scheduler only handles the live date and time selection.
-									</p>
-								</div>
-								<div className="bg-white p-2 sm:p-3">
-									<div className="min-h-[980px] rounded-[2px] border border-[color:var(--line-subtle)] bg-white">
-										<CalcomEmbed
-											namespace={calcomNamespace}
-											calLink={calcomLink}
-										/>
-									</div>
-								</div>
-							</article>
-						) : null}
 					</div>
 
 					<aside className="space-y-4">
@@ -146,13 +90,9 @@ export default function BookAppointmentPage() {
 						</article>
 
 						<article className="be-card p-6 sm:p-7">
-							<p className="be-kicker">
-								{hasCalcomEmbed ? "How Scheduling Works" : "After You Submit"}
-							</p>
+							<p className="be-kicker">How Scheduling Works</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								{hasCalcomEmbed
-									? "The boutique controls availability directly."
-									: "We confirm directly with you."}
+								The boutique controls date availability directly.
 							</h3>
 							<ul className="mt-5 grid gap-3">
 								{nextStepPoints.map(item => (

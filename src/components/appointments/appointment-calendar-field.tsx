@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type AppointmentCalendarFieldProps = {
 	id: string;
@@ -17,6 +17,14 @@ type CalendarCell = {
 	dayNumber: number;
 	inMonth: boolean;
 	isDisabled: boolean;
+};
+
+type AvailabilityResponse = {
+	ok?: boolean;
+	configured?: boolean;
+	availableDates?: string[];
+	message?: string;
+	timeZone?: string;
 };
 
 const weekdayLabels = [
@@ -88,7 +96,16 @@ function addMonths(date: Date, delta: number): Date {
 	return new Date(date.getFullYear(), date.getMonth() + delta, 1);
 }
 
-function buildCalendarCells(monthDate: Date, minDate: Date): CalendarCell[] {
+function toIsoMonth(date: Date): string {
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+}
+
+function buildCalendarCells(
+	monthDate: Date,
+	minDate: Date,
+	availableDates: Set<string>,
+	hasLiveAvailability: boolean,
+): CalendarCell[] {
 	const monthStart = startOfMonth(monthDate);
 	const firstVisible = new Date(monthStart);
 	firstVisible.setDate(1 - monthStart.getDay());
@@ -105,7 +122,11 @@ function buildCalendarCells(monthDate: Date, minDate: Date): CalendarCell[] {
 			iso: toIsoDate(normalized),
 			dayNumber: normalized.getDate(),
 			inMonth: normalized.getMonth() === monthStart.getMonth(),
-			isDisabled: normalized.getTime() < minDate.getTime(),
+			isDisabled:
+				normalized.getTime() < minDate.getTime() ||
+				normalized.getMonth() !== monthStart.getMonth() ||
+				(hasLiveAvailability &&
+					!availableDates.has(toIsoDate(normalized))),
 		});
 	}
 
@@ -122,15 +143,77 @@ export function AppointmentCalendarField({
 }: AppointmentCalendarFieldProps) {
 	const today = useMemo(() => startOfDay(new Date()), []);
 	const selectedDate = useMemo(() => parseIsoDate(value), [value]);
+	const [availableDates, setAvailableDates] = useState<string[]>([]);
+	const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
+	const [availabilityError, setAvailabilityError] = useState("");
+	const [hasLiveAvailability, setHasLiveAvailability] = useState(false);
 
 	const [visibleMonth, setVisibleMonth] = useState<Date>(() => {
 		const parsed = parseIsoDate(value);
 		return startOfMonth(parsed ?? today);
 	});
+	const visibleMonthKey = useMemo(() => toIsoMonth(visibleMonth), [visibleMonth]);
+	const availableDateSet = useMemo(
+		() => new Set(availableDates),
+		[availableDates],
+	);
+
+	useEffect(() => {
+		const controller = new AbortController();
+
+		async function loadAvailability() {
+			setIsLoadingAvailability(true);
+			setAvailabilityError("");
+
+			try {
+				const response = await fetch(
+					`/api/appointment-availability?month=${visibleMonthKey}`,
+					{
+						signal: controller.signal,
+					},
+				);
+				const json = (await response.json()) as AvailabilityResponse;
+
+				if (controller.signal.aborted) return;
+
+				setHasLiveAvailability(Boolean(json.configured));
+				setAvailableDates(json.availableDates ?? []);
+				if (!response.ok || json.ok === false) {
+					setAvailabilityError(
+						json.message ??
+							"We couldn't load live availability for this month.",
+					);
+				}
+			} catch (error) {
+				if (controller.signal.aborted) return;
+				setHasLiveAvailability(false);
+				setAvailableDates([]);
+				setAvailabilityError(
+					error instanceof Error
+						? error.message
+						: "We couldn't load live availability for this month.",
+				);
+			} finally {
+				if (!controller.signal.aborted) {
+					setIsLoadingAvailability(false);
+				}
+			}
+		}
+
+		void loadAvailability();
+
+		return () => controller.abort();
+	}, [visibleMonthKey]);
 
 	const calendarCells = useMemo(
-		() => buildCalendarCells(visibleMonth, today),
-		[visibleMonth, today],
+		() =>
+			buildCalendarCells(
+				visibleMonth,
+				today,
+				availableDateSet,
+				hasLiveAvailability,
+			),
+		[availableDateSet, hasLiveAvailability, visibleMonth, today],
 	);
 
 	const monthLabel = monthLabelFormatter.format(visibleMonth);
@@ -222,6 +305,20 @@ export function AppointmentCalendarField({
 					? `Selected: ${selectedDateFormatter.format(selectedDate)}`
 					: "No appointment date selected yet."}
 			</p>
+
+			<p className="mt-2 text-[11px] uppercase tracking-[0.1em] text-[color:var(--ink-500)]">
+				{isLoadingAvailability
+					? "Checking live boutique availability..."
+					: hasLiveAvailability
+						? "Only dates with current Google Calendar availability can be selected."
+						: "Live Google Calendar availability will appear here once the shared calendar is connected."}
+			</p>
+
+			{availabilityError ? (
+				<p className="mt-2 text-xs uppercase tracking-[0.12em] text-[color:#8a5a2b]">
+					{availabilityError}
+				</p>
+			) : null}
 		</div>
 	);
 }

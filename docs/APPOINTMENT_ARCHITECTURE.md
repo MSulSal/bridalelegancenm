@@ -48,8 +48,18 @@ Appointment-setting is the primary conversion flow. This compares practical opti
 - Phase 1 request flow is now implemented:
   - Dedicated booking page: `/book-appointment`
   - Request API endpoint: `/api/appointment-request`
-  - Manual confirmation model remains active (no live slot locking yet)
+  - Manual confirmation model remains active for the exact appointment time
+  - Appointment date choices can now be filtered by shared Google Calendar availability
+- Live date availability endpoint:
+  - `/api/appointment-availability`
 - Form delivery supports Formspree via environment configuration.
+
+## Current Recommendation
+
+- Keep the custom bridal intake and styling on-site.
+- Use a shared Google Calendar as the source of truth for available appointment dates.
+- Keep final time confirmation manual until the boutique wants full slot booking.
+- Use a Google service account for Vercel deployment instead of tying production to a personal Google login.
 
 ## Decision Inputs Needed From Client
 

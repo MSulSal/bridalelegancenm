@@ -19,10 +19,10 @@ const timelineOptions = [
 ] as const;
 
 const budgetRanges = [
-	{ value: "under-1500", label: "$500 to $1,000" },
+	{ value: "500-1000", label: "$500 to $1,000" },
 	{ value: "1500-2500", label: "$1,500 to $2,500" },
-	{ value: "2500-4000", label: "$2,500 to $3,000" },
-	{ value: "4000-plus", label: "$3,000+" },
+	{ value: "2500-3000", label: "$2,500 to $3,000" },
+	{ value: "3000-plus", label: "$3,000+" },
 ] as const;
 
 const fieldClass =
@@ -166,8 +166,8 @@ export function AppointmentRequestForm() {
 				</h2>
 				<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
 					This form is for bridal gown appointments. Submit your details, share
-					at least one inspiration image, and we&apos;ll confirm availability
-					directly.
+					at least one inspiration image, choose from open appointment dates,
+					and we&apos;ll confirm the exact time directly.
 				</p>
 			</div>
 
@@ -307,7 +307,7 @@ export function AppointmentRequestForm() {
 					<select
 						id="budgetRange"
 						name="budgetRange"
-						defaultValue="under-1500"
+						defaultValue="500-1000"
 						className={fieldClass}
 					>
 						{budgetRanges.map(option => (
