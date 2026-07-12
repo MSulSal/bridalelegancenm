@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 
 export default function BookAppointmentPage() {
 	const nextStepPoints = [
-		"Choose from dates that are currently available for boutique appointments.",
+		"Choose an open appointment date and one of the times still available that day.",
 		"Upload at least one bridal inspiration image in a single upload field.",
+		"Your selected appointment time is reserved when you submit the form.",
 		"We review your size notes, guest count, and style direction before reaching out.",
-		"We contact you directly to confirm the exact appointment time.",
 		"For now, bridal appointments may include up to 4 guests.",
 	];
 
@@ -92,7 +92,7 @@ export default function BookAppointmentPage() {
 						<article className="be-card p-6 sm:p-7">
 							<p className="be-kicker">How Scheduling Works</p>
 							<h3 className="mt-3 text-2xl leading-tight">
-								The boutique controls date availability directly.
+								The boutique keeps available times updated directly.
 							</h3>
 							<ul className="mt-5 grid gap-3">
 								{nextStepPoints.map(item => (

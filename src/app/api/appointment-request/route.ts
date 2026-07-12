@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
-import { isAppointmentDateAvailable } from "@/lib/appointment-availability";
+import {
+	findAvailableSlotForDate,
+	type AvailableAppointmentSlot,
+} from "@/lib/appointment-availability";
+import { createGoogleCalendarEvent } from "@/lib/google-calendar";
+import { siteConfig } from "@/lib/site";
 
 type ContactPreference = "email" | "phone" | "text";
 type ShoppingFocus = "bridal-gown";
@@ -26,6 +31,7 @@ type AppointmentRequestData = {
 	streetSizeApprox: string;
 	weddingDate?: string;
 	preferredDate: string;
+	preferredTimeSlot: string;
 	timeline: TimelineRange;
 	guestCount?: number;
 	budgetRange?: BudgetRange;
@@ -51,6 +57,7 @@ type UploadedPhotoGroup = {
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+const timeSlotPattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
 const maxImageBytes = 5 * 1024 * 1024;
 const maxImagesPerGroup = 12;
 
@@ -159,6 +166,7 @@ function validateFormData(formData: FormData): ValidationResult {
 	const weddingDateRaw = readString(formData.get("weddingDate"));
 	const weddingDate = readOptionalDate(formData.get("weddingDate"));
 	const preferredDate = readString(formData.get("preferredDate"));
+	const preferredTimeSlot = readString(formData.get("preferredTimeSlot"));
 	const timeline = readString(formData.get("timeline"));
 	const budgetRange = readString(formData.get("budgetRange"));
 	const preferredDesigners = readString(formData.get("preferredDesigners"));
@@ -190,6 +198,9 @@ function validateFormData(formData: FormData): ValidationResult {
 	}
 	if (!isoDatePattern.test(preferredDate)) {
 		errors.push("Please choose a preferred appointment date.");
+	}
+	if (!timeSlotPattern.test(preferredTimeSlot)) {
+		errors.push("Please choose a valid appointment time.");
 	}
 	if (!allowedTimeline.has(timeline)) {
 		errors.push("Please choose your timeline.");
@@ -247,6 +258,7 @@ function validateFormData(formData: FormData): ValidationResult {
 			streetSizeApprox,
 			weddingDate,
 			preferredDate,
+			preferredTimeSlot,
 			timeline: timeline as TimelineRange,
 			guestCount,
 			budgetRange: budgetRange ? (budgetRange as BudgetRange) : undefined,
@@ -263,6 +275,16 @@ function validateFormData(formData: FormData): ValidationResult {
 
 function ensureNotificationEnv(mode: NotificationMode): string[] {
 	const missing: string[] = [];
+
+	if (!process.env.GOOGLE_CALENDAR_ID?.trim()) {
+		missing.push("GOOGLE_CALENDAR_ID");
+	}
+	if (!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT_EMAIL?.trim()) {
+		missing.push("GOOGLE_CALENDAR_SERVICE_ACCOUNT_EMAIL");
+	}
+	if (!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY?.trim()) {
+		missing.push("GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY");
+	}
 
 	if (shouldUploadImages(mode)) {
 		if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
@@ -359,6 +381,7 @@ function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string
 		["Shopping For", shoppingFocusLabels[data.shoppingFocus] ?? data.shoppingFocus],
 		["Approx. Street Size", data.streetSizeApprox],
 		["Preferred Appointment Date", data.preferredDate],
+		["Preferred Appointment Time", data.preferredTimeSlot],
 		["Timeline", timelineLabels[data.timeline] ?? data.timeline],
 		["Wedding Date", data.weddingDate ?? "Not provided"],
 		[
@@ -379,6 +402,24 @@ function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string
 		],
 		["Style Notes", data.styleNotes ?? "Not provided"],
 	];
+}
+
+function buildCalendarEventDescription(
+	data: AppointmentRequestData,
+	photos: UploadedPhotoGroup,
+): string {
+	const rows = formatKeyValueRows(data)
+		.map(([label, value]) => `${label}: ${value}`)
+		.join("\n");
+
+	return [
+		"Bridal Elegance NM appointment booked from the website.",
+		"",
+		rows,
+		"",
+		"Bridal Inspiration:",
+		photos.bride.length > 0 ? photos.bride.join("\n") : "No images uploaded.",
+	].join("\n");
 }
 
 function buildEmailHtml(
@@ -487,6 +528,7 @@ function buildSmsBody(
 		`Phone: ${data.phone}`,
 		`Email: ${data.email}`,
 		`Date: ${data.preferredDate}`,
+		`Time: ${data.preferredTimeSlot}`,
 		`Timeline: ${timelineLabels[data.timeline] ?? data.timeline}`,
 		`Street Size: ${data.streetSizeApprox}`,
 		`Guests: ${data.guestCount ?? "Not provided"}`,
@@ -590,22 +632,32 @@ export async function POST(request: Request) {
 		);
 	}
 
+	let selectedSlot: AvailableAppointmentSlot | null = null;
 	try {
-		const isAvailable = await isAppointmentDateAvailable(
+		selectedSlot = await findAvailableSlotForDate(
 			validated.data.preferredDate,
+			validated.data.preferredTimeSlot,
 		);
-		if (!isAvailable) {
+		if (!selectedSlot) {
 			return NextResponse.json(
 				{
 					ok: false,
 					message:
-						"That appointment date is no longer available. Please choose another open day.",
+						"That appointment time is no longer available. Please choose another open time.",
 				},
 				{ status: 409 },
 			);
 		}
 	} catch (error) {
 		console.error("[appointment-request] Availability validation error", error);
+		return NextResponse.json(
+			{
+				ok: false,
+				message:
+					"We couldn't verify that appointment time right now. Please try again.",
+			},
+			{ status: 502 },
+		);
 	}
 
 	let uploadedPhotos: UploadedPhotoGroup = {
@@ -633,6 +685,32 @@ export async function POST(request: Request) {
 	}
 
 	const submittedAtIso = new Date().toISOString();
+	let calendarEventId = "";
+
+	try {
+		const createdEvent = await createGoogleCalendarEvent({
+			summary: `Bridal Appointment - ${validated.data.fullName}`,
+			description: buildCalendarEventDescription(
+				validated.data,
+				uploadedPhotos,
+			),
+			location: `${siteConfig.addressLine1}, ${siteConfig.addressLine2}`,
+			startDateTimeIso: selectedSlot.startDateTimeIso,
+			endDateTimeIso: selectedSlot.endDateTimeIso,
+		});
+		calendarEventId = createdEvent.id;
+	} catch (error) {
+		console.error("[appointment-request] Google Calendar booking error", error);
+		return NextResponse.json(
+			{
+				ok: false,
+				message:
+					"We couldn't reserve that appointment time right now. Please choose another available time and try again.",
+			},
+			{ status: 502 },
+		);
+	}
+
 	const deliveredChannels: string[] = [];
 
 	if (notificationMode === "both" || notificationMode === "email") {
@@ -675,6 +753,7 @@ export async function POST(request: Request) {
 	const submissionId = randomUUID();
 	console.info("[appointment-request] submission delivered", {
 		submissionId,
+		calendarEventId,
 		submittedAt: submittedAtIso,
 		requester: {
 			fullName: validated.data.fullName,
@@ -688,7 +767,7 @@ export async function POST(request: Request) {
 
 	return NextResponse.json({
 		ok: true,
-		message: `Appointment request received. Details delivered by ${deliveredChannels.join(
+		message: `Appointment reserved for ${validated.data.preferredDate} at ${validated.data.preferredTimeSlot}. Details delivered by ${deliveredChannels.join(
 			" and ",
 		)}.`,
 	});

@@ -1,19 +1,31 @@
 import "server-only";
 
+import { weeklyAppointmentSlotRules } from "./appointment-slot-rules";
 import {
 	fetchGoogleCalendarEvents,
 	getGoogleCalendarTimeZone,
 	isGoogleCalendarAvailabilityConfigured,
 } from "./google-calendar";
 
+export type AvailableAppointmentSlot = {
+	id: string;
+	label: string;
+	startTime: string;
+	endTime: string;
+	startDateTimeIso: string;
+	endDateTimeIso: string;
+};
+
 type AvailabilitySnapshot = {
 	configured: boolean;
 	timeZone: string;
 	availableDates: string[];
+	slotsByDate: Record<string, AvailableAppointmentSlot[]>;
 };
 
 const isoMonthPattern = /^\d{4}-\d{2}$/;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 function pad(value: number): string {
 	return String(value).padStart(2, "0");
@@ -31,6 +43,30 @@ function parseIsoMonth(value: string): { year: number; month: number } | null {
 
 function toIsoDate(year: number, month: number, day: number): string {
 	return `${year}-${pad(month)}-${pad(day)}`;
+}
+
+function parseTimeToMinutes(value: string): number {
+	const match = value.match(timePattern);
+	if (!match) return 0;
+	return Number(match[1]) * 60 + Number(match[2]);
+}
+
+function formatMinutesToTime(value: number): string {
+	const hours = Math.floor(value / 60);
+	const minutes = value % 60;
+	return `${pad(hours)}:${pad(minutes)}`;
+}
+
+function formatSlotLabel(startTime: string): string {
+	const [hoursRaw, minutesRaw] = startTime.split(":");
+	const hours = Number(hoursRaw);
+	const minutes = Number(minutesRaw);
+	const suffix = hours >= 12 ? "PM" : "AM";
+	const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+	if (minutes === 0) {
+		return `${hour12}:00 ${suffix}`;
+	}
+	return `${hour12}:${pad(minutes)} ${suffix}`;
 }
 
 function getAppointmentLeadDays(): number {
@@ -85,31 +121,17 @@ function zonedDateTimeToUtc(
 }
 
 function getCurrentIsoDateInTimeZone(timeZone: string): string {
-	return formatDateInTimeZone(new Date(), timeZone);
-}
-
-function formatDateInTimeZone(date: Date, timeZone: string): string {
 	const formatter = new Intl.DateTimeFormat("en-US", {
 		timeZone,
 		year: "numeric",
 		month: "2-digit",
 		day: "2-digit",
 	});
-	const parts = formatter.formatToParts(date);
+	const parts = formatter.formatToParts(new Date());
 	const year = parts.find(part => part.type === "year")?.value ?? "0000";
 	const month = parts.find(part => part.type === "month")?.value ?? "01";
 	const day = parts.find(part => part.type === "day")?.value ?? "01";
-
 	return `${year}-${month}-${day}`;
-}
-
-function getStartOfDayUtc(isoDate: string, timeZone: string): Date {
-	return zonedDateTimeToUtc(isoDate, 0, timeZone);
-}
-
-function getEndOfDayUtc(isoDate: string, timeZone: string): Date {
-	const nextIsoDate = addDaysToIsoDate(isoDate, 1);
-	return zonedDateTimeToUtc(nextIsoDate, 0, timeZone);
 }
 
 function addDaysToIsoDate(isoDate: string, daysToAdd: number): string {
@@ -125,27 +147,62 @@ function addDaysToIsoDate(isoDate: string, daysToAdd: number): string {
 	);
 }
 
-function doesIntervalBlockDate(
-	dateStart: Date,
-	dateEnd: Date,
-	eventIntervals: Array<{ start: Date; end: Date }>,
+function getWeekdayIndex(isoDate: string): number {
+	const [yearRaw, monthRaw, dayRaw] = isoDate.split("-");
+	return new Date(
+		Date.UTC(Number(yearRaw), Number(monthRaw) - 1, Number(dayRaw)),
+	).getUTCDay();
+}
+
+function buildScheduledSlotsForDate(
+	isoDate: string,
+	timeZone: string,
+): AvailableAppointmentSlot[] {
+	const weekdayIndex = getWeekdayIndex(isoDate);
+	const rules = weeklyAppointmentSlotRules[weekdayIndex] ?? [];
+
+	return rules.map(rule => {
+		const startMinutes = parseTimeToMinutes(rule.startTime);
+		const endMinutes = startMinutes + rule.durationMinutes;
+		const startDateTime = zonedDateTimeToUtc(isoDate, startMinutes, timeZone);
+		const endDateTime = zonedDateTimeToUtc(isoDate, endMinutes, timeZone);
+
+		return {
+			id: rule.id,
+			label: rule.label ?? formatSlotLabel(rule.startTime),
+			startTime: rule.startTime,
+			endTime: formatMinutesToTime(endMinutes),
+			startDateTimeIso: startDateTime.toISOString(),
+			endDateTimeIso: endDateTime.toISOString(),
+		};
+	});
+}
+
+function doesEventOverlapSlot(
+	eventInterval: { start: Date; end: Date },
+	slot: AvailableAppointmentSlot,
 ): boolean {
-	for (const interval of eventIntervals) {
-		const overlapStart = Math.max(
-			interval.start.getTime(),
-			dateStart.getTime(),
-		);
-		const overlapEnd = Math.min(interval.end.getTime(), dateEnd.getTime());
-		const overlapMs = overlapEnd - overlapStart;
+	const slotStart = new Date(slot.startDateTimeIso).getTime();
+	const slotEnd = new Date(slot.endDateTimeIso).getTime();
+	const overlapStart = Math.max(eventInterval.start.getTime(), slotStart);
+	const overlapEnd = Math.min(eventInterval.end.getTime(), slotEnd);
+	return overlapEnd > overlapStart;
+}
 
-		// Any real event overlap blocks the date. This is intentionally simpler
-		// and more predictable for a boutique-managed calendar workflow.
-		if (overlapMs > 0) {
-			return true;
-		}
-	}
+function getMonthDateRange(
+	parsedMonth: { year: number; month: number },
+	timeZone: string,
+) {
+	const monthStartIso = `${parsedMonth.year}-${pad(parsedMonth.month)}-01`;
+	const nextMonthYear =
+		parsedMonth.month === 12 ? parsedMonth.year + 1 : parsedMonth.year;
+	const nextMonthNumber = parsedMonth.month === 12 ? 1 : parsedMonth.month + 1;
+	const nextMonthStartIso = `${nextMonthYear}-${pad(nextMonthNumber)}-01`;
 
-	return false;
+	return {
+		monthStartUtc: zonedDateTimeToUtc(monthStartIso, 0, timeZone),
+		nextMonthStartUtc: zonedDateTimeToUtc(nextMonthStartIso, 0, timeZone),
+	};
 }
 
 export async function getMonthAvailability(
@@ -159,6 +216,7 @@ export async function getMonthAvailability(
 			configured: isGoogleCalendarAvailabilityConfigured(),
 			timeZone,
 			availableDates: [],
+			slotsByDate: {},
 		};
 	}
 
@@ -167,22 +225,18 @@ export async function getMonthAvailability(
 			configured: false,
 			timeZone,
 			availableDates: [],
+			slotsByDate: {},
 		};
 	}
 
-	const monthStartIso = `${parsedMonth.year}-${pad(parsedMonth.month)}-01`;
-	const nextMonthYear =
-		parsedMonth.month === 12 ? parsedMonth.year + 1 : parsedMonth.year;
-	const nextMonthNumber = parsedMonth.month === 12 ? 1 : parsedMonth.month + 1;
-	const nextMonthStartIso = `${nextMonthYear}-${pad(nextMonthNumber)}-01`;
-	const monthStartUtc = zonedDateTimeToUtc(monthStartIso, 0, timeZone);
-	const nextMonthStartUtc = zonedDateTimeToUtc(nextMonthStartIso, 0, timeZone);
-
+	const { monthStartUtc, nextMonthStartUtc } = getMonthDateRange(
+		parsedMonth,
+		timeZone,
+	);
 	const eventIntervals = await fetchGoogleCalendarEvents(
 		monthStartUtc.toISOString(),
 		nextMonthStartUtc.toISOString(),
 	);
-
 	const leadDateIso = addDaysToIsoDate(
 		getCurrentIsoDateInTimeZone(timeZone),
 		getAppointmentLeadDays(),
@@ -193,6 +247,7 @@ export async function getMonthAvailability(
 	);
 
 	const availableDates: string[] = [];
+	const slotsByDate: Record<string, AvailableAppointmentSlot[]> = {};
 	const totalDaysInMonth = new Date(
 		Date.UTC(parsedMonth.year, parsedMonth.month, 0),
 	).getUTCDate();
@@ -201,16 +256,17 @@ export async function getMonthAvailability(
 		const isoDate = toIsoDate(parsedMonth.year, parsedMonth.month, day);
 		if (isoDate < leadDateIso || isoDate > maxDateIso) continue;
 
-		const dateStartUtc = getStartOfDayUtc(isoDate, timeZone);
-		const dateEndUtc = getEndOfDayUtc(isoDate, timeZone);
-		const isBlocked = doesIntervalBlockDate(
-			dateStartUtc,
-			dateEndUtc,
-			eventIntervals,
+		const scheduledSlots = buildScheduledSlotsForDate(isoDate, timeZone);
+		const openSlots = scheduledSlots.filter(
+			slot =>
+				!eventIntervals.some(eventInterval =>
+					doesEventOverlapSlot(eventInterval, slot),
+				),
 		);
 
-		if (!isBlocked) {
+		if (openSlots.length > 0) {
 			availableDates.push(isoDate);
+			slotsByDate[isoDate] = openSlots;
 		}
 	}
 
@@ -218,17 +274,30 @@ export async function getMonthAvailability(
 		configured: true,
 		timeZone,
 		availableDates,
+		slotsByDate,
 	};
+}
+
+export async function getAvailableSlotsForDate(
+	isoDate: string,
+): Promise<AvailableAppointmentSlot[]> {
+	if (!isoDatePattern.test(isoDate)) return [];
+	const [year, month] = isoDate.split("-");
+	const monthAvailability = await getMonthAvailability(`${year}-${month}`);
+	return monthAvailability.slotsByDate[isoDate] ?? [];
+}
+
+export async function findAvailableSlotForDate(
+	isoDate: string,
+	slotId: string,
+): Promise<AvailableAppointmentSlot | null> {
+	const availableSlots = await getAvailableSlotsForDate(isoDate);
+	return availableSlots.find(slot => slot.id === slotId) ?? null;
 }
 
 export async function isAppointmentDateAvailable(
 	isoDate: string,
 ): Promise<boolean> {
-	if (!isoDatePattern.test(isoDate)) return false;
-
-	const [year, month] = isoDate.split("-");
-	const monthAvailability = await getMonthAvailability(`${year}-${month}`);
-	if (!monthAvailability.configured) return true;
-
-	return monthAvailability.availableDates.includes(isoDate);
+	const slots = await getAvailableSlotsForDate(isoDate);
+	return slots.length > 0;
 }

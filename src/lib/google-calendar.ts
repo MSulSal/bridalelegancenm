@@ -15,18 +15,6 @@ type GoogleTokenResponse = {
 	expires_in?: number;
 };
 
-type GoogleFreeBusyResponse = {
-	calendars?: Record<
-		string,
-		{
-			busy?: Array<{
-				start: string;
-				end: string;
-			}>;
-		}
-	>;
-};
-
 type GoogleCalendarListResponse = {
 	items?: Array<{
 		start?: {
@@ -47,10 +35,22 @@ export type CalendarEventInterval = {
 	end: Date;
 };
 
+type GoogleInsertEventInput = {
+	summary: string;
+	description: string;
+	location?: string;
+	startDateTimeIso: string;
+	endDateTimeIso: string;
+};
+
+type GoogleInsertEventResponse = {
+	id?: string;
+	htmlLink?: string;
+};
+
 const googleTokenUrl = "https://oauth2.googleapis.com/token";
-const googleFreeBusyUrl = "https://www.googleapis.com/calendar/v3/freeBusy";
 const googleCalendarEventsUrl = "https://www.googleapis.com/calendar/v3/calendars";
-const googleCalendarScope = "https://www.googleapis.com/auth/calendar.readonly";
+const googleCalendarScope = "https://www.googleapis.com/auth/calendar";
 
 function encodeBase64Url(value: string): string {
 	return Buffer.from(value)
@@ -148,45 +148,6 @@ export function isGoogleCalendarAvailabilityConfigured(): boolean {
 	return getGoogleCalendarConfig() !== null;
 }
 
-export async function fetchGoogleCalendarBusyIntervals(
-	timeMinIso: string,
-	timeMaxIso: string,
-): Promise<CalendarEventInterval[]> {
-	const config = getGoogleCalendarConfig();
-	if (!config) return [];
-
-	const accessToken = await getGoogleAccessToken(config);
-	const response = await fetch(googleFreeBusyUrl, {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			timeMin: timeMinIso,
-			timeMax: timeMaxIso,
-			timeZone: config.timeZone,
-			items: [{ id: config.calendarId }],
-		}),
-		cache: "no-store",
-	});
-
-	const json = (await response.json()) as GoogleFreeBusyResponse;
-	if (!response.ok) {
-		throw new Error(
-			`Google freeBusy request failed with status ${response.status}.`,
-		);
-	}
-
-	const busy =
-		json.calendars?.[config.calendarId]?.busy?.map(interval => ({
-			start: new Date(interval.start),
-			end: new Date(interval.end),
-		})) ?? [];
-
-	return busy.sort((left, right) => left.start.getTime() - right.start.getTime());
-}
-
 function parseGoogleEventDate(value: { date?: string; dateTime?: string } | undefined): Date | null {
 	if (!value) return null;
 	if (value.dateTime) {
@@ -250,4 +211,51 @@ export async function fetchGoogleCalendarEvents(
 	return intervals.sort(
 		(left, right) => left.start.getTime() - right.start.getTime(),
 	);
+}
+
+export async function createGoogleCalendarEvent(
+	input: GoogleInsertEventInput,
+): Promise<{ id: string; htmlLink?: string }> {
+	const config = getGoogleCalendarConfig();
+	if (!config) {
+		throw new Error("Google Calendar is not configured.");
+	}
+
+	const accessToken = await getGoogleAccessToken(config);
+	const response = await fetch(
+		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}/events?sendUpdates=none`,
+		{
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				summary: input.summary,
+				description: input.description,
+				location: input.location,
+				start: {
+					dateTime: input.startDateTimeIso,
+					timeZone: config.timeZone,
+				},
+				end: {
+					dateTime: input.endDateTimeIso,
+					timeZone: config.timeZone,
+				},
+			}),
+			cache: "no-store",
+		},
+	);
+
+	const json = (await response.json()) as GoogleInsertEventResponse;
+	if (!response.ok || !json.id) {
+		throw new Error(
+			`Google event insert failed with status ${response.status}.`,
+		);
+	}
+
+	return {
+		id: json.id,
+		htmlLink: json.htmlLink,
+	};
 }

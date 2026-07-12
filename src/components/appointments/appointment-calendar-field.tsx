@@ -8,6 +8,8 @@ type AppointmentCalendarFieldProps = {
 	label: string;
 	value: string;
 	onChange: (nextValue: string) => void;
+	selectedSlotId: string;
+	onSlotChange: (nextValue: string) => void;
 	required?: boolean;
 };
 
@@ -23,8 +25,24 @@ type AvailabilityResponse = {
 	ok?: boolean;
 	configured?: boolean;
 	availableDates?: string[];
+	slotsByDate?: Record<
+		string,
+		Array<{
+			id: string;
+			label: string;
+			startTime: string;
+			endTime: string;
+		}>
+	>;
 	message?: string;
 	timeZone?: string;
+};
+
+type AppointmentSlotOption = {
+	id: string;
+	label: string;
+	startTime: string;
+	endTime: string;
 };
 
 const weekdayLabels = [
@@ -139,11 +157,16 @@ export function AppointmentCalendarField({
 	label,
 	value,
 	onChange,
+	selectedSlotId,
+	onSlotChange,
 	required = false,
 }: AppointmentCalendarFieldProps) {
 	const today = useMemo(() => startOfDay(new Date()), []);
 	const selectedDate = useMemo(() => parseIsoDate(value), [value]);
 	const [availableDates, setAvailableDates] = useState<string[]>([]);
+	const [slotsByDate, setSlotsByDate] = useState<
+		Record<string, AppointmentSlotOption[]>
+	>({});
 	const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
 	const [availabilityError, setAvailabilityError] = useState("");
 	const [hasLiveAvailability, setHasLiveAvailability] = useState(false);
@@ -157,6 +180,7 @@ export function AppointmentCalendarField({
 		() => new Set(availableDates),
 		[availableDates],
 	);
+	const selectedDateSlots = value ? (slotsByDate[value] ?? []) : [];
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -178,6 +202,7 @@ export function AppointmentCalendarField({
 
 				setHasLiveAvailability(Boolean(json.configured));
 				setAvailableDates(json.availableDates ?? []);
+				setSlotsByDate(json.slotsByDate ?? {});
 				if (!response.ok || json.ok === false) {
 					setAvailabilityError(
 						json.message ??
@@ -188,6 +213,7 @@ export function AppointmentCalendarField({
 				if (controller.signal.aborted) return;
 				setHasLiveAvailability(false);
 				setAvailableDates([]);
+				setSlotsByDate({});
 				setAvailabilityError(
 					error instanceof Error
 						? error.message
@@ -204,6 +230,16 @@ export function AppointmentCalendarField({
 
 		return () => controller.abort();
 	}, [visibleMonthKey]);
+
+	useEffect(() => {
+		if (!value) return;
+		const hasSelectedSlot = selectedDateSlots.some(
+			slot => slot?.id === selectedSlotId,
+		);
+		if (!hasSelectedSlot && selectedSlotId) {
+			onSlotChange("");
+		}
+	}, [onSlotChange, selectedDateSlots, selectedSlotId, value]);
 
 	const calendarCells = useMemo(
 		() =>
@@ -288,6 +324,9 @@ export function AppointmentCalendarField({
 							onClick={() => {
 								if (!cell.isDisabled) {
 									onChange(cell.iso);
+									if (cell.iso !== value) {
+										onSlotChange("");
+									}
 								}
 							}}
 							disabled={cell.isDisabled}
@@ -305,6 +344,41 @@ export function AppointmentCalendarField({
 					? `Selected: ${selectedDateFormatter.format(selectedDate)}`
 					: "No appointment date selected yet."}
 			</p>
+
+			{value ? (
+				<div className="mt-4 border border-[color:var(--line-subtle)] bg-[color:var(--surface-soft)] p-4">
+					<p className="text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
+						Choose A Time
+					</p>
+					{selectedDateSlots.length > 0 ? (
+						<div className="mt-3 flex flex-wrap gap-2">
+							{selectedDateSlots.map(slot => {
+								const isSelected = slot?.id === selectedSlotId;
+								return (
+									<button
+										key={slot?.id}
+										type="button"
+										onClick={() => onSlotChange(slot?.id ?? "")}
+										className={
+											isSelected
+												? "border border-[color:var(--color-gold)] bg-[color:var(--accent-500)] px-3 py-2 text-sm text-white transition"
+												: "border border-[color:var(--line-subtle)] bg-white px-3 py-2 text-sm text-[color:var(--ink-900)] transition hover:border-[color:var(--ink-900)]"
+										}
+										aria-pressed={isSelected}
+									>
+										{slot?.label}
+									</button>
+								);
+							})}
+						</div>
+					) : (
+						<p className="mt-3 text-sm leading-6 text-[color:var(--ink-700)]">
+							That day is no longer showing open appointment times. Please choose
+							another available date.
+						</p>
+					)}
+				</div>
+			) : null}
 
 			<p className="mt-2 text-[11px] uppercase tracking-[0.1em] text-[color:var(--ink-500)]">
 				{isLoadingAvailability

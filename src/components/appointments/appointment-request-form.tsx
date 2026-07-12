@@ -41,7 +41,9 @@ export function AppointmentRequestForm() {
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [preferredDate, setPreferredDate] = useState("");
+	const [preferredTimeSlot, setPreferredTimeSlot] = useState("");
 	const [preferredDateError, setPreferredDateError] = useState("");
+	const [preferredTimeError, setPreferredTimeError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
 	const [errorList, setErrorList] = useState<string[]>([]);
@@ -79,6 +81,11 @@ export function AppointmentRequestForm() {
 			setErrorMessage("Please choose your preferred appointment date.");
 			return false;
 		}
+		if (!preferredTimeSlot) {
+			setPreferredTimeError("Please choose an appointment time.");
+			setErrorMessage("Please choose an appointment time.");
+			return false;
+		}
 
 		const formData = new FormData(form);
 		const bridePhotoCount = countSelectedFiles(
@@ -92,6 +99,7 @@ export function AppointmentRequestForm() {
 		}
 
 		setPreferredDateError("");
+		setPreferredTimeError("");
 		return true;
 	}
 
@@ -104,6 +112,7 @@ export function AppointmentRequestForm() {
 		setErrorMessage("");
 		setErrorList([]);
 		setPreferredDateError("");
+		setPreferredTimeError("");
 
 		if (!validateForm()) {
 			setIsSubmitting(false);
@@ -112,6 +121,7 @@ export function AppointmentRequestForm() {
 
 		const formData = new FormData(event.currentTarget);
 		formData.set("preferredDate", preferredDate);
+		formData.set("preferredTimeSlot", preferredTimeSlot);
 		formData.set("shoppingFocus", "bridal-gown");
 
 		try {
@@ -133,9 +143,10 @@ export function AppointmentRequestForm() {
 
 			event.currentTarget.reset();
 			setPreferredDate("");
+			setPreferredTimeSlot("");
 			setSuccessMessage(
 				json.message ??
-					"Appointment request received. We'll follow up with you shortly.",
+					"Appointment received. We'll follow up with you shortly.",
 			);
 		} catch {
 			setErrorMessage(
@@ -166,8 +177,8 @@ export function AppointmentRequestForm() {
 				</h2>
 				<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
 					This form is for bridal gown appointments. Submit your details, share
-					at least one inspiration image, choose from open appointment dates,
-					and we&apos;ll confirm the exact time directly.
+					at least one inspiration image, and choose your preferred appointment
+					date and time.
 				</p>
 			</div>
 
@@ -239,14 +250,24 @@ export function AppointmentRequestForm() {
 						label="Preferred Appointment Date"
 						required
 						value={preferredDate}
+						selectedSlotId={preferredTimeSlot}
 						onChange={nextValue => {
 							setPreferredDate(nextValue);
 							setPreferredDateError("");
+						}}
+						onSlotChange={nextValue => {
+							setPreferredTimeSlot(nextValue);
+							setPreferredTimeError("");
 						}}
 					/>
 					{preferredDateError ? (
 						<p className="mt-2 text-xs uppercase tracking-[0.12em] text-red-700">
 							{preferredDateError}
+						</p>
+					) : null}
+					{preferredTimeError ? (
+						<p className="mt-2 text-xs uppercase tracking-[0.12em] text-red-700">
+							{preferredTimeError}
 						</p>
 					) : null}
 				</div>
@@ -404,8 +425,8 @@ export function AppointmentRequestForm() {
 
 			<div className="mt-6 border border-[color:var(--line-subtle)] bg-[color:var(--surface-soft)] p-4 text-sm leading-7 text-[color:var(--ink-700)]">
 				<p>
-					We&apos;ll review your request, confirm availability directly, and reach
-					out by your preferred contact method.
+					We&apos;ll reserve your selected appointment time, review your request,
+					and reach out by your preferred contact method.
 				</p>
 			</div>
 
@@ -416,20 +437,20 @@ export function AppointmentRequestForm() {
 					required
 					className="mt-1 h-4 w-4"
 				/>
-				I understand this is an appointment request and the boutique will
-				confirm my final date and time directly.
+				I understand my selected appointment time will be reserved for Bridal
+				Elegance NM and the boutique may follow up with any additional details.
 			</label>
 
 			<div className="mt-6 flex flex-wrap items-center justify-between gap-3">
 				<p className="text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-					Manual Confirmation
+					Reserved On Submission
 				</p>
 				<button
 					type="submit"
 					disabled={isSubmitting}
 					className="be-btn be-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					{isSubmitting ? "Submitting..." : "Submit Appointment Request"}
+					{isSubmitting ? "Submitting..." : "Reserve Appointment"}
 				</button>
 			</div>
 
