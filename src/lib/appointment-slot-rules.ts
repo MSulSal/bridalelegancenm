@@ -7,7 +7,7 @@ export type WeeklySlotRule = {
 	label?: string;
 };
 
-const defaultDurationMinutes = 75;
+const defaultDurationMinutes = 30;
 
 function createRule(
 	startTime: string,
@@ -22,46 +22,45 @@ function createRule(
 	};
 }
 
-// The Monday/Tuesday/Wednesday/Friday pattern came from client notes and
-// currently includes both 12:30 and 1:00. We preserve that exact list and
-// keep the schedule centralized here so it can be refined quickly later.
+// Slot start times come from client notes. Each slot is treated as a
+// 30-minute bookable unit so matching calendar events can block it reliably.
 export const weeklyAppointmentSlotRules: Record<number, WeeklySlotRule[]> = {
 	0: [
-		createRule("12:00", 75),
-		createRule("13:30", 75),
+		createRule("12:00"),
+		createRule("13:30"),
 	],
 	1: [
-		createRule("11:00", 75),
-		createRule("12:30", 30),
-		createRule("13:00", 75),
-		createRule("14:30", 75),
+		createRule("11:00"),
+		createRule("12:30"),
+		createRule("13:00"),
+		createRule("14:30"),
 	],
 	2: [
-		createRule("11:00", 75),
-		createRule("12:30", 30),
-		createRule("13:00", 75),
-		createRule("14:30", 75),
+		createRule("11:00"),
+		createRule("12:30"),
+		createRule("13:00"),
+		createRule("14:30"),
 	],
 	3: [
-		createRule("11:00", 75),
-		createRule("12:30", 30),
-		createRule("13:00", 75),
-		createRule("14:30", 75),
+		createRule("11:00"),
+		createRule("12:30"),
+		createRule("13:00"),
+		createRule("14:30"),
 	],
 	4: [
-		createRule("10:00", 75),
-		createRule("11:30", 30),
+		createRule("10:00"),
+		createRule("11:30"),
 	],
 	5: [
-		createRule("11:00", 75),
-		createRule("12:30", 30),
-		createRule("13:00", 75),
-		createRule("14:30", 75),
+		createRule("11:00"),
+		createRule("12:30"),
+		createRule("13:00"),
+		createRule("14:30"),
 	],
 	6: [
-		createRule("10:00", 75),
-		createRule("11:30", 75),
-		createRule("13:00", 80),
-		createRule("14:20", 80),
+		createRule("10:00"),
+		createRule("11:30"),
+		createRule("13:00"),
+		createRule("14:20"),
 	],
 };
