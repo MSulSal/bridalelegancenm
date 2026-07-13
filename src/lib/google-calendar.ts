@@ -30,6 +30,10 @@ type GoogleCalendarListResponse = {
 	}>;
 };
 
+type GoogleCalendarMetadataResponse = {
+	timeZone?: string;
+};
+
 export type CalendarEventInterval = {
 	start: Date;
 	end: Date;
@@ -146,6 +150,32 @@ export function getGoogleCalendarTimeZone(): string {
 
 export function isGoogleCalendarAvailabilityConfigured(): boolean {
 	return getGoogleCalendarConfig() !== null;
+}
+
+export async function fetchGoogleCalendarResolvedTimeZone(): Promise<string> {
+	const config = getGoogleCalendarConfig();
+	if (!config) return "America/Denver";
+
+	const accessToken = await getGoogleAccessToken(config);
+	const response = await fetch(
+		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}`,
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+			cache: "no-store",
+		},
+	);
+
+	const json = (await response.json()) as GoogleCalendarMetadataResponse;
+	if (!response.ok) {
+		throw new Error(
+			`Google calendar metadata request failed with status ${response.status}.`,
+		);
+	}
+
+	return json.timeZone?.trim() || config.timeZone || "America/Denver";
 }
 
 function parseGoogleEventDate(value: { date?: string; dateTime?: string } | undefined): Date | null {

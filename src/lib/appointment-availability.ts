@@ -3,6 +3,7 @@ import "server-only";
 import { weeklyAppointmentSlotRules } from "./appointment-slot-rules";
 import {
 	fetchGoogleCalendarEvents,
+	fetchGoogleCalendarResolvedTimeZone,
 	getGoogleCalendarTimeZone,
 	isGoogleCalendarAvailabilityConfigured,
 } from "./google-calendar";
@@ -209,12 +210,12 @@ export async function getMonthAvailability(
 	monthValue: string,
 ): Promise<AvailabilitySnapshot> {
 	const parsedMonth = parseIsoMonth(monthValue);
-	const timeZone = getGoogleCalendarTimeZone();
+	const configuredTimeZone = getGoogleCalendarTimeZone();
 
 	if (!parsedMonth) {
 		return {
 			configured: isGoogleCalendarAvailabilityConfigured(),
-			timeZone,
+			timeZone: configuredTimeZone,
 			availableDates: [],
 			slotsByDate: {},
 		};
@@ -223,10 +224,20 @@ export async function getMonthAvailability(
 	if (!isGoogleCalendarAvailabilityConfigured()) {
 		return {
 			configured: false,
-			timeZone,
+			timeZone: configuredTimeZone,
 			availableDates: [],
 			slotsByDate: {},
 		};
+	}
+
+	let timeZone = configuredTimeZone;
+	try {
+		timeZone = await fetchGoogleCalendarResolvedTimeZone();
+	} catch (error) {
+		console.error(
+			"[appointment-availability] Falling back to configured timezone",
+			error,
+		);
 	}
 
 	const { monthStartUtc, nextMonthStartUtc } = getMonthDateRange(
