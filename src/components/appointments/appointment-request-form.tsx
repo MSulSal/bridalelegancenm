@@ -106,6 +106,7 @@ export function AppointmentRequestForm() {
 	async function onSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		if (isSubmitting) return;
+		const form = event.currentTarget;
 
 		setIsSubmitting(true);
 		setSuccessMessage("");
@@ -119,7 +120,7 @@ export function AppointmentRequestForm() {
 			return;
 		}
 
-		const formData = new FormData(event.currentTarget);
+		const formData = new FormData(form);
 		formData.set("preferredDate", preferredDate);
 		formData.set("preferredTimeSlot", preferredTimeSlot);
 		formData.set("shoppingFocus", "bridal-gown");
@@ -144,7 +145,7 @@ export function AppointmentRequestForm() {
 				return;
 			}
 
-			event.currentTarget.reset();
+			form.reset();
 			setPreferredDate("");
 			setPreferredTimeSlot("");
 			setSuccessMessage(
