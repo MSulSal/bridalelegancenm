@@ -9,6 +9,19 @@ type ApiResponse = {
 	errors?: string[];
 };
 
+function parseApiResponse(responseText: string): ApiResponse {
+	if (!responseText) return {};
+
+	try {
+		return JSON.parse(responseText) as ApiResponse;
+	} catch {
+		return {
+			ok: false,
+			message: responseText,
+		};
+	}
+}
+
 const timelineOptions = [
 	{ value: "asap", label: "As soon as possible" },
 	{ value: "1-3-months", label: "1 to 3 months out" },
@@ -132,9 +145,7 @@ export function AppointmentRequestForm() {
 			});
 
 			const responseText = await response.text();
-			const json = responseText
-				? (JSON.parse(responseText) as ApiResponse)
-				: ({} as ApiResponse);
+			const json = parseApiResponse(responseText);
 			if (!response.ok || !json.ok) {
 				setErrorMessage(
 					json.message ??
