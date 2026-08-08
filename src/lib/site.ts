@@ -1,7 +1,7 @@
 export const siteConfig = {
 	name: "Bridal Elegance NM",
 	description:
-		"Bridal Elegance is New Mexico's longest standing bridal boutique, located in Albuquerque north of Sawmill District and Old Town.",
+		"Bridal Elegance NM is New Mexico's longest-standing bridal boutique, located at 1301 Rio Grande NW, Suite 2 in Albuquerque, north of Sawmill District and Old Town.",
 	url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 	cityState: "Albuquerque, New Mexico",
 	tagline:
