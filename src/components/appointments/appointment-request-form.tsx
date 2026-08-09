@@ -195,7 +195,7 @@ export function AppointmentRequestForm() {
 				<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
 					This form is for bridal gown appointments. Submit your details, share
 					at least one inspiration image, and choose your preferred appointment
-					date and time.
+					date and time for boutique review.
 				</p>
 			</div>
 
@@ -442,8 +442,8 @@ export function AppointmentRequestForm() {
 
 			<div className="mt-6 border border-[color:var(--line-subtle)] bg-[color:var(--surface-soft)] p-4 text-sm leading-7 text-[color:var(--ink-700)]">
 				<p>
-					We&apos;ll reserve your selected appointment time, review your request,
-					and reach out by your preferred contact method.
+					We&apos;ll hold your selected appointment time as a request, review
+					your details, and follow up by your preferred contact method.
 				</p>
 			</div>
 
@@ -454,20 +454,21 @@ export function AppointmentRequestForm() {
 					required
 					className="mt-1 h-4 w-4"
 				/>
-				I understand my selected appointment time will be reserved for Bridal
-				Elegance NM and the boutique may follow up with any additional details.
+				I understand my selected appointment time will be submitted as a request
+				to Bridal Elegance NM and the boutique will confirm or decline it after
+				review.
 			</label>
 
 			<div className="mt-6 flex flex-wrap items-center justify-between gap-3">
 				<p className="text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-					Reserved On Submission
+					Request Pending Confirmation
 				</p>
 				<button
 					type="submit"
 					disabled={isSubmitting}
 					className="be-btn be-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					{isSubmitting ? "Submitting..." : "Reserve Appointment"}
+					{isSubmitting ? "Submitting..." : "Request Appointment"}
 				</button>
 			</div>
 

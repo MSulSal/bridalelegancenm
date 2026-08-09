@@ -14,8 +14,8 @@ export default function BookAppointmentPage() {
 	const nextStepPoints = [
 		"Choose an open appointment date and one of the times still available that day.",
 		"Upload at least one bridal inspiration image in a single upload field.",
-		"Your selected appointment time is reserved when you submit the form.",
-		"We review your size notes, guest count, and style direction before reaching out.",
+		"Your selected appointment time is held as a request when you submit the form.",
+		"We review your size notes, guest count, and style direction before confirming.",
 		"For now, bridal appointments may include up to 4 guests.",
 	];
 

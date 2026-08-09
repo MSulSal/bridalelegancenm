@@ -372,7 +372,8 @@ function buildCalendarEventDescription(
 		.join("\n");
 
 	return [
-		"Bridal Elegance NM appointment booked from the website.",
+		"Bridal Elegance NM appointment request from the website.",
+		"Status: Pending boutique confirmation",
 		"",
 		rows,
 		"",
@@ -512,7 +513,7 @@ export async function POST(request: Request) {
 
 		try {
 			const createdEvent = await createGoogleCalendarEvent({
-				summary: `Bridal Appointment - ${validated.data.fullName}`,
+				summary: `Appointment Request - Pending Confirmation - ${validated.data.fullName}`,
 				description: buildCalendarEventDescription(
 					validated.data,
 					uploadedPhotos,
@@ -551,7 +552,7 @@ export async function POST(request: Request) {
 
 		return NextResponse.json({
 			ok: true,
-			message: `Appointment reserved for ${validated.data.preferredDate} at ${validated.data.preferredTimeSlot}.`,
+			message: `Appointment request received for ${validated.data.preferredDate} at ${validated.data.preferredTimeSlot}. Bridal Elegance NM will confirm it shortly.`,
 		});
 	} catch (error) {
 		console.error("[appointment-request] Unhandled route error", error);
