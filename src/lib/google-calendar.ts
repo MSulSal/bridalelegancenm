@@ -1,5 +1,6 @@
 import "server-only";
 
+import { Buffer } from "node:buffer";
 import { createSign } from "node:crypto";
 
 type GoogleCalendarConfig = {
@@ -17,6 +18,10 @@ type GoogleTokenResponse = {
 
 type GoogleCalendarListResponse = {
 	items?: Array<{
+		id?: string;
+		summary?: string;
+		description?: string;
+		location?: string;
 		start?: {
 			date?: string;
 			dateTime?: string;
@@ -34,11 +39,6 @@ type GoogleCalendarMetadataResponse = {
 	timeZone?: string;
 };
 
-export type CalendarEventInterval = {
-	start: Date;
-	end: Date;
-};
-
 type GoogleInsertEventInput = {
 	summary: string;
 	description: string;
@@ -47,9 +47,50 @@ type GoogleInsertEventInput = {
 	endDateTimeIso: string;
 };
 
+type GoogleUpdateEventInput = {
+	summary?: string;
+	description?: string;
+	location?: string;
+	startDateTimeIso?: string;
+	endDateTimeIso?: string;
+};
+
 type GoogleInsertEventResponse = {
 	id?: string;
 	htmlLink?: string;
+};
+
+type GoogleEventResponse = {
+	id?: string;
+	summary?: string;
+	description?: string;
+	location?: string;
+	htmlLink?: string;
+	status?: string;
+	start?: {
+		date?: string;
+		dateTime?: string;
+	};
+	end?: {
+		date?: string;
+		dateTime?: string;
+	};
+};
+
+export type CalendarEventInterval = {
+	start: Date;
+	end: Date;
+};
+
+export type GoogleCalendarEvent = {
+	id: string;
+	summary: string;
+	description: string;
+	location?: string;
+	htmlLink?: string;
+	status?: string;
+	startDateTimeIso?: string;
+	endDateTimeIso?: string;
 };
 
 const googleTokenUrl = "https://oauth2.googleapis.com/token";
@@ -144,6 +185,60 @@ async function getGoogleAccessToken(
 	return json.access_token;
 }
 
+async function authorizedGoogleCalendarFetch(
+	path: string,
+	init: RequestInit,
+): Promise<Response> {
+	const config = getGoogleCalendarConfig();
+	if (!config) {
+		throw new Error("Google Calendar is not configured.");
+	}
+
+	const accessToken = await getGoogleAccessToken(config);
+
+	return fetch(
+		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}${path}`,
+		{
+			...init,
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				...(init.headers ?? {}),
+			},
+			cache: "no-store",
+		},
+	);
+}
+
+function parseGoogleEventDate(
+	value: { date?: string; dateTime?: string } | undefined,
+): Date | null {
+	if (!value) return null;
+	if (value.dateTime) {
+		return new Date(value.dateTime);
+	}
+	if (value.date) {
+		return new Date(`${value.date}T00:00:00.000Z`);
+	}
+	return null;
+}
+
+function mapGoogleCalendarEvent(
+	json: GoogleEventResponse,
+): GoogleCalendarEvent | null {
+	if (!json.id) return null;
+
+	return {
+		id: json.id,
+		summary: json.summary ?? "",
+		description: json.description ?? "",
+		location: json.location,
+		htmlLink: json.htmlLink,
+		status: json.status,
+		startDateTimeIso: json.start?.dateTime,
+		endDateTimeIso: json.end?.dateTime,
+	};
+}
+
 export function getGoogleCalendarTimeZone(): string {
 	return getGoogleCalendarConfig()?.timeZone ?? "America/Denver";
 }
@@ -156,17 +251,9 @@ export async function fetchGoogleCalendarResolvedTimeZone(): Promise<string> {
 	const config = getGoogleCalendarConfig();
 	if (!config) return "America/Denver";
 
-	const accessToken = await getGoogleAccessToken(config);
-	const response = await fetch(
-		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}`,
-		{
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
-			cache: "no-store",
-		},
-	);
+	const response = await authorizedGoogleCalendarFetch("", {
+		method: "GET",
+	});
 
 	const json = (await response.json()) as GoogleCalendarMetadataResponse;
 	if (!response.ok) {
@@ -178,17 +265,6 @@ export async function fetchGoogleCalendarResolvedTimeZone(): Promise<string> {
 	return json.timeZone?.trim() || config.timeZone || "America/Denver";
 }
 
-function parseGoogleEventDate(value: { date?: string; dateTime?: string } | undefined): Date | null {
-	if (!value) return null;
-	if (value.dateTime) {
-		return new Date(value.dateTime);
-	}
-	if (value.date) {
-		return new Date(`${value.date}T00:00:00.000Z`);
-	}
-	return null;
-}
-
 export async function fetchGoogleCalendarEvents(
 	timeMinIso: string,
 	timeMaxIso: string,
@@ -196,21 +272,16 @@ export async function fetchGoogleCalendarEvents(
 	const config = getGoogleCalendarConfig();
 	if (!config) return [];
 
-	const accessToken = await getGoogleAccessToken(config);
 	const params = new URLSearchParams();
 	params.set("timeMin", timeMinIso);
 	params.set("timeMax", timeMaxIso);
 	params.set("singleEvents", "true");
 	params.set("orderBy", "startTime");
 
-	const response = await fetch(
-		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}/events?${params.toString()}`,
+	const response = await authorizedGoogleCalendarFetch(
+		`/events?${params.toString()}`,
 		{
 			method: "GET",
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
-			cache: "no-store",
 		},
 	);
 
@@ -251,31 +322,25 @@ export async function createGoogleCalendarEvent(
 		throw new Error("Google Calendar is not configured.");
 	}
 
-	const accessToken = await getGoogleAccessToken(config);
-	const response = await fetch(
-		`${googleCalendarEventsUrl}/${encodeURIComponent(config.calendarId)}/events?sendUpdates=none`,
-		{
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				summary: input.summary,
-				description: input.description,
-				location: input.location,
-				start: {
-					dateTime: input.startDateTimeIso,
-					timeZone: config.timeZone,
-				},
-				end: {
-					dateTime: input.endDateTimeIso,
-					timeZone: config.timeZone,
-				},
-			}),
-			cache: "no-store",
+	const response = await authorizedGoogleCalendarFetch("/events?sendUpdates=none", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
 		},
-	);
+		body: JSON.stringify({
+			summary: input.summary,
+			description: input.description,
+			location: input.location,
+			start: {
+				dateTime: input.startDateTimeIso,
+				timeZone: config.timeZone,
+			},
+			end: {
+				dateTime: input.endDateTimeIso,
+				timeZone: config.timeZone,
+			},
+		}),
+	});
 
 	const json = (await response.json()) as GoogleInsertEventResponse;
 	if (!response.ok || !json.id) {
@@ -288,4 +353,99 @@ export async function createGoogleCalendarEvent(
 		id: json.id,
 		htmlLink: json.htmlLink,
 	};
+}
+
+export async function getGoogleCalendarEvent(
+	eventId: string,
+): Promise<GoogleCalendarEvent | null> {
+	const response = await authorizedGoogleCalendarFetch(
+		`/events/${encodeURIComponent(eventId)}`,
+		{
+			method: "GET",
+		},
+	);
+
+	if (response.status === 404) {
+		return null;
+	}
+
+	const json = (await response.json()) as GoogleEventResponse;
+	if (!response.ok) {
+		throw new Error(
+			`Google event fetch failed with status ${response.status}.`,
+		);
+	}
+
+	return mapGoogleCalendarEvent(json);
+}
+
+export async function updateGoogleCalendarEvent(
+	eventId: string,
+	input: GoogleUpdateEventInput,
+): Promise<GoogleCalendarEvent> {
+	const config = getGoogleCalendarConfig();
+	if (!config) {
+		throw new Error("Google Calendar is not configured.");
+	}
+
+	const body: Record<string, unknown> = {};
+	if (input.summary !== undefined) body.summary = input.summary;
+	if (input.description !== undefined) body.description = input.description;
+	if (input.location !== undefined) body.location = input.location;
+	if (input.startDateTimeIso !== undefined) {
+		body.start = {
+			dateTime: input.startDateTimeIso,
+			timeZone: config.timeZone,
+		};
+	}
+	if (input.endDateTimeIso !== undefined) {
+		body.end = {
+			dateTime: input.endDateTimeIso,
+			timeZone: config.timeZone,
+		};
+	}
+
+	const response = await authorizedGoogleCalendarFetch(
+		`/events/${encodeURIComponent(eventId)}?sendUpdates=none`,
+		{
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+		},
+	);
+
+	const json = (await response.json()) as GoogleEventResponse;
+	if (!response.ok) {
+		throw new Error(
+			`Google event update failed with status ${response.status}.`,
+		);
+	}
+
+	const event = mapGoogleCalendarEvent(json);
+	if (!event) {
+		throw new Error("Google event update did not return an event id.");
+	}
+
+	return event;
+}
+
+export async function deleteGoogleCalendarEvent(eventId: string): Promise<void> {
+	const response = await authorizedGoogleCalendarFetch(
+		`/events/${encodeURIComponent(eventId)}?sendUpdates=none`,
+		{
+			method: "DELETE",
+		},
+	);
+
+	if (response.status === 404 || response.status === 410) {
+		return;
+	}
+
+	if (!response.ok) {
+		throw new Error(
+			`Google event delete failed with status ${response.status}.`,
+		);
+	}
 }

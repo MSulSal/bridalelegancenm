@@ -1,12 +1,19 @@
 import { randomUUID } from "node:crypto";
-import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
+import {
+	type AppointmentAction,
+	createAppointmentActionToken,
+} from "@/lib/appointment-action-token";
 import {
 	findAvailableSlotForDate,
 	type AvailableAppointmentSlot,
 } from "@/lib/appointment-availability";
-import { createGoogleCalendarEvent } from "@/lib/google-calendar";
+import {
+	createGoogleCalendarEvent,
+	deleteGoogleCalendarEvent,
+} from "@/lib/google-calendar";
 import { siteConfig } from "@/lib/site";
+import { sendSmsToClientRecipients } from "@/lib/twilio";
 
 type ContactPreference = "email" | "phone" | "text";
 type ShoppingFocus = "bridal-gown";
@@ -104,14 +111,8 @@ const allowedBudgetRanges = new Set([
 	"3000-plus",
 ]);
 
-type NotificationMode = "both" | "text" | "email";
-
 function readString(value: FormDataEntryValue | null): string {
 	return typeof value === "string" ? value.trim() : "";
-}
-
-function shouldUploadImages(): boolean {
-	return true;
 }
 
 function readOptionalDate(value: FormDataEntryValue | null): string | undefined {
@@ -180,7 +181,9 @@ function validateFormData(formData: FormData): ValidationResult {
 		errors.push("Please enter a valid phone number.");
 	}
 	if (!allowedShoppingFocus.has(shoppingFocus)) {
-		errors.push("This request form is currently limited to bridal gown appointments.");
+		errors.push(
+			"This request form is currently limited to bridal gown appointments.",
+		);
 	}
 	if (streetSizeApprox.length < 1 || streetSizeApprox.length > 24) {
 		errors.push("Please enter an approximate street size.");
@@ -277,13 +280,28 @@ function ensureAppointmentEnv(): string[] {
 	if (!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY?.trim()) {
 		missing.push("GOOGLE_CALENDAR_SERVICE_ACCOUNT_PRIVATE_KEY");
 	}
-
 	if (!process.env.CLOUDINARY_CLOUD_NAME?.trim()) {
 		missing.push("CLOUDINARY_CLOUD_NAME");
 	}
 	if (!process.env.CLOUDINARY_UPLOAD_PRESET?.trim()) {
 		missing.push("CLOUDINARY_UPLOAD_PRESET");
 	}
+	if (!process.env.APPOINTMENT_ACTION_SECRET?.trim()) {
+		missing.push("APPOINTMENT_ACTION_SECRET");
+	}
+	if (!process.env.TWILIO_ACCOUNT_SID?.trim()) {
+		missing.push("TWILIO_ACCOUNT_SID");
+	}
+	if (!process.env.TWILIO_AUTH_TOKEN?.trim()) {
+		missing.push("TWILIO_AUTH_TOKEN");
+	}
+	if (!process.env.TWILIO_FROM_PHONE?.trim()) {
+		missing.push("TWILIO_FROM_PHONE");
+	}
+	if (!process.env.APPOINTMENT_NOTIFICATION_SMS_TO?.trim()) {
+		missing.push("APPOINTMENT_NOTIFICATION_SMS_TO");
+	}
+
 	return missing;
 }
 
@@ -323,21 +341,15 @@ async function uploadImageToCloudinary(file: File): Promise<string> {
 	return json.secure_url;
 }
 
-function escapeHtml(value: string): string {
-	return value
-		.replaceAll("&", "&amp;")
-		.replaceAll("<", "&lt;")
-		.replaceAll(">", "&gt;")
-		.replaceAll('"', "&quot;")
-		.replaceAll("'", "&#039;");
-}
-
 function formatKeyValueRows(data: AppointmentRequestData): Array<[string, string]> {
 	return [
 		["Name", data.fullName],
 		["Email", data.email],
 		["Phone", data.phone],
-		["Shopping For", shoppingFocusLabels[data.shoppingFocus] ?? data.shoppingFocus],
+		[
+			"Shopping For",
+			shoppingFocusLabels[data.shoppingFocus] ?? data.shoppingFocus,
+		],
 		["Approx. Street Size", data.streetSizeApprox],
 		["Preferred Appointment Date", data.preferredDate],
 		["Preferred Appointment Time", data.preferredTimeSlot],
@@ -382,10 +394,44 @@ function buildCalendarEventDescription(
 	].join("\n");
 }
 
-function buildSmsBody(
+function getRequestOrigin(request: Request): string {
+	const forwardedProto =
+		request.headers.get("x-forwarded-proto")?.trim() ?? "";
+	const host = request.headers.get("x-forwarded-host")?.trim() ??
+		request.headers.get("host")?.trim() ??
+		"";
+
+	if (host) {
+		const protocol =
+			forwardedProto || (host.includes("localhost") ? "http" : "https");
+		return `${protocol}://${host}`;
+	}
+
+	return siteConfig.url;
+}
+
+function buildActionUrl(
+	origin: string,
+	eventId: string,
+	action: AppointmentAction,
+): string {
+	const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+	const token = createAppointmentActionToken({
+		action,
+		eventId,
+		expiresAt,
+	});
+
+	return `${origin}/api/appointment-request/action?token=${encodeURIComponent(token)}`;
+}
+
+function buildClientAlertSmsBody(
 	data: AppointmentRequestData,
 	submittedAtIso: string,
 	photoUrls: string[],
+	calendarLink: string | undefined,
+	approveUrl: string,
+	rejectUrl: string,
 ): string {
 	const lines = [
 		"New Bridal Appointment Request",
@@ -394,21 +440,36 @@ function buildSmsBody(
 		`Email: ${data.email}`,
 		`Date: ${data.preferredDate}`,
 		`Time: ${data.preferredTimeSlot}`,
-		`Timeline: ${timelineLabels[data.timeline] ?? data.timeline}`,
-		`Street Size: ${data.streetSizeApprox}`,
 		`Guests: ${data.guestCount ?? "Not provided"}`,
-		`Contact Pref: ${contactLabels[data.contactPreference] ?? data.contactPreference}`,
+		`Street Size: ${data.streetSizeApprox}`,
+		`Budget: ${
+			data.budgetRange
+				? (budgetLabels[data.budgetRange] ?? data.budgetRange)
+				: "Not provided"
+		}`,
+		`Timeline: ${timelineLabels[data.timeline] ?? data.timeline}`,
+		`Designers: ${data.preferredDesigners ?? "Not provided"}`,
+		`Contact Pref: ${
+			contactLabels[data.contactPreference] ?? data.contactPreference
+		}`,
+		`Style Notes: ${data.styleNotes ?? "Not provided"}`,
 		`Submitted: ${submittedAtIso}`,
 	];
+
+	if (calendarLink) {
+		lines.push(`Calendar Hold: ${calendarLink}`);
+	}
 
 	if (photoUrls.length > 0) {
 		lines.push("Image URLs:");
 		lines.push(...photoUrls);
 	}
 
+	lines.push(`Approve: ${approveUrl}`);
+	lines.push(`Reject: ${rejectUrl}`);
+
 	return lines.join("\n");
 }
-
 
 export async function POST(request: Request) {
 	try {
@@ -420,8 +481,7 @@ export async function POST(request: Request) {
 			return NextResponse.json(
 				{
 					ok: false,
-					message:
-						"Invalid request payload.",
+					message: "Invalid request payload.",
 				},
 				{ status: 400 },
 			);
@@ -510,6 +570,7 @@ export async function POST(request: Request) {
 		}
 
 		let calendarEventId = "";
+		let calendarEventLink = "";
 
 		try {
 			const createdEvent = await createGoogleCalendarEvent({
@@ -523,6 +584,7 @@ export async function POST(request: Request) {
 				endDateTimeIso: selectedSlot.endDateTimeIso,
 			});
 			calendarEventId = createdEvent.id;
+			calendarEventLink = createdEvent.htmlLink ?? "";
 		} catch (error) {
 			console.error("[appointment-request] Google Calendar booking error", error);
 			return NextResponse.json(
@@ -535,11 +597,51 @@ export async function POST(request: Request) {
 			);
 		}
 
+		const submittedAtIso = new Date().toISOString();
+		const origin = getRequestOrigin(request);
+		const approveUrl = buildActionUrl(origin, calendarEventId, "approve");
+		const rejectUrl = buildActionUrl(origin, calendarEventId, "reject");
+
+		try {
+			await sendSmsToClientRecipients(
+				buildClientAlertSmsBody(
+					validated.data,
+					submittedAtIso,
+					uploadedPhotos.bride,
+					calendarEventLink || undefined,
+					approveUrl,
+					rejectUrl,
+				),
+			);
+		} catch (error) {
+			console.error("[appointment-request] Twilio client alert error", error);
+
+			if (calendarEventId) {
+				try {
+					await deleteGoogleCalendarEvent(calendarEventId);
+				} catch (rollbackError) {
+					console.error(
+						"[appointment-request] Calendar rollback after Twilio failure failed",
+						rollbackError,
+					);
+				}
+			}
+
+			return NextResponse.json(
+				{
+					ok: false,
+					message:
+						"We couldn't send that appointment request right now. Please try again.",
+				},
+				{ status: 502 },
+			);
+		}
+
 		const submissionId = randomUUID();
 		console.info("[appointment-request] submission delivered", {
 			submissionId,
 			calendarEventId,
-			submittedAt: new Date().toISOString(),
+			submittedAt: submittedAtIso,
 			requester: {
 				fullName: validated.data.fullName,
 				email: validated.data.email,
