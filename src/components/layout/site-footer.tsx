@@ -5,7 +5,14 @@ const footerLinks = [
 	{ href: "/collections", label: "Collections" },
 	{ href: "/accessories", label: "Accessories" },
 	{ href: "/#spotlights-preview", label: "Designer Spotlights" },
-	{ href: siteConfig.appointmentHref, label: siteConfig.appointmentLabel },
+	...(siteConfig.appointmentsEnabled
+		? [
+				{
+					href: siteConfig.appointmentHref,
+					label: siteConfig.appointmentLabel,
+				},
+			]
+		: []),
 ] as const;
 
 export function SiteFooter() {

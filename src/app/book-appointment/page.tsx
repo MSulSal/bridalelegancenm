@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { appointmentPageContent } from "@/content/site-content";
 import { AppointmentRequestForm } from "@/components/appointments/appointment-request-form";
 import { SiteShell } from "@/components/layout/site-shell";
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function BookAppointmentPage() {
+	if (!siteConfig.appointmentsEnabled) {
+		notFound();
+	}
+
 	const nextStepPoints = [
 		"Choose an open appointment date and one of the times still available that day.",
 		"Upload at least one bridal inspiration image in a single upload field.",

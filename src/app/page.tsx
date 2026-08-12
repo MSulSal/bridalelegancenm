@@ -49,12 +49,14 @@ export default function HomePage() {
 								{homeContent.hero.supportLine}
 							</p>
 							<div className="mt-7 flex flex-wrap gap-3">
-								<a
-									href={siteConfig.appointmentHref}
-									className={`be-btn be-btn-primary ${styles.heroPrimaryCta}`}
-								>
-									{siteConfig.appointmentLabel}
-								</a>
+								{siteConfig.appointmentsEnabled ? (
+									<a
+										href={siteConfig.appointmentHref}
+										className={`be-btn be-btn-primary ${styles.heroPrimaryCta}`}
+									>
+										{siteConfig.appointmentLabel}
+									</a>
+								) : null}
 								<a
 									href="/collections"
 									className={`be-btn ${styles.heroGhostButton}`}
@@ -247,42 +249,44 @@ export default function HomePage() {
 				</section>
 			</ScrollReveal>
 
-			<ScrollReveal delayMs={150}>
-				<section id="appointment-intent" className="be-section">
-					<div className="be-card p-6 sm:p-10">
-						<SectionHeading
-							eyebrow={
-								homeContent.appointmentSection.heading.eyebrow
-							}
-							title={homeContent.appointmentSection.heading.title}
-							description={
-								homeContent.appointmentSection.heading
-									.description
-							}
-						/>
-						<ul className="mt-8 grid gap-4 sm:grid-cols-3">
-							{homeContent.appointmentSection.promises.map(
-								item => (
-									<li
-										key={item}
-										className="bg-[color:var(--surface-soft)] px-4 py-4 text-sm leading-7 text-[color:var(--ink-700)]"
-									>
-										{item}
-									</li>
-								),
-							)}
-						</ul>
-						<div className="mt-8">
-							<a
-								href={siteConfig.appointmentHref}
-								className="be-btn be-btn-primary"
-							>
-								{siteConfig.appointmentLabel}
-							</a>
+			{siteConfig.appointmentsEnabled ? (
+				<ScrollReveal delayMs={150}>
+					<section id="appointment-intent" className="be-section">
+						<div className="be-card p-6 sm:p-10">
+							<SectionHeading
+								eyebrow={
+									homeContent.appointmentSection.heading.eyebrow
+								}
+								title={homeContent.appointmentSection.heading.title}
+								description={
+									homeContent.appointmentSection.heading
+										.description
+								}
+							/>
+							<ul className="mt-8 grid gap-4 sm:grid-cols-3">
+								{homeContent.appointmentSection.promises.map(
+									item => (
+										<li
+											key={item}
+											className="bg-[color:var(--surface-soft)] px-4 py-4 text-sm leading-7 text-[color:var(--ink-700)]"
+										>
+											{item}
+										</li>
+									),
+								)}
+							</ul>
+							<div className="mt-8">
+								<a
+									href={siteConfig.appointmentHref}
+									className="be-btn be-btn-primary"
+								>
+									{siteConfig.appointmentLabel}
+								</a>
+							</div>
 						</div>
-					</div>
-				</section>
-			</ScrollReveal>
+					</section>
+				</ScrollReveal>
+			) : null}
 		</SiteShell>
 	);
 }

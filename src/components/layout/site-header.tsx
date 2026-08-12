@@ -255,12 +255,14 @@ export function SiteHeader() {
 								<circle cx="17.5" cy="6.5" r="1" />
 							</svg>
 						</a>
-						<a
-							href={siteConfig.appointmentHref}
-							className={`be-btn be-btn-primary ${styles.topbarCta} shrink-0`}
-						>
-							{siteConfig.appointmentLabel}
-						</a>
+						{siteConfig.appointmentsEnabled ? (
+							<a
+								href={siteConfig.appointmentHref}
+								className={`be-btn be-btn-primary ${styles.topbarCta} shrink-0`}
+							>
+								{siteConfig.appointmentLabel}
+							</a>
+						) : null}
 					</div>
 				</div>
 			</div>

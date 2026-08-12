@@ -1,6 +1,10 @@
 import { siteConfig } from "@/lib/site";
 
 export function MobileBookingBar() {
+	if (!siteConfig.appointmentsEnabled) {
+		return null;
+	}
+
 	return (
 		<div className="be-mobile-booking-bar md:hidden">
 			<div className="be-container">

@@ -1,11 +1,21 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
 
+const appointmentRoutes: Array<{
+	path: string;
+	priority: number;
+	changeFrequency: NonNullable<
+		MetadataRoute.Sitemap[number]["changeFrequency"]
+	>;
+}> = siteConfig.appointmentsEnabled
+	? [{ path: "/book-appointment", priority: 0.9, changeFrequency: "weekly" }]
+	: [];
+
 const routes = [
 	{ path: "", priority: 1, changeFrequency: "weekly" },
 	{ path: "/collections", priority: 0.9, changeFrequency: "weekly" },
 	{ path: "/accessories", priority: 0.8, changeFrequency: "monthly" },
-	{ path: "/book-appointment", priority: 0.9, changeFrequency: "weekly" },
+	...appointmentRoutes,
 ] as const satisfies Array<{
 	path: string;
 	priority: number;

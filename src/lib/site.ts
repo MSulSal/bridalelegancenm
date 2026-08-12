@@ -5,6 +5,7 @@ export const siteConfig = {
 	url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 	cityState: "Albuquerque, New Mexico",
 	tagline: "Appointment-only bridal boutique in Albuquerque.",
+	appointmentsEnabled: false,
 	appointmentLabel: "Book Appointment",
 	appointmentHref: "/book-appointment",
 	legacySiteUrl: "https://bridalelegancenm.com",
