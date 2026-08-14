@@ -142,14 +142,6 @@ export default function HomePage() {
 									<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
 										{item.copy}
 									</p>
-									<a
-										href={item.href}
-										target="_blank"
-										rel="noreferrer"
-										className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
-									>
-										Find out more
-									</a>
 								</div>
 							</article>
 						))}
@@ -173,8 +165,10 @@ export default function HomePage() {
 						{homeContent.spotlightSection.items
 							.filter(
 								item =>
-									siteConfig.accessoriesEnabled ||
-									item.href !== "/accessories",
+									(siteConfig.accessoriesEnabled ||
+										item.href !== "/accessories") &&
+									(siteConfig.appointmentsEnabled ||
+										item.href !== "/book-appointment"),
 							)
 							.map(item => (
 							<article
