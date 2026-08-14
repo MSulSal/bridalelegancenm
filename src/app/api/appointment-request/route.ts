@@ -23,7 +23,7 @@ type TimelineRange =
 	| "4-6-months"
 	| "7-12-months"
 	| "over-12-months"
-	| "just-browsing";
+	| "just-starting";
 type BudgetRange =
 	| "500-1000"
 	| "1500-2500"
@@ -84,7 +84,7 @@ const timelineLabels: Record<string, string> = {
 	"4-6-months": "4 to 6 months out",
 	"7-12-months": "7 to 12 months out",
 	"over-12-months": "More than 12 months out",
-	"just-browsing": "Just browsing for now",
+	"just-starting": "Just getting started",
 };
 
 const budgetLabels: Record<string, string> = {
@@ -102,7 +102,7 @@ const allowedTimeline = new Set([
 	"4-6-months",
 	"7-12-months",
 	"over-12-months",
-	"just-browsing",
+	"just-starting",
 ]);
 const allowedBudgetRanges = new Set([
 	"500-1000",

@@ -50,7 +50,7 @@ export const homeContent = {
 			eyebrow: "Boutique Highlights",
 			title: "Finishing Touches And An Appointment-First Experience",
 			description:
-				"Everything is designed to make browsing feel polished, focused, and easy to act on.",
+				"Everything is designed to make each visit feel polished, focused, and easy to navigate.",
 		},
 		ctaLabel: "Book Styling Appointment",
 		items: [
@@ -119,7 +119,7 @@ export const accessoriesPageContent = {
 	metadata: {
 		title: "Accessories",
 		description:
-			"Browse accessory styling direction from Bridal Elegance NM, including veils and finishing pieces.",
+			"Explore accessory styling direction from Bridal Elegance NM, including veils and finishing pieces.",
 	},
 	heading: {
 		eyebrow: "Finishing Pieces",

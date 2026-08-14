@@ -28,7 +28,7 @@ const timelineOptions = [
 	{ value: "4-6-months", label: "4 to 6 months out" },
 	{ value: "7-12-months", label: "7 to 12 months out" },
 	{ value: "over-12-months", label: "More than 12 months out" },
-	{ value: "just-browsing", label: "Just browsing for now" },
+	{ value: "just-starting", label: "Just getting started" },
 ] as const;
 
 const budgetRanges = [

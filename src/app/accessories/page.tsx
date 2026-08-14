@@ -55,7 +55,7 @@ export default function AccessoriesPage() {
 								{accessoriesPageContent.externalCollection.label}
 							</h2>
 							<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-								Explore source accessory styles directly while finalizing your complete look through in-boutique appointment guidance.
+								View source accessory styles directly while finalizing your complete look through in-boutique appointment guidance.
 							</p>
 							<a
 								href={accessoriesPageContent.externalCollection.href}
