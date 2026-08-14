@@ -87,6 +87,14 @@ export default function HomePage() {
 							<p className="mt-4 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
 								{siteConfig.showroomUpdate}
 							</p>
+							<p className="mt-3 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]">
+								<a
+									href={siteConfig.smsHref}
+									className="hover:text-[color:var(--ink-700)]"
+								>
+									{siteConfig.appointmentTextLine}
+								</a>
+							</p>
 						</article>
 
 						<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

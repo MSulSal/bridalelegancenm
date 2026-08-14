@@ -57,6 +57,14 @@ export function SiteFooter() {
 						<p>{siteConfig.showroomUpdate}</p>
 						<p>
 							<a
+								href={siteConfig.smsHref}
+								className="hover:text-[color:var(--ink-900)]"
+							>
+								{siteConfig.appointmentTextLine}
+							</a>
+						</p>
+						<p>
+							<a
 								href={siteConfig.mapsHref}
 								target="_blank"
 								rel="noreferrer"
