@@ -3,7 +3,9 @@ import { BrandText } from "@/components/brand/brand-text";
 
 const footerLinks = [
 	{ href: "/collections", label: "Collections" },
-	{ href: "/accessories", label: "Accessories" },
+	...(siteConfig.accessoriesEnabled
+		? [{ href: "/accessories", label: "Accessories" }]
+		: []),
 	{ href: "/#spotlights-preview", label: "Designer Spotlights" },
 	...(siteConfig.appointmentsEnabled
 		? [

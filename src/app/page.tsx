@@ -170,7 +170,13 @@ export default function HomePage() {
 						}
 					/>
 					<div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-						{homeContent.spotlightSection.items.map(item => (
+						{homeContent.spotlightSection.items
+							.filter(
+								item =>
+									siteConfig.accessoriesEnabled ||
+									item.href !== "/accessories",
+							)
+							.map(item => (
 							<article
 								key={item.title}
 								className={`be-card overflow-hidden ${styles.sectionLift}`}

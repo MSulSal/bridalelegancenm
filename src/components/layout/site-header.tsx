@@ -18,7 +18,9 @@ import styles from "./site-header.module.css";
 const navItems = [
 	{ href: "/", label: "Home" },
 	{ href: "/collections", label: "Collections" },
-	{ href: "/accessories", label: "Accessories" },
+	...(siteConfig.accessoriesEnabled
+		? [{ href: "/accessories", label: "Accessories" }]
+		: []),
 ] as const;
 
 function getServerThemeSnapshot(): ThemeId {

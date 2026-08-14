@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import { SiteShell } from "@/components/layout/site-shell";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { accessoriesPageContent } from "@/content/site-content";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
 	title: accessoriesPageContent.metadata.title,
@@ -10,6 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function AccessoriesPage() {
+	if (!siteConfig.accessoriesEnabled) {
+		notFound();
+	}
+
 	return (
 		<SiteShell>
 			<section className="be-section pt-12 md:pt-20">
