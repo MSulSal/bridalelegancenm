@@ -87,7 +87,7 @@ export const homeContent = {
 			{
 				step: "02",
 				title: "Availability Confirmation",
-				body: "Our team confirms by phone or email based on boutique availability.",
+				body: "Our team confirms by text based on boutique availability.",
 			},
 			{
 				step: "03",
@@ -109,7 +109,7 @@ export const homeContent = {
 		},
 		promises: [
 			"Now welcoming appointments in Albuquerque, north of Sawmill District and Old Town.",
-			`Call us: ${legacySiteContent.business.phoneDisplay}`,
+			`Text us: ${legacySiteContent.business.phoneDisplay}`,
 			"Instagram: @bridalelegancenm",
 		],
 	},

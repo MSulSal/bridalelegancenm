@@ -77,10 +77,10 @@ export function SiteFooter() {
 						</p>
 						<p>
 							<a
-								href={siteConfig.phoneHref}
+								href={siteConfig.smsHref}
 								className="hover:text-[color:var(--ink-900)]"
 							>
-								{siteConfig.phoneDisplay}
+								Text {siteConfig.phoneDisplay}
 							</a>
 						</p>
 						<p>
