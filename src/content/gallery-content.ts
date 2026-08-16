@@ -32,8 +32,8 @@ export const galleryPageContent = {
 			descriptor: "Designer Collection",
 			summary:
 				"Bold couture direction with sculpted structure and modern statement silhouettes.",
-			coverFocus: "96% 42%",
-			coverScale: 1.02,
+			coverFocus: "96% 34%",
+			coverScale: 1.05,
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
