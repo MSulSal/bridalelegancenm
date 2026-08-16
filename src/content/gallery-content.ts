@@ -52,6 +52,7 @@ export const galleryPageContent = {
 			summary:
 				"Romantic craftsmanship with timeless bridal lines and soft editorial movement.",
 			coverFocus: "4% 42%",
+			coverScale: 1,
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -70,6 +71,7 @@ export const galleryPageContent = {
 			summary:
 				"Refined silhouettes designed for effortless elegance and approachable luxury.",
 			coverFocus: "100% 42%",
+			coverScale: 1,
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
