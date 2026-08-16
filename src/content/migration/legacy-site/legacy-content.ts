@@ -36,15 +36,15 @@ export const legacySiteContent = {
 		bridalDesigners: [
 			{
 				label: "Sottero and Midgley",
-				href: "https://www.maggiesottero.com/sottero-and-midgley",
+				href: "https://www.maggiesottero.com/find-your-style/sottero-and-midgley",
 			},
 			{
 				label: "Maggie Sottero",
-				href: "https://www.maggiesottero.com/maggie-sottero",
+				href: "https://www.maggiesottero.com/find-your-style/maggie-sottero",
 			},
 			{
 				label: "Rebecca Ingram",
-				href: "https://www.maggiesottero.com/rebecca-ingram",
+				href: "https://www.maggiesottero.com/find-your-style/rebecca-ingram",
 			},
 		],
 		motherOfBride: {

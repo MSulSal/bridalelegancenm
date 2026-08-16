@@ -18,10 +18,6 @@ export type GalleryShowcaseCollection = {
 	hoverVideoSrc?: string;
 };
 
-const MAGGIE_SOTTERO_HREF =
-	legacySiteContent.externalLinks.bridalDesigners[1]?.href ??
-	"https://www.maggiesottero.com";
-
 export const galleryPageContent = {
 	metadata: {
 		title: "Collections",
@@ -43,7 +39,9 @@ export const galleryPageContent = {
 				alt: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[0].alt,
 			},
-			collectionHref: MAGGIE_SOTTERO_HREF,
+			collectionHref:
+				legacySiteContent.externalLinks.bridalDesigners[0]?.href ??
+				"https://www.maggiesottero.com/find-your-style/sottero-and-midgley",
 		},
 		{
 			id: "maggie-sottero",
@@ -59,7 +57,9 @@ export const galleryPageContent = {
 				alt: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[1].alt,
 			},
-			collectionHref: MAGGIE_SOTTERO_HREF,
+			collectionHref:
+				legacySiteContent.externalLinks.bridalDesigners[1]?.href ??
+				"https://www.maggiesottero.com/find-your-style/maggie-sottero",
 		},
 		{
 			id: "rebecca-ingram",
@@ -75,7 +75,9 @@ export const galleryPageContent = {
 				alt: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[2].alt,
 			},
-			collectionHref: MAGGIE_SOTTERO_HREF,
+			collectionHref:
+				legacySiteContent.externalLinks.bridalDesigners[2]?.href ??
+				"https://www.maggiesottero.com/find-your-style/rebecca-ingram",
 		},
 	],
 } as const;

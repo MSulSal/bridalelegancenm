@@ -216,39 +216,6 @@ export default function HomePage() {
 				</section>
 			</ScrollReveal>
 
-			<ScrollReveal delayMs={130}>
-				<section
-					className="be-section"
-					aria-labelledby="journey-heading"
-				>
-					<SectionHeading
-						eyebrow={homeContent.journeySection.heading.eyebrow}
-						title={homeContent.journeySection.heading.title}
-						description={
-							homeContent.journeySection.heading.description
-						}
-					/>
-					<ol className="mt-9 grid gap-4 md:grid-cols-2">
-						{homeContent.journeySection.steps.map(item => (
-							<li
-								key={item.step}
-								className={`be-card p-6 ${styles.sectionLift}`}
-							>
-								<p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-500)]">
-									Step {item.step}
-								</p>
-								<h3 className="mt-3 text-2xl leading-tight">
-									{item.title}
-								</h3>
-								<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
-									{item.body}
-								</p>
-							</li>
-						))}
-					</ol>
-				</section>
-			</ScrollReveal>
-
 			{siteConfig.appointmentsEnabled ? (
 				<ScrollReveal delayMs={150}>
 					<section id="appointment-intent" className="be-section">

@@ -14,7 +14,7 @@ export const homeContent = {
 	collectionSection: {
 		heading: {
 			eyebrow: "Collections",
-			title: "Bridal Gowns And Accessories",
+			title: "Bridal Gowns",
 			description:
 				"Curated designer collections presented with a modern editorial boutique experience.",
 		},
