@@ -3,7 +3,6 @@ import { BrandText } from "@/components/brand/brand-text";
 import { homeContent } from "@/content/site-content";
 import { SiteShell } from "@/components/layout/site-shell";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { siteConfig } from "@/lib/site";
 import styles from "./home.module.css";
 
@@ -56,11 +55,20 @@ export default function HomePage() {
 			<ScrollReveal delayMs={70}>
 				<section
 					id="about-preview"
-					className="be-section pt-8 md:pt-12"
+					className={`be-section pt-8 md:pt-12 ${styles.showroomSection}`}
 				>
-					<div
-						className={`${styles.sectionLift} ${styles.showroomFeature}`}
-					>
+					<div className={styles.showroomFeature}>
+						<div className={styles.showroomBackdropText} aria-hidden="true">
+							<p className={styles.showroomBackdropKicker}>
+								{homeContent.aboutPreview.kicker}
+							</p>
+							<p className={styles.showroomBackdropCopy}>
+								{homeContent.aboutPreview.copy}
+							</p>
+							<p className={styles.showroomBackdropMeta}>
+								{siteConfig.showroomUpdate}
+							</p>
+						</div>
 						<div className={styles.showroomGalleryBackdrop}>
 							{galleryStrip.map(image => (
 								<figure
@@ -77,68 +85,9 @@ export default function HomePage() {
 								</figure>
 							))}
 						</div>
-						<div className={styles.showroomFeatureOverlay} />
-						<div className={styles.showroomFeatureContent}>
-							<p className="be-kicker">
-								{homeContent.aboutPreview.kicker}
-							</p>
-							<p className={styles.showroomFeatureCopy}>
-								{homeContent.aboutPreview.copy}
-							</p>
-							<p className={styles.showroomFeatureMeta}>
-								{siteConfig.showroomUpdate}
-							</p>
-							<p className={styles.showroomFeatureAction}>
-								<a
-									href={siteConfig.smsHref}
-									className="hover:text-[color:var(--ink-700)]"
-								>
-									{siteConfig.appointmentTextLine}
-								</a>
-							</p>
-						</div>
 					</div>
 				</section>
 			</ScrollReveal>
-
-			{siteConfig.appointmentsEnabled ? (
-				<ScrollReveal delayMs={150}>
-					<section id="appointment-intent" className="be-section">
-						<div className="be-card p-6 sm:p-10">
-							<SectionHeading
-								eyebrow={
-									homeContent.appointmentSection.heading.eyebrow
-								}
-								title={homeContent.appointmentSection.heading.title}
-								description={
-									homeContent.appointmentSection.heading
-										.description
-								}
-							/>
-							<ul className="mt-8 grid gap-4 sm:grid-cols-3">
-								{homeContent.appointmentSection.promises.map(
-									item => (
-										<li
-											key={item}
-											className="bg-[color:var(--surface-soft)] px-4 py-4 text-sm leading-7 text-[color:var(--ink-700)]"
-										>
-											{item}
-										</li>
-									),
-								)}
-							</ul>
-							<div className="mt-8">
-								<a
-									href={siteConfig.appointmentHref}
-									className="be-btn be-btn-primary"
-								>
-									{siteConfig.appointmentLabel}
-								</a>
-							</div>
-						</div>
-					</section>
-				</ScrollReveal>
-			) : null}
 		</SiteShell>
 	);
 }

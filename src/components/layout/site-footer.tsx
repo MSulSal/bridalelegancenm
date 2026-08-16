@@ -6,7 +6,6 @@ const footerLinks = [
 	...(siteConfig.accessoriesEnabled
 		? [{ href: "/accessories", label: "Accessories" }]
 		: []),
-	{ href: "/#spotlights-preview", label: "Designer Spotlights" },
 	...(siteConfig.appointmentsEnabled
 		? [
 				{
@@ -54,15 +53,6 @@ export function SiteFooter() {
 
 					<div className="space-y-3 text-sm text-[color:var(--ink-700)]">
 						<p className="be-kicker">Contact</p>
-						<p>{siteConfig.showroomUpdate}</p>
-						<p>
-							<a
-								href={siteConfig.smsHref}
-								className="hover:text-[color:var(--ink-900)]"
-							>
-								{siteConfig.appointmentTextLine}
-							</a>
-						</p>
 						<p>
 							<a
 								href={siteConfig.mapsHref}
@@ -80,7 +70,7 @@ export function SiteFooter() {
 								href={siteConfig.smsHref}
 								className="hover:text-[color:var(--ink-900)]"
 							>
-								Text {siteConfig.phoneDisplay}
+								{siteConfig.appointmentTextLine}
 							</a>
 						</p>
 						<p>
@@ -91,6 +81,16 @@ export function SiteFooter() {
 								className="hover:text-[color:var(--ink-900)]"
 							>
 								Instagram {siteConfig.instagramLabel}
+							</a>
+						</p>
+						<p>
+							<a
+								href={siteConfig.tiktokHref}
+								target="_blank"
+								rel="noreferrer"
+								className="hover:text-[color:var(--ink-900)]"
+							>
+								TikTok {siteConfig.tiktokLabel}
 							</a>
 						</p>
 					</div>

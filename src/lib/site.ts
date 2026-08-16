@@ -23,6 +23,8 @@ export const siteConfig = {
 	instagramHref:
 		"https://www.instagram.com/bridalelegancenm?igshid=1pbdf5fjo7xjw",
 	instagramLabel: "@bridalelegancenm",
+	tiktokHref: "https://www.tiktok.com/@bridalelegancenm",
+	tiktokLabel: "@bridalelegancenm",
 	showroomUpdate:
 		"Now welcoming appointments in Albuquerque, north of Sawmill District and Old Town.",
 } as const;

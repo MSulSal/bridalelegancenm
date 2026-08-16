@@ -27,6 +27,24 @@ function getServerThemeSnapshot(): ThemeId {
 	return defaultTheme;
 }
 
+function TikTokIcon() {
+	return (
+		<svg
+			aria-hidden="true"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.8"
+		>
+			<path
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				d="M14 4c.55 1.93 1.85 3.33 4 4.2v2.63c-1.52-.05-2.83-.46-4-1.22v5.35a5.15 5.15 0 1 1-5.15-5.15c.36 0 .7.03 1.03.1v2.78a2.57 2.57 0 1 0 1.55 2.36V4H14Z"
+			/>
+		</svg>
+	);
+}
+
 export function SiteHeader() {
 	const headerRef = useRef<HTMLElement>(null);
 	const mobileMenuRef = useRef<HTMLDetailsElement>(null);
@@ -179,6 +197,20 @@ export function SiteHeader() {
 												<span>Instagram</span>
 											</a>
 										</li>
+										<li>
+											<a
+												href={siteConfig.tiktokHref}
+												target="_blank"
+												rel="noreferrer"
+												className={
+													styles.mobileInstagramLink
+												}
+												onClick={closeMobileMenu}
+											>
+												<TikTokIcon />
+												<span>TikTok</span>
+											</a>
+										</li>
 
 										{navItems.map(item => (
 											<li key={item.href}>
@@ -256,6 +288,15 @@ export function SiteHeader() {
 								<circle cx="12" cy="12" r="4.25" />
 								<circle cx="17.5" cy="6.5" r="1" />
 							</svg>
+						</a>
+						<a
+							href={siteConfig.tiktokHref}
+							target="_blank"
+							rel="noreferrer"
+							aria-label="Visit us on TikTok (opens in new tab)"
+							className={styles.instagramIconLink}
+						>
+							<TikTokIcon />
 						</a>
 						{siteConfig.appointmentsEnabled ? (
 							<a
