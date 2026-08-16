@@ -61,18 +61,14 @@ export default function HomePage() {
 					>
 						<div className={styles.showroomCardCopy}>
 							<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
-								{homeContent.aboutPreview.copy}
-							</p>
-							<p className="mt-4 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-								{siteConfig.showroomUpdate}
-							</p>
-							<p className="mt-3 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]">
+								Accepting appointments 7 days a week. Text{" "}
 								<a
 									href={siteConfig.smsHref}
-									className="hover:text-[color:var(--ink-700)]"
+									className="text-[color:var(--ink-900)] hover:text-[color:var(--ink-700)]"
 								>
-									{siteConfig.appointmentTextLine}
-								</a>
+									{siteConfig.phoneDisplay}
+								</a>{" "}
+								to book your appointment.
 							</p>
 						</div>
 						<div className={styles.showroomCardGallery}>
