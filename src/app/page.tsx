@@ -130,17 +130,18 @@ export default function HomePage() {
 						{homeContent.collectionSection.items.map(item => (
 							<article
 								key={item.title}
-								className={`be-card overflow-hidden ${styles.sectionLift}`}
+									className={`be-card overflow-hidden ${styles.sectionLift}`}
 							>
 								<div className="border-b border-[color:var(--line-subtle)]">
-									<Image
-										src={item.image.localPath}
-										alt={item.image.alt}
-										width={1200}
-										height={1800}
-										sizes="(min-width: 768px) 30vw, 100vw"
-										className="block h-auto w-full"
-									/>
+									<div className={styles.collectionImageFrame}>
+										<Image
+											src={item.image.localPath}
+											alt={item.image.alt}
+											fill
+											sizes="(min-width: 768px) 30vw, 100vw"
+											className={`object-cover ${styles.collectionImage}`}
+										/>
+									</div>
 								</div>
 								<div className="p-6">
 									<p className="be-kicker">{item.tag}</p>
