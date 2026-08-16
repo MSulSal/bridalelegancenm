@@ -18,6 +18,17 @@
 	aspect-ratio: 4 / 5;
 }
 
+.collectionImageFrame {
+	position: relative;
+	aspect-ratio: 4 / 5;
+	overflow: hidden;
+	background: #efe6da;
+}
+
+.collectionImage {
+	object-position: center 32%;
+}
+
 .heroSection {
 	margin-inline: calc(50% - 50dvw);
 	margin-top: 0;

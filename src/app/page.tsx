@@ -56,10 +56,10 @@ export default function HomePage() {
 					id="about-preview"
 					className="be-section pt-8 md:pt-12"
 				>
-					<div className="grid gap-4 lg:grid-cols-[1.02fr_0.98fr]">
-						<article
-							className={`be-card p-5 sm:p-7 ${styles.sectionLift}`}
-						>
+					<article
+						className={`be-card p-5 sm:p-7 ${styles.sectionLift}`}
+					>
+						<div className="max-w-2xl">
 							<p className="be-kicker">
 								{homeContent.aboutPreview.kicker}
 							</p>
@@ -77,9 +77,8 @@ export default function HomePage() {
 									{siteConfig.appointmentTextLine}
 								</a>
 							</p>
-						</article>
-
-						<div className={styles.homeGalleryGrid}>
+						</div>
+						<div className={`mt-6 ${styles.homeGalleryGrid}`}>
 							{galleryStrip.map(image => (
 								<figure
 									key={image.localPath}
@@ -95,7 +94,7 @@ export default function HomePage() {
 								</figure>
 							))}
 						</div>
-					</div>
+					</article>
 				</section>
 			</ScrollReveal>
 
@@ -115,14 +114,19 @@ export default function HomePage() {
 								className={`be-card overflow-hidden ${styles.sectionLift}`}
 							>
 								<div className="border-b border-[color:var(--line-subtle)]">
-									<Image
-										src={item.image.localPath}
-										alt={item.image.alt}
-										width={1200}
-										height={1800}
-										sizes="(min-width: 768px) 30vw, 100vw"
-										className="block h-auto w-full"
-									/>
+									<div className={styles.collectionImageFrame}>
+										<Image
+											src={item.image.localPath}
+											alt={item.image.alt}
+											fill
+											sizes="(min-width: 768px) 30vw, 100vw"
+											className={`object-cover ${styles.collectionImage}`}
+											style={{
+												objectPosition:
+													item.homeImagePosition,
+											}}
+										/>
+									</div>
 								</div>
 								<div className="p-6">
 									<p className="be-kicker">{item.tag}</p>
