@@ -74,34 +74,14 @@ export default function HomePage() {
 					id="about-preview"
 					className="be-section pt-8 md:pt-12"
 				>
-					<div className="grid gap-4 lg:grid-cols-[1.02fr_0.98fr]">
-						<article
-							className={`be-card p-5 sm:p-7 ${styles.sectionLift}`}
-						>
-							<p className="be-kicker">
-								{homeContent.aboutPreview.kicker}
-							</p>
-							<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
-								{homeContent.aboutPreview.copy}
-							</p>
-							<p className="mt-4 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)]">
-								{siteConfig.showroomUpdate}
-							</p>
-							<p className="mt-3 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]">
-								<a
-									href={siteConfig.smsHref}
-									className="hover:text-[color:var(--ink-700)]"
-								>
-									{siteConfig.appointmentTextLine}
-								</a>
-							</p>
-						</article>
-
-						<div className={styles.homeGalleryGrid}>
+					<article
+						className={`be-card overflow-hidden ${styles.sectionLift} ${styles.showroomFeature}`}
+					>
+						<div className={styles.showroomGalleryBackdrop}>
 							{galleryStrip.map(image => (
 								<figure
 									key={image.localPath}
-									className={`m-0 be-lookbook-frame ${styles.sectionLift} ${styles.homeGalleryTile}`}
+									className={`m-0 be-lookbook-frame ${styles.homeGalleryTile}`}
 								>
 									<Image
 										src={image.localPath}
@@ -113,7 +93,27 @@ export default function HomePage() {
 								</figure>
 							))}
 						</div>
-					</div>
+						<div className={styles.showroomFeatureOverlay} />
+						<div className={styles.showroomFeatureContent}>
+							<p className="be-kicker">
+								{homeContent.aboutPreview.kicker}
+							</p>
+							<p className={styles.showroomFeatureCopy}>
+								{homeContent.aboutPreview.copy}
+							</p>
+							<p className={styles.showroomFeatureMeta}>
+								{siteConfig.showroomUpdate}
+							</p>
+							<p className={styles.showroomFeatureAction}>
+								<a
+									href={siteConfig.smsHref}
+									className="hover:text-[color:var(--ink-700)]"
+								>
+									{siteConfig.appointmentTextLine}
+								</a>
+							</p>
+						</div>
+					</article>
 				</section>
 			</ScrollReveal>
 
