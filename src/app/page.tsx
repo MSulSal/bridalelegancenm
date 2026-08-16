@@ -48,22 +48,6 @@ export default function HomePage() {
 							<p className="mt-3 text-xs uppercase tracking-[0.16em] text-white/85">
 								{homeContent.hero.supportLine}
 							</p>
-							<div className="mt-7 flex flex-wrap gap-3">
-								{siteConfig.appointmentsEnabled ? (
-									<a
-										href={siteConfig.appointmentHref}
-										className={`be-btn be-btn-primary ${styles.heroPrimaryCta}`}
-									>
-										{siteConfig.appointmentLabel}
-									</a>
-								) : null}
-								<a
-									href="/collections"
-									className={`be-btn ${styles.heroGhostButton}`}
-								>
-									{homeContent.hero.secondaryCtaLabel}
-								</a>
-							</div>
 						</figcaption>
 					</div>
 				</figure>
@@ -74,14 +58,14 @@ export default function HomePage() {
 					id="about-preview"
 					className="be-section pt-8 md:pt-12"
 				>
-					<article
-						className={`be-card overflow-hidden ${styles.sectionLift} ${styles.showroomFeature}`}
+					<div
+						className={`${styles.sectionLift} ${styles.showroomFeature}`}
 					>
 						<div className={styles.showroomGalleryBackdrop}>
 							{galleryStrip.map(image => (
 								<figure
 									key={image.localPath}
-									className={`m-0 be-lookbook-frame ${styles.homeGalleryTile}`}
+									className={`m-0 ${styles.homeGalleryTile}`}
 								>
 									<Image
 										src={image.localPath}
@@ -113,7 +97,7 @@ export default function HomePage() {
 								</a>
 							</p>
 						</div>
-					</article>
+					</div>
 				</section>
 			</ScrollReveal>
 
