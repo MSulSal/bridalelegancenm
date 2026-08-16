@@ -25,7 +25,7 @@ export const homeContent = {
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[0].href,
 				homeImagePosition: "96% 34%",
-				homeImageScale: 1.04,
+				homeImageScale: 1.05,
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[0],
 			},

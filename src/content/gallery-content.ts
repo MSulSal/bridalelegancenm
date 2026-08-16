@@ -7,6 +7,7 @@ export type GalleryShowcaseCollection = {
 	summary: string;
 	collectionHref: string;
 	coverFocus?: string;
+	coverScale?: number;
 	cover: {
 		localPath: string;
 		alt: string;
@@ -32,6 +33,7 @@ export const galleryPageContent = {
 			summary:
 				"Bold couture direction with sculpted structure and modern statement silhouettes.",
 			coverFocus: "96% 42%",
+			coverScale: 1.05,
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
@@ -90,6 +92,7 @@ export const galleryShowcaseCollections: GalleryShowcaseCollection[] =
 		summary: collection.summary,
 		collectionHref: collection.collectionHref,
 		coverFocus: collection.coverFocus,
+		coverScale: collection.coverScale,
 		cover: {
 			localPath: collection.cover.localPath,
 			alt: collection.cover.alt,
