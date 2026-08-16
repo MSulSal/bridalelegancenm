@@ -140,6 +140,7 @@ export default function HomePage() {
 											fill
 											sizes="(min-width: 768px) 30vw, 100vw"
 											className={`object-cover ${styles.collectionImage}`}
+											style={{ objectPosition: item.homeImagePosition }}
 										/>
 									</div>
 								</div>
