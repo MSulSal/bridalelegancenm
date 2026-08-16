@@ -57,9 +57,9 @@ export default function HomePage() {
 					className="be-section pt-8 md:pt-12"
 				>
 					<article
-						className={`be-card p-5 sm:p-7 ${styles.sectionLift}`}
+						className={`be-card p-5 sm:p-7 ${styles.sectionLift} ${styles.showroomCard}`}
 					>
-						<div className="max-w-2xl">
+						<div className={styles.showroomCardCopy}>
 							<p className="be-kicker">
 								{homeContent.aboutPreview.kicker}
 							</p>
@@ -78,11 +78,11 @@ export default function HomePage() {
 								</a>
 							</p>
 						</div>
-						<div className={`mt-6 ${styles.homeGalleryGrid}`}>
+						<div className={styles.showroomCardGallery}>
 							{galleryStrip.map(image => (
 								<figure
 									key={image.localPath}
-									className={`m-0 be-lookbook-frame ${styles.sectionLift} ${styles.homeGalleryTile}`}
+									className={`m-0 be-lookbook-frame ${styles.showroomCardTile}`}
 								>
 									<Image
 										src={image.localPath}
@@ -109,9 +109,12 @@ export default function HomePage() {
 					/>
 					<div className="mt-9 grid gap-5 md:grid-cols-3">
 						{homeContent.collectionSection.items.map(item => (
-							<article
+							<a
 								key={item.title}
-								className={`be-card overflow-hidden ${styles.sectionLift}`}
+								href={item.href}
+								target="_blank"
+								rel="noreferrer"
+								className={`be-card overflow-hidden ${styles.sectionLift} block`}
 							>
 								<div className="border-b border-[color:var(--line-subtle)]">
 									<div className={styles.collectionImageFrame}>
@@ -136,8 +139,11 @@ export default function HomePage() {
 									<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
 										{item.copy}
 									</p>
+									<p className="mt-5 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]">
+										View Collection
+									</p>
 								</div>
-							</article>
+							</a>
 						))}
 					</div>
 				</section>

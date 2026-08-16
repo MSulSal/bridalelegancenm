@@ -40,7 +40,7 @@ export const legacySiteContent = {
 			},
 			{
 				label: "Maggie Sottero",
-				href: "http://www.maggiesottero.com",
+				href: "https://www.maggiesottero.com/maggie-sottero",
 			},
 			{
 				label: "Rebecca Ingram",

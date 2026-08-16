@@ -18,6 +18,26 @@
 	aspect-ratio: 4 / 5;
 }
 
+.showroomCard {
+	display: grid;
+	gap: 1.25rem;
+}
+
+.showroomCardCopy {
+	max-width: 30rem;
+}
+
+.showroomCardGallery {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.showroomCardTile {
+	height: 100%;
+	min-height: 10rem;
+}
+
 .collectionImageFrame {
 	position: relative;
 	aspect-ratio: 4 / 5;
@@ -119,6 +139,10 @@
 		gap: 1rem;
 	}
 
+	.showroomCardGallery {
+		gap: 1rem;
+	}
+
 	.heroSection {
 		margin-top: 0;
 	}
@@ -139,6 +163,20 @@
 @media (min-width: 768px) {
 	.heroPrimaryCta {
 		display: inline-flex !important;
+	}
+
+	.showroomCard {
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		align-items: stretch;
+	}
+
+	.showroomCardGallery {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.showroomCardTile {
+		min-height: 100%;
+		aspect-ratio: auto;
 	}
 }
 
