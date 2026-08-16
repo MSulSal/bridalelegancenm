@@ -22,8 +22,8 @@ export function SiteFooter() {
 	return (
 		<footer className="be-footer">
 			<div className="be-container pt-12 pb-[calc(6.75rem+env(safe-area-inset-bottom))] md:py-12">
-				<div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
-					<div className="space-y-4">
+				<div className="grid gap-10 text-left md:grid-cols-[1.4fr_1fr_1fr]">
+					<div className="space-y-4 text-left">
 						<p className="be-kicker">
 							<BrandText
 								nm="Bridal Elegance NM"
@@ -32,7 +32,7 @@ export function SiteFooter() {
 						</p>
 					</div>
 
-					<ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-[color:var(--ink-700)]">
+					<ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-left text-sm text-[color:var(--ink-700)]">
 						{footerLinks.map(link => (
 							<li key={link.href}>
 								<a
@@ -45,7 +45,7 @@ export function SiteFooter() {
 						))}
 					</ul>
 
-					<div className="space-y-3 text-sm text-[color:var(--ink-700)]">
+					<div className="space-y-3 text-left text-sm text-[color:var(--ink-700)]">
 						<p className="be-kicker">Contact</p>
 						<p>
 							<a
@@ -55,8 +55,6 @@ export function SiteFooter() {
 								className="hover:text-[color:var(--ink-900)]"
 							>
 								{siteConfig.addressLine1}
-								<br />
-								{siteConfig.addressLine2}
 							</a>
 						</p>
 						<p>
@@ -90,7 +88,7 @@ export function SiteFooter() {
 					</div>
 				</div>
 
-				<div className="mt-10 flex flex-col gap-2 border-t border-[color:var(--line-subtle)] pt-5 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)] sm:flex-row sm:items-center sm:justify-between">
+				<div className="mt-10 flex flex-col gap-2 border-t border-[color:var(--line-subtle)] pt-5 text-left text-xs uppercase tracking-[0.14em] text-[color:var(--ink-500)] sm:flex-row sm:items-center sm:justify-between">
 					<p>New Mexico Bridal Boutique</p>
 					<p>
 						(c) {year}{" "}
