@@ -24,7 +24,7 @@ export const homeContent = {
 				copy: "Designer wedding gowns carried through our authorized salon relationship.",
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[0].href,
-				homeImagePosition: "96% 42%",
+				homeImagePosition: "96% 48%",
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[0],
 			},
