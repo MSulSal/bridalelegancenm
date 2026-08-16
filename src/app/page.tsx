@@ -119,6 +119,9 @@ export default function HomePage() {
 											style={{
 												objectPosition:
 													item.homeImagePosition,
+												transform: item.homeImageScale
+													? `scale(${item.homeImageScale})`
+													: undefined,
 											}}
 										/>
 									</div>

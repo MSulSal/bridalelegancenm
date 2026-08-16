@@ -25,6 +25,7 @@ export const homeContent = {
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[0].href,
 				homeImagePosition: "96% 34%",
+				homeImageScale: 1.04,
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[0],
 			},
@@ -34,6 +35,7 @@ export const homeContent = {
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[1].href,
 				homeImagePosition: "4% 42%",
+				homeImageScale: 1,
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[1],
 			},
@@ -43,6 +45,7 @@ export const homeContent = {
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[2].href,
 				homeImagePosition: "100% 42%",
+				homeImageScale: 1,
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[2],
 			},
