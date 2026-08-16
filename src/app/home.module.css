@@ -1,3 +1,23 @@
+.sectionLift {
+	transition:
+		transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+		box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sectionLift:hover {
+	transform: translateY(-4px);
+}
+
+.homeGalleryGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.homeGalleryTile {
+	aspect-ratio: 4 / 5;
+}
+
 .heroSection {
 	margin-inline: calc(50% - 50dvw);
 	margin-top: 0;
@@ -20,6 +40,14 @@
 .heroImage {
 	object-position: 88% 34%;
 	filter: brightness(1.06) contrast(1.03) saturate(1.05);
+	transform: scale(1);
+	transition:
+		transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+		filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.heroFrame:hover .heroImage {
+	transform: scale(1.015);
 }
 
 .heroOverlay {
@@ -55,44 +83,35 @@
 	max-width: min(96%, 42rem);
 }
 
-.showroomSection {
-	padding-top: 2rem;
+.heroDescription {
+	max-width: 36ch;
 }
 
-.showroomCard {
-	margin-bottom: 1.25rem;
-	max-width: 44rem;
+.heroPrimaryCta {
+	display: none !important;
 }
 
-.showroomCopy {
-	margin-top: 0.75rem;
-	font-size: 1rem;
-	line-height: 1.8;
-	color: var(--ink-700);
+.heroGhostButton {
+	border: 1px solid rgba(255, 255, 255, 0.72);
+	color: #ffffff;
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(2px);
 }
 
-.showroomMeta {
-	margin-top: 1rem;
-	font-size: 0.78rem;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var(--ink-500);
-}
-
-.showroomGrid {
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 1rem;
-}
-
-.homeGalleryTile {
-	position: relative;
-	aspect-ratio: 4 / 5;
-	overflow: hidden;
-	background: var(--surface-soft);
+.heroGhostButton:hover {
+	border-color: rgba(255, 255, 255, 0.92);
+	background: rgba(255, 255, 255, 0.18);
 }
 
 @media (min-width: 640px) {
+	.homeGalleryGrid {
+		gap: 1rem;
+	}
+
+	.heroSection {
+		margin-top: 0;
+	}
+
 	.heroViewport {
 		min-height: calc(100svh - 4.6rem);
 	}
@@ -104,13 +123,23 @@
 	.heroImage {
 		object-position: 84% 32%;
 	}
+}
 
-	.showroomGrid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (min-width: 768px) {
+	.heroPrimaryCta {
+		display: inline-flex !important;
 	}
 }
 
 @media (min-width: 1024px) {
+	.homeGalleryGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.heroSection {
+		margin-top: 0;
+	}
+
 	.heroViewport {
 		min-height: calc(100svh - 10.2rem);
 	}
@@ -122,8 +151,20 @@
 	.heroImage {
 		object-position: 78% 30%;
 	}
+}
 
-	.showroomGrid {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+@media (prefers-reduced-motion: reduce) {
+	.sectionLift,
+	.heroImage,
+	.heroGhostButton {
+		transition: none;
+	}
+
+	.sectionLift:hover {
+		transform: none;
+	}
+
+	.heroFrame:hover .heroImage {
+		transform: none;
 	}
 }
