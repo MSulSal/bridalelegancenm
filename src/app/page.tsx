@@ -99,6 +99,146 @@ export default function HomePage() {
 				</section>
 			</ScrollReveal>
 
+			<ScrollReveal delayMs={90}>
+				<section id="collections-preview" className="be-section">
+					<SectionHeading
+						eyebrow={homeContent.collectionSection.heading.eyebrow}
+						title={homeContent.collectionSection.heading.title}
+						description={
+							homeContent.collectionSection.heading.description
+						}
+					/>
+					<div className="mt-9 grid gap-5 md:grid-cols-3">
+						{homeContent.collectionSection.items.map(item => (
+							<article
+								key={item.title}
+								className={`be-card overflow-hidden ${styles.sectionLift}`}
+							>
+								<div className="border-b border-[color:var(--line-subtle)]">
+									<Image
+										src={item.image.localPath}
+										alt={item.image.alt}
+										width={1200}
+										height={1800}
+										sizes="(min-width: 768px) 30vw, 100vw"
+										className="block h-auto w-full"
+									/>
+								</div>
+								<div className="p-6">
+									<p className="be-kicker">{item.tag}</p>
+									<h3 className="mt-3 text-2xl leading-tight">
+										{item.title}
+									</h3>
+									<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
+										{item.copy}
+									</p>
+								</div>
+							</article>
+						))}
+					</div>
+				</section>
+			</ScrollReveal>
+
+			<ScrollReveal delayMs={110}>
+				<section
+					id="spotlights-preview"
+					className="be-section border-y border-[color:var(--line-subtle)]"
+				>
+					<SectionHeading
+						eyebrow={homeContent.spotlightSection.heading.eyebrow}
+						title={homeContent.spotlightSection.heading.title}
+						description={
+							homeContent.spotlightSection.heading.description
+						}
+					/>
+					<div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+						{homeContent.spotlightSection.items
+							.filter(
+								item =>
+									(siteConfig.accessoriesEnabled ||
+										item.href !== "/accessories") &&
+									(siteConfig.appointmentsEnabled ||
+										item.href !== "/book-appointment"),
+							)
+							.map(item => (
+								<article
+									key={item.title}
+									className={`be-card overflow-hidden ${styles.sectionLift}`}
+								>
+									<div className="border-b border-[color:var(--line-subtle)]">
+										<Image
+											src={item.image.localPath}
+											alt={item.image.alt}
+											width={1200}
+											height={1800}
+											sizes="(min-width: 768px) 30vw, 100vw"
+											className="block h-auto w-full"
+										/>
+									</div>
+									<div className="p-6">
+										<p className="be-kicker">Category</p>
+										<h3 className="mt-3 text-2xl leading-tight">
+											{item.title}
+										</h3>
+										<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
+											{item.copy}
+										</p>
+										<a
+											href={item.href}
+											target={
+												item.href.startsWith("http")
+													? "_blank"
+													: undefined
+											}
+											rel={
+												item.href.startsWith("http")
+													? "noreferrer"
+													: undefined
+											}
+											className="mt-5 inline-block text-xs uppercase tracking-[0.14em] text-[color:var(--ink-900)]"
+										>
+											{item.ctaLabel}
+										</a>
+									</div>
+								</article>
+							))}
+					</div>
+				</section>
+			</ScrollReveal>
+
+			<ScrollReveal delayMs={130}>
+				<section
+					className="be-section"
+					aria-labelledby="journey-heading"
+				>
+					<SectionHeading
+						eyebrow={homeContent.journeySection.heading.eyebrow}
+						title={homeContent.journeySection.heading.title}
+						description={
+							homeContent.journeySection.heading.description
+						}
+					/>
+					<ol className="mt-9 grid gap-4 md:grid-cols-2">
+						{homeContent.journeySection.steps.map(item => (
+							<li
+								key={item.step}
+								className={`be-card p-6 ${styles.sectionLift}`}
+							>
+								<p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-500)]">
+									Step {item.step}
+								</p>
+								<h3 className="mt-3 text-2xl leading-tight">
+									{item.title}
+								</h3>
+								<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
+									{item.body}
+								</p>
+							</li>
+						))}
+					</ol>
+				</section>
+			</ScrollReveal>
+
 			{siteConfig.appointmentsEnabled ? (
 				<ScrollReveal delayMs={150}>
 					<section id="appointment-intent" className="be-section">
