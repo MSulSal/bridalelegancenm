@@ -30,12 +30,6 @@ export function SiteFooter() {
 								atelier="Bridal Elegance NM"
 							/>
 						</p>
-						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
-							<BrandText
-								nm={`${siteConfig.tagline} Located in Albuquerque, north of Sawmill District and Old Town.`}
-								atelier={siteConfig.tagline}
-							/>
-						</p>
 					</div>
 
 					<ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-[color:var(--ink-700)]">

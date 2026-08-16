@@ -1,88 +1,3 @@
-.sectionLift {
-	transition:
-		transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-		box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.sectionLift:hover {
-	transform: translateY(-4px);
-}
-
-.showroomSection {
-	margin-inline: calc(50% - 50dvw);
-	padding-inline: 0;
-}
-
-.showroomFeature {
-	position: relative;
-	min-height: 32rem;
-	overflow: hidden;
-	background: linear-gradient(180deg, rgba(250, 246, 239, 0.9), rgba(244, 235, 223, 0.94));
-}
-
-.showroomBackdropText {
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	padding: 1.35rem;
-	pointer-events: none;
-}
-
-.showroomBackdropKicker {
-	font-size: 0.72rem;
-	letter-spacing: 0.22em;
-	text-transform: uppercase;
-	color: rgba(111, 86, 61, 0.24);
-}
-
-.showroomBackdropCopy {
-	max-width: 11ch;
-	margin-top: 0.35rem;
-	font-family: var(--font-display-serif), Georgia, serif;
-	font-size: clamp(2.3rem, 7vw, 6.5rem);
-	line-height: 0.95;
-	color: rgba(111, 86, 61, 0.13);
-}
-
-.showroomBackdropMeta {
-	max-width: 30rem;
-	margin-top: 0.75rem;
-	font-size: 0.82rem;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: rgba(111, 86, 61, 0.18);
-}
-
-.showroomGalleryBackdrop {
-	position: relative;
-	z-index: 1;
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	grid-auto-rows: 1fr;
-	gap: 0.75rem;
-	height: 100%;
-	min-height: 32rem;
-	padding: 1rem;
-	align-items: end;
-}
-
-.homeGalleryTile {
-	position: relative;
-	min-height: 16rem;
-	overflow: hidden;
-}
-
-.homeGalleryTile:nth-child(1) {
-	grid-row: span 2;
-}
-
-.homeGalleryTile:nth-child(4) {
-	grid-column: span 2;
-}
-
 .heroSection {
 	margin-inline: calc(50% - 50dvw);
 	margin-top: 0;
@@ -105,14 +20,6 @@
 .heroImage {
 	object-position: 88% 34%;
 	filter: brightness(1.06) contrast(1.03) saturate(1.05);
-	transform: scale(1);
-	transition:
-		transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
-		filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.heroFrame:hover .heroImage {
-	transform: scale(1.015);
 }
 
 .heroOverlay {
@@ -148,40 +55,36 @@
 	max-width: min(96%, 42rem);
 }
 
-.heroDescription {
-	max-width: 36ch;
+.showroomSection {
+	padding-top: 2rem;
 }
 
-.heroPrimaryCta {
-	display: none !important;
+.showroomIntro {
+	margin-bottom: 1.25rem;
+	max-width: 40rem;
 }
 
-.heroGhostButton {
-	border: 1px solid rgba(255, 255, 255, 0.72);
-	color: #ffffff;
-	background: rgba(255, 255, 255, 0.08);
-	backdrop-filter: blur(2px);
+.showroomCopy {
+	margin-top: 0.75rem;
+	font-size: 1rem;
+	line-height: 1.8;
+	color: var(--ink-700);
 }
 
-.heroGhostButton:hover {
-	border-color: rgba(255, 255, 255, 0.92);
-	background: rgba(255, 255, 255, 0.18);
+.showroomGrid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1rem;
+}
+
+.homeGalleryTile {
+	position: relative;
+	aspect-ratio: 4 / 5;
+	overflow: hidden;
+	background: var(--surface-soft);
 }
 
 @media (min-width: 640px) {
-	.showroomFeature {
-		min-height: 36rem;
-	}
-
-	.showroomGalleryBackdrop {
-		min-height: 36rem;
-		padding: 1.15rem;
-	}
-
-	.heroSection {
-		margin-top: 0;
-	}
-
 	.heroViewport {
 		min-height: calc(100svh - 4.6rem);
 	}
@@ -194,57 +97,12 @@
 		object-position: 84% 32%;
 	}
 
-	.showroomBackdropText {
-		padding: 1.7rem;
-	}
-}
-
-@media (min-width: 768px) {
-	.heroPrimaryCta {
-		display: inline-flex !important;
-	}
-
-	.showroomFeature {
-		min-height: 38rem;
-	}
-
-	.showroomGalleryBackdrop {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		min-height: 38rem;
-	}
-
-	.homeGalleryTile:nth-child(1) {
-		grid-column: span 2;
-		grid-row: span 2;
-	}
-
-	.homeGalleryTile:nth-child(2) {
-		grid-row: span 2;
-	}
-
-	.homeGalleryTile:nth-child(3) {
-		grid-row: span 2;
-	}
-
-	.homeGalleryTile:nth-child(4) {
-		grid-column: auto;
-		grid-row: span 2;
-	}
-
-	.showroomBackdropText {
-		padding: 2rem;
+	.showroomGrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 @media (min-width: 1024px) {
-	.showroomFeature {
-		min-height: 42rem;
-	}
-
-	.heroSection {
-		margin-top: 0;
-	}
-
 	.heroViewport {
 		min-height: calc(100svh - 10.2rem);
 	}
@@ -257,32 +115,7 @@
 		object-position: 78% 30%;
 	}
 
-	.showroomGalleryBackdrop {
-		min-height: 42rem;
-		padding: 1.25rem;
-	}
-
-	.showroomBackdropText {
-		padding: 2.4rem;
-	}
-
-	.showroomBackdropCopy {
-		max-width: 10ch;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.sectionLift,
-	.heroImage,
-	.heroGhostButton {
-		transition: none;
-	}
-
-	.sectionLift:hover {
-		transform: none;
-	}
-
-	.heroFrame:hover .heroImage {
-		transform: none;
+	.showroomGrid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 }

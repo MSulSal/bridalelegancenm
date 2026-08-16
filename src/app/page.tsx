@@ -10,11 +10,9 @@ export default function HomePage() {
 	const galleryStrip = homeContent.homeGallery.slice(1, 5);
 
 	return (
-		<SiteShell>
+		<SiteShell fullWidthMain>
 			<section className={styles.heroSection}>
-				<figure
-					className={`m-0 be-card overflow-hidden ${styles.heroFrame}`}
-				>
+				<figure className={`m-0 overflow-hidden ${styles.heroFrame}`}>
 					<div className={styles.heroViewport}>
 						<Image
 							src="/hero-image-v6.png"
@@ -57,19 +55,16 @@ export default function HomePage() {
 					id="about-preview"
 					className={`be-section pt-8 md:pt-12 ${styles.showroomSection}`}
 				>
-					<div className={styles.showroomFeature}>
-						<div className={styles.showroomBackdropText} aria-hidden="true">
-							<p className={styles.showroomBackdropKicker}>
+					<div className="be-container">
+						<div className={styles.showroomIntro}>
+							<p className="be-kicker">
 								{homeContent.aboutPreview.kicker}
 							</p>
-							<p className={styles.showroomBackdropCopy}>
+							<p className={styles.showroomCopy}>
 								{homeContent.aboutPreview.copy}
 							</p>
-							<p className={styles.showroomBackdropMeta}>
-								{siteConfig.showroomUpdate}
-							</p>
 						</div>
-						<div className={styles.showroomGalleryBackdrop}>
+						<div className={styles.showroomGrid}>
 							{galleryStrip.map(image => (
 								<figure
 									key={image.localPath}

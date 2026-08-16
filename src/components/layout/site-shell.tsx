@@ -5,9 +5,13 @@ import { SiteHeader } from "./site-header";
 
 type SiteShellProps = {
 	children: ReactNode;
+	fullWidthMain?: boolean;
 };
 
-export function SiteShell({ children }: SiteShellProps) {
+export function SiteShell({
+	children,
+	fullWidthMain = false,
+}: SiteShellProps) {
 	return (
 		<div className="min-h-screen text-[color:var(--ink-900)]">
 			<a
@@ -17,7 +21,14 @@ export function SiteShell({ children }: SiteShellProps) {
 				Skip to content
 			</a>
 			<SiteHeader />
-			<main id="main-content" className="be-container pb-28 md:pb-16">
+			<main
+				id="main-content"
+				className={
+					fullWidthMain
+						? "pb-28 md:pb-16"
+						: "be-container pb-28 md:pb-16"
+				}
+			>
 				{children}
 			</main>
 			<MobileBookingBar />
