@@ -30,6 +30,11 @@ export function SiteFooter() {
 								atelier="Bridal Elegance NM"
 							/>
 						</p>
+						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
+							New Mexico's only private appointment bridal boutique.
+							We are located in Albuquerque, North of Sawmill and
+							Old Town.
+						</p>
 					</div>
 
 					<ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-left text-sm text-[color:var(--ink-700)]">
