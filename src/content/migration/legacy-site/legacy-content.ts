@@ -104,21 +104,21 @@ export const legacySiteContent = {
 		collectionHighlights: {
 			bridalDesigners: [
 				{
-					localPath: "/client-gallery-2026/img-6692.jpeg",
+					localPath: "/migration/legacy-site-images/bridal-sottero-midgley.png",
 					sourceUrl:
-						"/client-gallery-2026/img-6692.jpeg",
+						"/migration/legacy-site-images/bridal-sottero-midgley.png",
 					alt: "Sottero and Midgley style bridal gown",
 				},
 				{
-					localPath: "/client-gallery-2026/img-6699.jpeg",
+					localPath: "/migration/legacy-site-images/bridal-maggie.jpeg",
 					sourceUrl:
-						"/client-gallery-2026/img-6699.jpeg",
+						"/migration/legacy-site-images/bridal-maggie.jpeg",
 					alt: "Maggie Sottero style bridal gown",
 				},
 				{
-					localPath: "/client-gallery-2026/img-6704.jpeg",
+					localPath: "/migration/legacy-site-images/bridal-rebecca.jpeg",
 					sourceUrl:
-						"/client-gallery-2026/img-6704.jpeg",
+						"/migration/legacy-site-images/bridal-rebecca.jpeg",
 					alt: "Rebecca Ingram style bridal gown",
 				},
 			],
