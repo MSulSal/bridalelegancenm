@@ -60,9 +60,6 @@ export default function HomePage() {
 						className={`be-card p-5 sm:p-7 ${styles.sectionLift} ${styles.showroomCard}`}
 					>
 						<div className={styles.showroomCardCopy}>
-							<p className="be-kicker">
-								{homeContent.aboutPreview.kicker}
-							</p>
 							<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
 								{homeContent.aboutPreview.copy}
 							</p>
@@ -101,7 +98,6 @@ export default function HomePage() {
 			<ScrollReveal delayMs={90}>
 				<section id="collections-preview" className="be-section">
 					<SectionHeading
-						eyebrow={homeContent.collectionSection.heading.eyebrow}
 						title={homeContent.collectionSection.heading.title}
 						description={
 							homeContent.collectionSection.heading.description
@@ -132,8 +128,7 @@ export default function HomePage() {
 									</div>
 								</div>
 								<div className="p-6">
-									<p className="be-kicker">{item.tag}</p>
-									<h3 className="mt-3 text-2xl leading-tight">
+									<h3 className="text-2xl leading-tight">
 										{item.title}
 									</h3>
 									<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">
@@ -155,7 +150,6 @@ export default function HomePage() {
 					className="be-section border-y border-[color:var(--line-subtle)]"
 				>
 					<SectionHeading
-						eyebrow={homeContent.spotlightSection.heading.eyebrow}
 						title={homeContent.spotlightSection.heading.title}
 						description={
 							homeContent.spotlightSection.heading.description
@@ -186,8 +180,7 @@ export default function HomePage() {
 										/>
 									</div>
 									<div className="p-6">
-										<p className="be-kicker">Category</p>
-										<h3 className="mt-3 text-2xl leading-tight">
+										<h3 className="text-2xl leading-tight">
 											{item.title}
 										</h3>
 										<p className="mt-4 text-sm leading-7 text-[color:var(--ink-700)]">

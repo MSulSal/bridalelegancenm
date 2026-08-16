@@ -1,5 +1,5 @@
 type SectionHeadingProps = {
-	eyebrow: string;
+	eyebrow?: string;
 	title: string;
 	description?: string;
 };
@@ -11,7 +11,7 @@ export function SectionHeading({
 }: SectionHeadingProps) {
 	return (
 		<header className="flex flex-col gap-4">
-			<p className="be-kicker">{eyebrow}</p>
+			{eyebrow ? <p className="be-kicker">{eyebrow}</p> : null}
 			<h2 className="max-w-3xl text-4xl leading-tight sm:text-5xl">
 				{title}
 			</h2>
