@@ -56,14 +56,17 @@ export default function HomePage() {
 					className={`be-section pt-8 md:pt-12 ${styles.showroomSection}`}
 				>
 					<div className="be-container">
-						<div className={styles.showroomIntro}>
+						<article className={`be-card p-5 sm:p-7 ${styles.showroomCard}`}>
 							<p className="be-kicker">
 								{homeContent.aboutPreview.kicker}
 							</p>
 							<p className={styles.showroomCopy}>
 								{homeContent.aboutPreview.copy}
 							</p>
-						</div>
+							<p className={styles.showroomMeta}>
+								{siteConfig.appointmentTextLine}
+							</p>
+						</article>
 						<div className={styles.showroomGrid}>
 							{galleryStrip.map(image => (
 								<figure
