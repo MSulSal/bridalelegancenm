@@ -24,7 +24,7 @@ export const homeContent = {
 				copy: "Designer wedding gowns carried through our authorized salon relationship.",
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[0].href,
-				homeImagePosition: "center 58%",
+				homeImagePosition: "center 20%",
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[0],
 			},
@@ -33,7 +33,7 @@ export const homeContent = {
 				copy: "Wedding gown collection from Maggie Sottero.",
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[1].href,
-				homeImagePosition: "center 58%",
+				homeImagePosition: "center 18%",
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[1],
 			},
@@ -42,7 +42,7 @@ export const homeContent = {
 				copy: "Wedding gown collection from Rebecca Ingram.",
 				tag: "Bridal Designer",
 				href: legacySiteContent.externalLinks.bridalDesigners[2].href,
-				homeImagePosition: "center 42%",
+				homeImagePosition: "center 34%",
 				image: legacySiteContent.imageLibrary.collectionHighlights
 					.bridalDesigners[2],
 			},
