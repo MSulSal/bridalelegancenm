@@ -33,7 +33,7 @@ export const galleryPageContent = {
 			summary:
 				"Bold couture direction with sculpted structure and modern statement silhouettes.",
 			coverFocus: "96% 42%",
-			coverScale: 1.05,
+			coverScale: 1.02,
 			cover: {
 				localPath:
 					legacySiteContent.imageLibrary.collectionHighlights
