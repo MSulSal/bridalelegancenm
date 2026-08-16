@@ -163,6 +163,7 @@
 	height: 100%;
 	object-fit: cover;
 	object-position: var(--cover-focus, 50% 50%);
+	transform: scale(var(--cover-scale, 1));
 }
 
 .collectionRail {

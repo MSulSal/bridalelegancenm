@@ -385,6 +385,11 @@ export function CollectionParallaxShowcase({
 																			"--cover-focus":
 																				collection.coverFocus ??
 																				"50% 50%",
+																			"--cover-scale":
+																				String(
+																					collection.coverScale ??
+																						1,
+																				),
 																		} as CSSProperties
 																	}
 																>
