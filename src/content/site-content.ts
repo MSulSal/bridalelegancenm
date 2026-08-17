@@ -11,6 +11,24 @@ export const homeContent = {
 		copy: "A calm, one-on-one consultation experience shaped around your timeline and style preferences.",
 	},
 	homeGallery: legacySiteContent.imageLibrary.homeGallery,
+	showroomGallery: [
+		{
+			localPath: "/showroom/sr1.jpeg",
+			alt: "Bridal showroom entrance with featured gowns and lounge seating",
+		},
+		{
+			localPath: "/showroom/sr2.jpeg",
+			alt: "Bridal boutique showroom with seating and display space",
+		},
+		{
+			localPath: "/showroom/sr3.jpeg",
+			alt: "Private fitting area inside the bridal showroom",
+		},
+		{
+			localPath: "/showroom/sr4.jpeg",
+			alt: "Bridal gown display area inside the showroom",
+		},
+	],
 	collectionSection: {
 		heading: {
 			eyebrow: "Collections",

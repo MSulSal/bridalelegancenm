@@ -8,7 +8,7 @@ import { siteConfig } from "@/lib/site";
 import styles from "./home.module.css";
 
 export default function HomePage() {
-	const galleryStrip = homeContent.homeGallery.slice(1, 5);
+	const galleryStrip = homeContent.showroomGallery;
 
 	return (
 		<SiteShell>
