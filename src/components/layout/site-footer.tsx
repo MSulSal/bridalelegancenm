@@ -31,7 +31,6 @@ export function SiteFooter() {
 							/>
 						</p>
 						<p className="max-w-xl text-base leading-8 text-[color:var(--ink-700)]">
-							New Mexico's only private appointment bridal boutique.
 							We are located in Albuquerque, North of Sawmill and
 							Old Town.
 						</p>
