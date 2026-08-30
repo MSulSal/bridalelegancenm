@@ -1,7 +1,7 @@
 export const siteConfig = {
 	name: "Bridal Elegance NM",
 	description:
-		"Bridal Elegance NM is an Albuquerque bridal boutique featuring designer wedding gowns at 1301 Rio Grande NW, Suite 2, north of Sawmill District and Old Town.",
+		"Bridal Elegance NM is an Albuquerque bridal boutique offering designer wedding gowns from Maggie Sottero, Sottero and Midgley, and Rebecca Ingram at 1301 Rio Grande NW, Suite 2.",
 	url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 	cityState: "Albuquerque, New Mexico",
 	tagline: "Appointment-only bridal boutique in Albuquerque.",
