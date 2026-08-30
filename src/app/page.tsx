@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { BrandText } from "@/components/brand/brand-text";
+import { ShowroomGalleryLightbox } from "@/components/home/showroom-gallery-lightbox";
 import { homeContent } from "@/content/site-content";
 import { SiteShell } from "@/components/layout/site-shell";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
@@ -35,7 +36,7 @@ export default function HomePage() {
 									nm={
 										<>
 											Bridal Elegance{" "}
-											<span className="relative -top-[0.08em] text-[0.58em] font-semibold tracking-[0.14em]">
+											<span className="font-semibold tracking-[0.08em]">
 												NM
 											</span>
 										</>
@@ -61,32 +62,20 @@ export default function HomePage() {
 					>
 						<div className={styles.showroomCardCopy}>
 							<p className="mt-3 text-sm leading-7 text-[color:var(--ink-700)]">
-								Accepting appointments 7 days a week. Text{" "}
-								<a
-									href={siteConfig.smsHref}
-									className="text-[color:var(--ink-900)] hover:text-[color:var(--ink-700)]"
-								>
-									{siteConfig.phoneDisplay}
-								</a>{" "}
-								to book your appointment.
+								<span>Accepting appointments 7 days a week.</span>
+								<span className="block">
+									Text{" "}
+									<a
+										href={siteConfig.smsHref}
+										className="text-[color:var(--ink-900)] hover:text-[color:var(--ink-700)]"
+									>
+										{siteConfig.phoneDisplay}
+									</a>{" "}
+									to book your appointment.
+								</span>
 							</p>
 						</div>
-						<div className={styles.showroomCardGallery}>
-							{galleryStrip.map(image => (
-								<figure
-									key={image.localPath}
-									className={`m-0 be-lookbook-frame ${styles.showroomCardTile}`}
-								>
-									<Image
-										src={image.localPath}
-										alt={image.alt}
-										fill
-										sizes="(min-width: 640px) 22vw, 46vw"
-										className="object-cover"
-									/>
-								</figure>
-							))}
-						</div>
+						<ShowroomGalleryLightbox images={galleryStrip} />
 					</article>
 				</section>
 			</ScrollReveal>
