@@ -49,7 +49,7 @@
 .showroomLightbox {
 	position: fixed;
 	inset: 0;
-	z-index: 90;
+	z-index: 260;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -59,14 +59,14 @@
 
 .showroomLightboxFrame {
 	position: relative;
-	width: min(92vw, 70rem);
-	height: min(88vh, 56rem);
+	width: min(92vw, 54rem);
+	height: min(36vh, 22rem);
 }
 
 .showroomLightboxNav {
 	position: absolute;
 	top: 50%;
-	z-index: 1;
+	z-index: 261;
 	display: grid;
 	place-items: center;
 	width: 3rem;
@@ -93,7 +93,7 @@
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
-	z-index: 1;
+	z-index: 261;
 	border: 1px solid rgba(255, 255, 255, 0.4);
 	background: rgba(255, 255, 255, 0.08);
 	color: #fff;
@@ -108,6 +108,7 @@
 	position: absolute;
 	left: 50%;
 	bottom: 1rem;
+	z-index: 261;
 	transform: translateX(-50%);
 	margin: 0;
 	color: rgba(255, 255, 255, 0.88);
@@ -236,6 +237,11 @@
 	.heroImage {
 		object-position: 84% 32%;
 	}
+
+	.showroomLightboxFrame {
+		width: min(88vw, 58rem);
+		height: min(42vh, 26rem);
+	}
 }
 
 @media (min-width: 768px) {
@@ -276,6 +282,11 @@
 
 	.heroImage {
 		object-position: 78% 30%;
+	}
+
+	.showroomLightboxFrame {
+		width: min(76vw, 62rem);
+		height: min(34vh, 24rem);
 	}
 }
 
