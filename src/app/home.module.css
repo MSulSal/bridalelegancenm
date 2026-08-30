@@ -59,8 +59,8 @@
 
 .showroomLightboxFrame {
 	position: relative;
-	width: min(92vw, 54rem);
-	height: min(36vh, 22rem);
+	width: min(94vw, 72rem);
+	height: min(84vh, 58rem);
 }
 
 .showroomLightboxNav {
@@ -239,8 +239,8 @@
 	}
 
 	.showroomLightboxFrame {
-		width: min(88vw, 58rem);
-		height: min(42vh, 26rem);
+		width: min(92vw, 76rem);
+		height: min(86vh, 60rem);
 	}
 }
 
@@ -285,8 +285,8 @@
 	}
 
 	.showroomLightboxFrame {
-		width: min(76vw, 62rem);
-		height: min(34vh, 24rem);
+		width: min(90vw, 82rem);
+		height: min(88vh, 62rem);
 	}
 }
 
