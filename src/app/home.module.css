@@ -40,7 +40,7 @@
 	display: block;
 	width: 100%;
 	overflow: hidden;
-	cursor: zoom-in;
+	cursor: pointer;
 	border: 0;
 	padding: 0;
 	background: transparent;
@@ -63,6 +63,32 @@
 	height: min(88vh, 56rem);
 }
 
+.showroomLightboxNav {
+	position: absolute;
+	top: 50%;
+	z-index: 1;
+	display: grid;
+	place-items: center;
+	width: 3rem;
+	height: 3rem;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+	font-size: 2rem;
+	line-height: 1;
+	cursor: pointer;
+	transform: translateY(-50%);
+}
+
+.showroomLightboxNavPrev {
+	left: 1rem;
+}
+
+.showroomLightboxNavNext {
+	right: 1rem;
+}
+
 .showroomLightboxClose {
 	position: absolute;
 	top: 1rem;
@@ -76,6 +102,18 @@
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	cursor: pointer;
+}
+
+.showroomLightboxCount {
+	position: absolute;
+	left: 50%;
+	bottom: 1rem;
+	transform: translateX(-50%);
+	margin: 0;
+	color: rgba(255, 255, 255, 0.88);
+	font-size: 0.78rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
 }
 
 .collectionImageFrame {

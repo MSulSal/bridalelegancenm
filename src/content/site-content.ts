@@ -17,7 +17,7 @@ export const homeContent = {
 			alt: "Bridal showroom entrance with featured gowns and lounge seating",
 		},
 		{
-			localPath: "/showroom/sr2.jpeg",
+			localPath: "/showroom/sr2-cropped.jpeg",
 			alt: "Bridal boutique showroom with seating and display space",
 		},
 		{
@@ -25,7 +25,7 @@ export const homeContent = {
 			alt: "Private fitting area inside the bridal showroom",
 		},
 		{
-			localPath: "/showroom/sr4.jpeg",
+			localPath: "/showroom/sr4-cropped.jpeg",
 			alt: "Bridal gown display area inside the showroom",
 		},
 	],

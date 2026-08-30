@@ -18,6 +18,18 @@ export function ShowroomGalleryLightbox({
 }: ShowroomGalleryLightboxProps) {
 	const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+	const showPrevious = () => {
+		setActiveIndex(current =>
+			current === null ? 0 : (current - 1 + images.length) % images.length,
+		);
+	};
+
+	const showNext = () => {
+		setActiveIndex(current =>
+			current === null ? 0 : (current + 1) % images.length,
+		);
+	};
+
 	useEffect(() => {
 		if (activeIndex === null) {
 			return;
@@ -27,11 +39,17 @@ export function ShowroomGalleryLightbox({
 			if (event.key === "Escape") {
 				setActiveIndex(null);
 			}
+			if (event.key === "ArrowLeft") {
+				showPrevious();
+			}
+			if (event.key === "ArrowRight") {
+				showNext();
+			}
 		};
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [activeIndex]);
+	}, [activeIndex, images.length]);
 
 	return (
 		<>
@@ -65,6 +83,28 @@ export function ShowroomGalleryLightbox({
 				>
 					<button
 						type="button"
+						className={`${styles.showroomLightboxNav} ${styles.showroomLightboxNavPrev}`}
+						onClick={event => {
+							event.stopPropagation();
+							showPrevious();
+						}}
+						aria-label="Show previous showroom photo"
+					>
+						‹
+					</button>
+					<button
+						type="button"
+						className={`${styles.showroomLightboxNav} ${styles.showroomLightboxNavNext}`}
+						onClick={event => {
+							event.stopPropagation();
+							showNext();
+						}}
+						aria-label="Show next showroom photo"
+					>
+						›
+					</button>
+					<button
+						type="button"
 						className={styles.showroomLightboxClose}
 						onClick={() => setActiveIndex(null)}
 						aria-label="Close showroom photo preview"
@@ -84,6 +124,9 @@ export function ShowroomGalleryLightbox({
 							priority
 						/>
 					</div>
+					<p className={styles.showroomLightboxCount}>
+						{activeIndex + 1} / {images.length}
+					</p>
 				</div>
 			) : null}
 		</>
