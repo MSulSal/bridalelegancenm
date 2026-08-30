@@ -49,24 +49,34 @@
 .showroomLightbox {
 	position: fixed;
 	inset: 0;
-	z-index: 260;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	z-index: 10000;
+	display: grid;
+	place-items: center;
 	padding: 1.25rem;
-	background: rgba(17, 14, 12, 0.88);
+	background: rgba(12, 10, 9, 0.94);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	overscroll-behavior: contain;
+}
+
+.showroomLightboxPanel {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: min(96vw, 92rem);
+	max-width: 100%;
 }
 
 .showroomLightboxFrame {
 	position: relative;
-	width: min(94vw, 72rem);
-	height: min(84vh, 58rem);
+	width: min(92vw, 78rem);
+	height: min(82vh, 64rem);
 }
 
 .showroomLightboxNav {
 	position: absolute;
 	top: 50%;
-	z-index: 261;
+	z-index: 10001;
 	display: grid;
 	place-items: center;
 	width: 3rem;
@@ -93,7 +103,7 @@
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
-	z-index: 261;
+	z-index: 10001;
 	border: 1px solid rgba(255, 255, 255, 0.4);
 	background: rgba(255, 255, 255, 0.08);
 	color: #fff;
@@ -108,7 +118,7 @@
 	position: absolute;
 	left: 50%;
 	bottom: 1rem;
-	z-index: 261;
+	z-index: 10001;
 	transform: translateX(-50%);
 	margin: 0;
 	color: rgba(255, 255, 255, 0.88);
