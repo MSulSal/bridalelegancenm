@@ -14,6 +14,8 @@ export const siteConfig = {
 	phoneHref: "tel:+15058302110",
 	smsHref: "sms:+15058302110",
 	appointmentTextLine: "Text (505) 830-2110 for appointments.",
+	quickShipTextLine: "Ask about Quick Ship wedding dresses.",
+	quickShipHref: "/quick-ship-wedding-dresses",
 	addressLine1: "1301 Rio Grande NW, Suite 2",
 	addressLine2: "North of Sawmill District and Old Town, Albuquerque, NM",
 	mapsHref:

@@ -18,6 +18,7 @@ import styles from "./site-header.module.css";
 const navItems = [
 	{ href: "/", label: "Home" },
 	{ href: "/collections", label: "Collections" },
+	{ href: siteConfig.quickShipHref, label: "Quick Ship" },
 	...(siteConfig.accessoriesEnabled
 		? [{ href: "/accessories", label: "Accessories" }]
 		: []),

@@ -80,6 +80,29 @@ export default function HomePage() {
 				</section>
 			</ScrollReveal>
 
+			<ScrollReveal delayMs={80}>
+				<section className="be-section py-8 md:py-10">
+					<div className="border-y border-[color:var(--line-subtle)] py-7 sm:flex sm:items-center sm:justify-between sm:gap-8">
+						<div>
+							<p className="be-kicker">A Faster Timeline</p>
+							<h2 className="mt-3 text-3xl leading-tight sm:text-4xl">
+								Quick Ship wedding dresses
+							</h2>
+							<p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--ink-700)]">
+								Need a gown sooner? Ask us about Quick Ship options and
+								current availability.
+							</p>
+						</div>
+						<a
+							href={siteConfig.quickShipHref}
+							className="be-btn be-btn-ghost mt-5 shrink-0 sm:mt-0"
+						>
+							Explore Quick Ship
+						</a>
+					</div>
+				</section>
+			</ScrollReveal>
+
 			<ScrollReveal delayMs={90}>
 				<section id="collections-preview" className="be-section">
 					<SectionHeading

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { defaultTheme, themeIds, themeStorageKey } from "@/lib/theme";
 import { siteConfig } from "@/lib/site";
+import { LocalBusinessJsonLd } from "@/components/seo/local-business-json-ld";
 import "./globals.css";
 
 const bodyFont = Manrope({
@@ -95,6 +96,7 @@ export default function RootLayout({
 			<body
 				className={`${bodyFont.variable} ${displayFont.variable} antialiased`}
 			>
+				<LocalBusinessJsonLd />
 				{children}
 			</body>
 		</html>
