@@ -82,7 +82,7 @@ export default function HomePage() {
 
 			<ScrollReveal delayMs={80}>
 				<section className="be-section py-8 md:py-10">
-					<div className="border-y border-[color:var(--line-subtle)] py-7 sm:flex sm:items-center sm:justify-between sm:gap-8">
+					<div className="border-y border-[color:var(--line-subtle)] py-7">
 						<div>
 							<p className="be-kicker">A Faster Timeline</p>
 							<h2 className="mt-3 text-3xl leading-tight sm:text-4xl">
@@ -93,12 +93,6 @@ export default function HomePage() {
 								current availability.
 							</p>
 						</div>
-						<a
-							href={siteConfig.quickShipHref}
-							className="be-btn be-btn-ghost mt-5 shrink-0 sm:mt-0"
-						>
-							Explore Quick Ship
-						</a>
 					</div>
 				</section>
 			</ScrollReveal>

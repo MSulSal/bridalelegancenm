@@ -24,11 +24,6 @@ const accessoryRoutes: Array<{
 const routes = [
 	{ path: "", priority: 1, changeFrequency: "weekly" },
 	{ path: "/collections", priority: 0.9, changeFrequency: "weekly" },
-	{
-		path: "/quick-ship-wedding-dresses",
-		priority: 0.9,
-		changeFrequency: "weekly",
-	},
 	...accessoryRoutes,
 	...appointmentRoutes,
 ] as const satisfies Array<{

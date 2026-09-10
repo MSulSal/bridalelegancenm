@@ -3,7 +3,6 @@ import { BrandText } from "@/components/brand/brand-text";
 
 const footerLinks = [
 	{ href: "/collections", label: "Collections" },
-	{ href: siteConfig.quickShipHref, label: "Quick Ship Dresses" },
 	...(siteConfig.accessoriesEnabled
 		? [{ href: "/accessories", label: "Accessories" }]
 		: []),
