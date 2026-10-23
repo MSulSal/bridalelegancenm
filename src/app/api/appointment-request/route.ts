@@ -472,6 +472,10 @@ function buildClientAlertSmsBody(
 }
 
 export async function POST(request: Request) {
+	if (!siteConfig.appointmentsEnabled) {
+		return NextResponse.json({ ok: false, message: "Not found." }, { status: 404 });
+	}
+
 	try {
 		let formData: FormData;
 

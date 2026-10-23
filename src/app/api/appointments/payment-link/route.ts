@@ -1,5 +1,6 @@
 ﻿import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
+import { siteConfig } from "@/lib/site";
 
 type Payload = {
 	fullName?: unknown;
@@ -31,6 +32,10 @@ function getDepositAmountCents(): number {
 }
 
 export async function POST(request: Request) {
+	if (!siteConfig.appointmentsEnabled) {
+		return NextResponse.json({ ok: false, message: "Not found." }, { status: 404 });
+	}
+
 	let body: unknown;
 
 	try {

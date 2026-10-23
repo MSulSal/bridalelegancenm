@@ -156,6 +156,10 @@ function buildCustomerRejectionText(details: ParsedAppointmentDetails): string {
 }
 
 export async function GET(request: Request) {
+	if (!siteConfig.appointmentsEnabled) {
+		return new NextResponse("Not found.", { status: 404 });
+	}
+
 	const token = new URL(request.url).searchParams.get("token")?.trim() ?? "";
 	if (!token) {
 		return htmlPage(

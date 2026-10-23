@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getDepositAmountCents } from "@/lib/appointments";
+import { siteConfig } from "@/lib/site";
 
 type ChargePayload = {
 	sourceId?: unknown;
@@ -29,6 +30,10 @@ function getSquareBaseUrl(): string {
 }
 
 export async function POST(request: Request) {
+	if (!siteConfig.appointmentsEnabled) {
+		return NextResponse.json({ ok: false, message: "Not found." }, { status: 404 });
+	}
+
 	let body: unknown;
 
 	try {
